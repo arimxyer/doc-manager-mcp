@@ -1,0 +1,104 @@
+"""Configuration management tools for doc-manager."""
+
+from pathlib import Path
+from datetime import datetime
+
+from ..models import InitializeConfigInput
+from ..constants import DocumentationPlatform
+from ..utils import detect_project_language, find_docs_directory, save_config, handle_error
+
+async def initialize_config(params: InitializeConfigInput) -> str:
+    """Initialize .doc-manager.yml configuration file for the project.
+
+    This tool creates a new configuration file that defines how the documentation
+    manager should operate for this project. It detects project characteristics
+    and creates sensible defaults.
+
+    Args:
+        params (InitializeConfigInput): Validated input parameters containing:
+            - project_path (str): Absolute path to project root
+            - platform (Optional[DocumentationPlatform]): Platform to use (auto-detected if not specified)
+            - exclude_patterns (Optional[List[str]]): Glob patterns to exclude
+
+    Returns:
+        str: Success message with configuration summary or error message
+
+    Examples:
+        - Use when: Setting up documentation management for a new project
+        - Use when: Reconfiguring documentation settings
+        - Don't use when: Configuration already exists and you just want to read it
+
+    Error Handling:
+        - Returns error if project_path doesn't exist
+        - Returns error if unable to write configuration file
+        - Validates all input parameters via Pydantic model
+    """
+    try:
+        project_path = Path(params.project_path).resolve()
+
+        if not project_path.exists():
+            return f"Error: Project path does not exist: {project_path}"
+
+        if not project_path.is_dir():
+            return f"Error: Project path is not a directory: {project_path}"
+
+        # Check if config already exists
+        config_path = project_path / ".doc-manager.yml"
+        if config_path.exists():
+            return f"Configuration already exists at {config_path}. Delete it first to reinitialize."
+
+        # Detect platform if not specified
+        platform = params.platform
+        if not platform:
+            # Try to detect platform
+            if (project_path / "docsite" / "hugo.yaml").exists() or (project_path / "hugo.toml").exists():
+                platform = DocumentationPlatform.HUGO
+            elif (project_path / "docusaurus.config.js").exists():
+                platform = DocumentationPlatform.DOCUSAURUS
+            elif (project_path / "mkdocs.yml").exists():
+                platform = DocumentationPlatform.MKDOCS
+            elif (project_path / "conf.py").exists():
+                platform = DocumentationPlatform.SPHINX
+            else:
+                platform = DocumentationPlatform.UNKNOWN
+
+        # Detect project language
+        language = detect_project_language(project_path)
+
+        # Find docs directory
+        docs_dir = find_docs_directory(project_path)
+        docs_path = str(docs_dir.relative_to(project_path)) if docs_dir else "docs"
+
+        # Create configuration
+        config = {
+            "platform": platform.value,
+            "exclude": params.exclude_patterns,
+            "sources": [],
+            "docs_path": docs_path,
+            "metadata": {
+                "language": language,
+                "created": datetime.now().isoformat(),
+                "version": "1.0.0"
+            }
+        }
+
+        # Save configuration
+        if not save_config(project_path, config):
+            return "Error: Failed to write configuration file"
+
+        return f"""✓ Created .doc-manager.yml configuration
+
+**Configuration Summary:**
+- Platform: {platform.value}
+- Documentation Path: {docs_path}
+- Primary Language: {language}
+- Exclude Patterns: {len(params.exclude_patterns)} patterns
+
+Next steps:
+1. Run `docmgr_initialize_memory` to set up the memory system
+2. Run `docmgr_bootstrap` to generate documentation (if starting fresh)
+3. Run `docmgr_migrate` to restructure existing documentation (if docs exist)
+"""
+
+    except Exception as e:
+        return handle_error(e, "initialize_config")
