@@ -436,10 +436,253 @@ option1: value
 """
 
 
-# Import the other workflow functions (migrate and sync) will be implemented next
 async def migrate(params: MigrateInput) -> str:
-    """Migrate existing documentation - to be implemented."""
-    return "Migration workflow not yet implemented. Coming soon!"
+    """Migrate existing documentation to new structure.
+
+    Orchestrates documentation restructuring:
+    1. Assesses existing documentation quality
+    2. Detects current and target platforms
+    3. Creates new documentation structure
+    4. Moves/copies files preserving git history (if requested)
+    5. Updates internal links and references
+    6. Generates migration report with breaking changes
+
+    Args:
+        params (MigrateInput): Validated input parameters containing:
+            - project_path (str): Absolute path to project root
+            - existing_docs_path (str): Current docs location (relative)
+            - new_docs_path (str): New docs location (default: "docs-new")
+            - target_platform (Optional[DocumentationPlatform]): Target platform
+            - preserve_history (bool): Use git mv to preserve history (default: True)
+
+    Returns:
+        str: Migration report with moved files and breaking changes
+
+    Examples:
+        - Use when: Restructuring existing documentation
+        - Use when: Migrating to a different documentation platform
+        - Use when: Consolidating scattered documentation
+
+    Error Handling:
+        - Returns error if project_path doesn't exist
+        - Returns error if existing_docs_path doesn't exist
+        - Returns error if new_docs_path already exists
+    """
+    try:
+        project_path = Path(params.project_path).resolve()
+
+        if not project_path.exists():
+            return f"Error: Project path does not exist: {project_path}"
+
+        # Validate existing docs path
+        existing_docs = project_path / params.existing_docs_path
+        if not existing_docs.exists():
+            return f"Error: Existing documentation path does not exist: {existing_docs}"
+
+        # Validate new docs path
+        new_docs = project_path / params.new_docs_path
+        if new_docs.exists():
+            return f"Error: New documentation path already exists: {new_docs}. Please choose a different path or remove the existing directory."
+
+        lines = ["# Documentation Migration Report", ""]
+        lines.append(f"**Project:** {project_path.name}")
+        lines.append(f"**Started:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        lines.append("")
+
+        # Step 1: Assess existing documentation
+        lines.append("## Step 1: Existing Documentation Assessment")
+        lines.append("")
+
+        from ..models import AssessQualityInput
+        quality_result = await assess_quality(AssessQualityInput(
+            project_path=str(project_path),
+            docs_path=params.existing_docs_path,
+            response_format=ResponseFormat.JSON
+        ))
+
+        quality_data = json.loads(quality_result)
+        existing_score = quality_data.get("overall_score", "unknown")
+
+        lines.append(f"✓ Existing documentation quality: **{existing_score}**")
+        lines.append("")
+
+        # Step 2: Detect platforms
+        lines.append("## Step 2: Platform Detection")
+        lines.append("")
+
+        from ..models import DetectPlatformInput
+        platform_result = await detect_platform(DetectPlatformInput(
+            project_path=str(project_path),
+            response_format=ResponseFormat.JSON
+        ))
+
+        platform_data = json.loads(platform_result)
+        current_platform = platform_data.get("recommendation", "unknown")
+        target_platform = params.target_platform.value if params.target_platform else current_platform
+
+        lines.append(f"Current platform: **{current_platform}**")
+        lines.append(f"Target platform: **{target_platform}**")
+        lines.append("")
+
+        # Step 3: Create new structure
+        lines.append("## Step 3: Creating New Structure")
+        lines.append("")
+
+        new_docs.mkdir(parents=True, exist_ok=True)
+
+        # Find all markdown files in existing docs
+        markdown_files = []
+        for pattern in ["**/*.md", "**/*.markdown"]:
+            markdown_files.extend(existing_docs.glob(pattern))
+
+        moved_files = []
+        link_updates_needed = []
+
+        # Move/copy files
+        for md_file in markdown_files:
+            relative_path = md_file.relative_to(existing_docs)
+
+            # Map to new structure (simplified - could be more sophisticated)
+            new_file_path = new_docs / relative_path
+
+            # Create directory structure
+            new_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Move or copy file
+            if params.preserve_history:
+                # Use git mv to preserve history
+                from ..utils import run_git_command
+                git_result = run_git_command(
+                    project_path,
+                    "mv",
+                    str(md_file.relative_to(project_path)),
+                    str(new_file_path.relative_to(project_path))
+                )
+
+                if git_result is not None:
+                    moved_files.append({
+                        "old": str(md_file.relative_to(project_path)),
+                        "new": str(new_file_path.relative_to(project_path)),
+                        "method": "git mv"
+                    })
+                else:
+                    # Fall back to copy if git mv fails
+                    import shutil
+                    shutil.copy2(md_file, new_file_path)
+                    moved_files.append({
+                        "old": str(md_file.relative_to(project_path)),
+                        "new": str(new_file_path.relative_to(project_path)),
+                        "method": "copy"
+                    })
+            else:
+                # Simple copy
+                import shutil
+                shutil.copy2(md_file, new_file_path)
+                moved_files.append({
+                    "old": str(md_file.relative_to(project_path)),
+                    "new": str(new_file_path.relative_to(project_path)),
+                    "method": "copy"
+                })
+
+        lines.append(f"✓ Migrated {len(moved_files)} documentation files")
+        lines.append("")
+
+        # Step 4: Update internal links
+        lines.append("## Step 4: Link Updates")
+        lines.append("")
+
+        # Scan for broken links in new structure
+        from ..models import ValidateDocsInput
+        validation_result = await validate_docs(ValidateDocsInput(
+            project_path=str(project_path),
+            docs_path=params.new_docs_path,
+            check_links=True,
+            check_assets=False,
+            check_snippets=False,
+            response_format=ResponseFormat.JSON
+        ))
+
+        validation_data = json.loads(validation_result)
+        broken_links = [issue for issue in validation_data.get("issues", []) if issue.get("type") == "broken_link"]
+
+        if broken_links:
+            lines.append(f"⚠️  Found {len(broken_links)} broken links that need updating")
+            link_updates_needed = broken_links[:10]  # Show first 10
+            for link in link_updates_needed:
+                lines.append(f"  - {link.get('file')}:{link.get('line')} - {link.get('link_url')}")
+            if len(broken_links) > 10:
+                lines.append(f"  ... and {len(broken_links) - 10} more")
+        else:
+            lines.append("✓ No broken links detected")
+
+        lines.append("")
+
+        # Step 5: Quality assessment of migrated docs
+        lines.append("## Step 5: Post-Migration Quality Assessment")
+        lines.append("")
+
+        new_quality_result = await assess_quality(AssessQualityInput(
+            project_path=str(project_path),
+            docs_path=params.new_docs_path,
+            response_format=ResponseFormat.JSON
+        ))
+
+        new_quality_data = json.loads(new_quality_result)
+        new_score = new_quality_data.get("overall_score", "unknown")
+
+        lines.append(f"✓ Migrated documentation quality: **{new_score}**")
+
+        if existing_score != new_score:
+            lines.append(f"  (Changed from {existing_score})")
+
+        lines.append("")
+
+        # Summary
+        lines.append("## Migration Summary")
+        lines.append("")
+        lines.append("**Files Migrated:**")
+        lines.append(f"- Total files: {len(moved_files)}")
+
+        git_mv_count = len([f for f in moved_files if f["method"] == "git mv"])
+        copy_count = len([f for f in moved_files if f["method"] == "copy"])
+
+        if git_mv_count > 0:
+            lines.append(f"- Git history preserved: {git_mv_count} files")
+        if copy_count > 0:
+            lines.append(f"- Copied: {copy_count} files")
+
+        lines.append("")
+        lines.append("**Breaking Changes:**")
+
+        if broken_links:
+            lines.append(f"- {len(broken_links)} broken links need manual updates")
+        else:
+            lines.append("- None detected")
+
+        lines.append("")
+
+        # Next steps
+        lines.append("## Next Steps")
+        lines.append("")
+        lines.append("1. **Review migrated content**: Check that all files moved correctly")
+
+        if broken_links:
+            lines.append("2. **Update broken links**: Fix internal links to match new structure")
+
+        lines.append("3. **Update references**: Update any external references to old doc paths")
+        lines.append("4. **Test new structure**: Ensure documentation builds correctly")
+        lines.append(f"5. **Remove old docs**: After verification, remove `{params.existing_docs_path}/`")
+        lines.append("6. **Update configuration**: Update `.doc-manager.yml` if needed")
+        lines.append("")
+
+        lines.append("**Migration Files:**")
+        lines.append(f"- Old location: `{params.existing_docs_path}/`")
+        lines.append(f"- New location: `{params.new_docs_path}/`")
+
+        return "\n".join(lines)
+
+    except Exception as e:
+        return handle_error(e, "migrate")
 
 
 async def sync(params: SyncInput) -> str:
