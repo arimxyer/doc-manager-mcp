@@ -39,6 +39,9 @@ The server follows a modular architecture where each tool is implemented in its 
 - `src/constants.py` - Constants and enums
 - `src/utils.py` - Shared utility functions
 - `src/tools/` - Tool implementations (one file per tool/group)
+- `references/` - Reference documentation for implementation
+- `templates/` - Code templates for tools and tests
+- `.claude/` - Claude Code configuration and mcp-builder skill
 
 ### Tool Registration Pattern
 
@@ -97,9 +100,21 @@ Checksums enable change detection independent of git commits, which is more reli
 - Migration workflow (restructure existing docs)
 - Sync workflow (incremental updates)
 
-See NEXT-STEPS.md for detailed implementation roadmap.
+See NEXT-STEPS.md for detailed implementation roadmap and IMPLEMENTATION-GUIDE.md for step-by-step implementation instructions.
 
 ## Adding New Tools
+
+**Use the templates in `templates/tools/` as starting points:**
+- `tool-template.py` - Standard tool implementation template
+- `workflow-template.py` - Multi-step workflow tool template
+- `test-template.py` - Test file template
+
+**Refer to reference documentation in `references/`:**
+- `quality-criteria.md` - 7 quality assessment criteria and rubrics
+- `doc-mapping-patterns.md` - Common code change → doc update patterns
+- `doc-platform-selector.md` - Platform selection decision framework
+
+**Implementation steps:**
 
 1. **Define Model** in `src/models.py`:
    ```python
@@ -197,3 +212,21 @@ metadata:
 5. **Performance** - Cache expensive operations when possible
 6. **Platform Agnostic** - Support multiple documentation platforms
 7. **MCP Best Practices** - Follow FastMCP patterns and annotations
+
+## Development Resources
+
+**Reference Documentation (`references/`):**
+- Quality assessment criteria with detailed rubrics
+- Code-to-docs mapping patterns
+- Platform selection framework
+
+**Templates (`templates/`):**
+- Tool implementation templates with best practices
+- Test templates for comprehensive coverage
+- Workflow templates for multi-step operations
+
+**MCP Builder Skill (`.claude/skills/mcp-builder/`):**
+- Complete MCP development guidelines
+- Python and TypeScript implementation guides
+- Evaluation framework and scripts
+- Use by activating: `/skill mcp-builder`
