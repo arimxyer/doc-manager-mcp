@@ -20,7 +20,8 @@ from src.models import (
     DetectPlatformInput,
     ValidateDocsInput,
     AssessQualityInput,
-    MapChangesInput
+    MapChangesInput,
+    TrackDependenciesInput
 )
 
 # Import tool implementations
@@ -30,6 +31,7 @@ from src.tools.platform import detect_platform
 from src.tools.validation import validate_docs
 from src.tools.quality import assess_quality
 from src.tools.changes import map_changes
+from src.tools.dependencies import track_dependencies
 
 # Initialize the MCP server
 mcp = FastMCP("doc_manager_mcp")
@@ -121,6 +123,20 @@ async def docmgr_assess_quality(params: AssessQualityInput) -> str:
 async def docmgr_map_changes(params: MapChangesInput) -> str:
     """Map code changes to affected documentation using checksum comparison or git diff."""
     return await map_changes(params)
+
+@mcp.tool(
+    name="docmgr_track_dependencies",
+    annotations={
+        "title": "Track Code-to-Documentation Dependencies",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False
+    }
+)
+async def docmgr_track_dependencies(params: TrackDependenciesInput) -> str:
+    """Build dependency graph showing which docs reference which source files."""
+    return await track_dependencies(params)
 
 if __name__ == "__main__":
     mcp.run()
