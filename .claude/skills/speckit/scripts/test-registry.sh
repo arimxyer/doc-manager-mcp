@@ -22,7 +22,7 @@ source "$SCRIPT_DIR/common.sh"
 
 # Configuration
 REGISTRY_FILE="test-registry.json"
-PARSER_SCRIPT="$SCRIPT_DIR/parse-test-file.ts"
+PARSER_SCRIPT="$SCRIPT_DIR/parse-test-file-universal.ts"
 JSON_MODE=false
 COMMAND=""
 SPEC_NUMBER=""
@@ -33,7 +33,7 @@ FILTER_TAG=""
 # ==============================================================================
 show_help() {
     cat << 'EOF'
-Test Registry Management
+Test Registry Management (Multi-Language)
 
 USAGE:
     test-registry.sh <command> [options]
@@ -44,7 +44,7 @@ COMMANDS:
     report                  Show pyramid metrics, health, and issues
     spec <number>           Show tests for specific spec (e.g., spec 001)
     retire [--filter TAG]   List retirement candidate tests
-    validate                Validate all tests have required JSDoc tags
+    validate                Validate all tests have required metadata tags
     export-for-plan         Export test data for speckit workflow
     self-check              Run self-diagnostic tests
 
@@ -75,23 +75,29 @@ EXAMPLES:
     # List tests with @slow tag
     test-registry.sh retire --filter slow
 
-    # Validate JSDoc tags
+    # Validate metadata tags
     test-registry.sh validate
 
     # Export for plan.md generation
     test-registry.sh export-for-plan --json
 
+SUPPORTED LANGUAGES:
+    - Python (.py): test_*.py, *_test.py
+    - JavaScript/TypeScript (.js, .ts, .jsx, .tsx): *.test.*, *.spec.*
+    - Go (.go): *_test.go
+    - Rust (.rs): *_test.rs
+
 REGISTRY FILE:
     Location: <repo-root>/test-registry.json
-    Contains: Individual test metadata with JSDoc tags
+    Contains: Individual test metadata with tags
 
 REQUIRES:
-    - bun (for TypeScript parser)
+    - bun (for universal parser)
     - jq (for JSON processing)
 
 STATUS:
-    ✅ FULLY IMPLEMENTED
-    Last Updated: 2025-11-12
+    ✅ FULLY IMPLEMENTED - Multi-Language
+    Last Updated: 2025-11-14
 
 EOF
 }
@@ -267,14 +273,25 @@ cmd_scan() {
         exit 1
     fi
 
-    # Find all test files (exclude node_modules, dist, build, etc.)
+    # Find all test files across multiple languages (exclude node_modules, dist, build, etc.)
     local test_files=()
     while IFS= read -r -d '' file; do
         test_files+=("$file")
-    done < <(find "$repo_root" -type f \( -name "*.test.ts" -o -name "*.test.tsx" -o -name "*.spec.ts" -o -name "*.spec.tsx" \) \
+    done < <(find "$repo_root" -type f \( \
+        -name "*.test.ts" -o -name "*.test.tsx" -o \
+        -name "*.spec.ts" -o -name "*.spec.tsx" -o \
+        -name "*.test.js" -o -name "*.test.jsx" -o \
+        -name "*.spec.js" -o -name "*.spec.jsx" -o \
+        -name "test_*.py" -o -name "*_test.py" -o \
+        -name "*_test.go" -o \
+        -name "*_test.rs" \
+        \) \
         -not -path "*/node_modules/*" \
         -not -path "*/dist/*" \
         -not -path "*/build/*" \
+        -not -path "*/target/*" \
+        -not -path "*/.venv/*" \
+        -not -path "*/__pycache__/*" \
         -not -path "*/.next/*" \
         -print0 2>/dev/null)
 
@@ -587,14 +604,25 @@ cmd_validate() {
     local repo_root
     repo_root="$(get_repo_root)"
 
-    # Find all test files (exclude node_modules, dist, build, etc.)
+    # Find all test files across multiple languages (exclude node_modules, dist, build, etc.)
     local test_files=()
     while IFS= read -r -d '' file; do
         test_files+=("$file")
-    done < <(find "$repo_root" -type f \( -name "*.test.ts" -o -name "*.test.tsx" -o -name "*.spec.ts" -o -name "*.spec.tsx" \) \
+    done < <(find "$repo_root" -type f \( \
+        -name "*.test.ts" -o -name "*.test.tsx" -o \
+        -name "*.spec.ts" -o -name "*.spec.tsx" -o \
+        -name "*.test.js" -o -name "*.test.jsx" -o \
+        -name "*.spec.js" -o -name "*.spec.jsx" -o \
+        -name "test_*.py" -o -name "*_test.py" -o \
+        -name "*_test.go" -o \
+        -name "*_test.rs" \
+        \) \
         -not -path "*/node_modules/*" \
         -not -path "*/dist/*" \
         -not -path "*/build/*" \
+        -not -path "*/target/*" \
+        -not -path "*/.venv/*" \
+        -not -path "*/__pycache__/*" \
         -not -path "*/.next/*" \
         -print0 2>/dev/null)
 
