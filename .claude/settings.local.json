@@ -1,9 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Skill(mcp-builder)"
+      "Skill(mcp-builder)",
+      "Bash(python -m py_compile:*)",
+      "Bash(uv run pytest:*)",
+      "Bash(uv run python:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "zen"
+  ],
+  "enableAllProjectMcpServers": true
 }

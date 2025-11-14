@@ -77,10 +77,10 @@ async def initialize_memory(params: InitializeMemoryInput) -> str:
             "docs_path": str(docs_dir.relative_to(project_path)) if docs_dir else None,
             "git_commit": git_commit,
             "git_branch": git_branch,
-            "created_at": datetime.now().isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "version": "1.0.0",
             "file_count": file_count,
-            "checksums": checksums
+            "files": checksums
         }
 
         baseline_path = memory_dir / "memory" / "repo-baseline.json"
