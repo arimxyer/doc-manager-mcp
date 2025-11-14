@@ -99,8 +99,30 @@ export class PythonAdapter extends BaseLanguageAdapter {
       }
     }
 
-    // Strategy 2: Check for comment nodes immediately before the function/class
+    // Strategy 2: Check for preceding docstring (expression_statement with string)
     let current = node.previousSibling;
+
+    // Skip whitespace/newline nodes
+    while (current && (current.type === 'newline' || current.type === 'indent')) {
+      current = current.previousSibling;
+    }
+
+    // Check if previous sibling is an expression_statement containing a string (docstring)
+    if (current && current.type === 'expression_statement') {
+      const stringNode = filterNullNodes(current.children).find((child) =>
+        child.type === 'string'
+      );
+
+      if (stringNode) {
+        let docstring = sourceCode.slice(stringNode.startIndex, stringNode.endIndex);
+        // Remove quotes (""", ''', ", ')
+        docstring = docstring.replace(/^("""|'''|"|')/, '').replace(/("""|'''|"|')$/, '');
+        comments.push(docstring.trim());
+      }
+    }
+
+    // Strategy 3: Check for comment nodes immediately before the function/class
+    current = node.previousSibling;
     const precedingComments: string[] = [];
 
     while (current && current.type === 'comment') {
