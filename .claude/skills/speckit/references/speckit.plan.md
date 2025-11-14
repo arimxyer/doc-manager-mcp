@@ -17,16 +17,28 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 2. **Load context**: Read FEATURE_SPEC and `memory/constitution.md`. Load IMPL_PLAN template (already copied from `templates/plan-template.md`).
 
-3. **Load test coverage** (if test-registry.json exists):
+3. **Initialize test registry** (if not exists):
+   - Check if `test-registry.json` exists at repo root
+   - If missing:
+     - Run `scripts/test-registry.sh init` to create empty registry
+     - Run `scripts/test-registry.sh scan` to populate from existing tests
+     - Report: "Initialized test registry with [N] tests"
+   - If exists: Continue to step 4
+
+4. **Load test coverage**:
    - Run `scripts/test-registry.sh export-for-plan --json` from repo root
    - Parse JSON output for existingTests totals and pyramid status
-   - Include in Technical Context section of plan.md:
-     - Current test count by type (unit/integration/e2e)
-     - Pyramid health status
-     - Tests owned by this spec (if updating existing spec)
-   - If test-registry.json doesn't exist, skip this step
+   - Check orphanedTests count:
+     - If > 0: Note "Found [N] untagged tests. Consider running: test-registry.sh bootstrap --spec <number>"
+     - Brownfield projects benefit from bootstrap before planning
 
-4. **Execute plan workflow**: Follow the structure in IMPL_PLAN template to:
+5. **Document testing strategy**: Fill the "Testing Strategy" section in plan.md:
+   - Coverage Baseline: Use data from step 4 (total tests, pyramid health)
+   - Test Pyramid Targets: Calculate expected distribution (70% unit, 20% integration, 10% e2e)
+   - Component Test Coverage: Map spec requirements to test types needed
+   - Note if bootstrap is recommended for untagged tests
+
+6. **Execute plan workflow**: Follow the structure in IMPL_PLAN template to:
    - Fill Technical Context (mark unknowns as "NEEDS CLARIFICATION")
    - Fill Constitution Check section from constitution
    - Evaluate gates (ERROR if violations unjustified)
@@ -35,7 +47,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Phase 1: Update agent context by running the agent script
    - Re-evaluate Constitution Check post-design
 
-5. **Stop and report**: Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
+7. **Stop and report**: Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
 
 ## Phases
 
