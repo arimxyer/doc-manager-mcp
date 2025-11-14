@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 
 from ..models import MapChangesInput
-from ..constants import ResponseFormat
+from ..constants import ResponseFormat, ChangeDetectionMode
 from ..utils import calculate_checksum, run_git_command, handle_error
 
 
@@ -26,7 +26,7 @@ def _load_baseline(project_path: Path) -> Optional[Dict[str, Any]]:
 def _get_changed_files_from_checksums(project_path: Path, baseline: Dict[str, Any]) -> List[Dict[str, str]]:
     """Compare current checksums with baseline to find changed files."""
     changed_files = []
-    baseline_checksums = baseline.get("checksums", {})
+    baseline_checksums = baseline.get("files", {})
 
     # Check existing files for changes
     for file_path in project_path.rglob("*"):
@@ -276,7 +276,7 @@ def _format_changes_report(changed_files: List[Dict[str, str]], affected_docs: L
         return json.dumps({
             "analyzed_at": datetime.now().isoformat(),
             "baseline_commit": baseline_info.get("git_commit") if baseline_info else None,
-            "baseline_created": baseline_info.get("created_at") if baseline_info else None,
+            "baseline_created": baseline_info.get("timestamp") if baseline_info else None,
             "changes_detected": len(changed_files) > 0,
             "total_changes": len(changed_files),
             "changed_files": changed_files,
@@ -287,8 +287,10 @@ def _format_changes_report(changed_files: List[Dict[str, str]], affected_docs: L
         lines.append(f"**Analyzed:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
         if baseline_info:
-            lines.append(f"**Baseline Commit:** {baseline_info.get('git_commit', 'N/A')[:8]}")
-            lines.append(f"**Baseline Created:** {baseline_info.get('created_at', 'N/A')}")
+            git_commit = baseline_info.get('git_commit', 'N/A')
+            if git_commit and git_commit != 'N/A':
+                lines.append(f"**Baseline Commit:** {git_commit[:8]}")
+            lines.append(f"**Baseline Created:** {baseline_info.get('timestamp', 'N/A')}")
 
         lines.append("")
 
@@ -420,15 +422,16 @@ async def map_changes(params: MapChangesInput) -> str:
         changed_files = []
         baseline_info = None
 
-        if params.since_commit:
+        if params.mode == ChangeDetectionMode.GIT_DIFF:
             # Use git diff
-            changed_files = _get_changed_files_from_git(project_path, params.since_commit)
-            baseline_info = {"git_commit": params.since_commit}
+            since_commit = params.since_commit or "HEAD~1"
+            changed_files = _get_changed_files_from_git(project_path, since_commit)
+            baseline_info = {"git_commit": since_commit}
         else:
-            # Use checksum comparison from memory
+            # Use checksum comparison from memory (default: CHECKSUM mode)
             baseline = _load_baseline(project_path)
             if not baseline:
-                return f"Error: No baseline found at {project_path}/.doc-manager/memory/repo-baseline.json. Run docmgr_initialize_memory first or specify since_commit parameter."
+                return f"Error: No baseline found at {project_path}/.doc-manager/memory/repo-baseline.json. Run docmgr_initialize_memory first or use mode='git_diff' with since_commit parameter."
 
             changed_files = _get_changed_files_from_checksums(project_path, baseline)
             baseline_info = baseline

@@ -3,7 +3,7 @@
 from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
 
-from .constants import ResponseFormat, DocumentationPlatform, QualityCriterion
+from .constants import ResponseFormat, DocumentationPlatform, QualityCriterion, ChangeDetectionMode
 
 class InitializeConfigInput(BaseModel):
     """Input for initializing .doc-manager.yml configuration."""
@@ -155,6 +155,10 @@ class MapChangesInput(BaseModel):
         default=None,
         description="Git commit hash to compare from. If not specified, uses checksums from memory"
     )
+    mode: ChangeDetectionMode = Field(
+        default=ChangeDetectionMode.CHECKSUM,
+        description="Change detection mode: 'checksum' for file hash comparison or 'git_diff' for git-based diff"
+    )
     response_format: ResponseFormat = Field(
         default=ResponseFormat.MARKDOWN,
         description="Output format"
@@ -171,6 +175,11 @@ class TrackDependenciesInput(BaseModel):
     project_path: str = Field(
         ...,
         description="Absolute path to project root directory",
+        min_length=1
+    )
+    docs_path: Optional[str] = Field(
+        default=None,
+        description="Path to documentation directory (relative to project root). If not specified, will be auto-detected",
         min_length=1
     )
     response_format: ResponseFormat = Field(
@@ -218,12 +227,12 @@ class MigrateInput(BaseModel):
         description="Absolute path to project root directory",
         min_length=1
     )
-    existing_docs_path: str = Field(
+    source_path: str = Field(
         ...,
         description="Path to existing documentation directory (relative to project root)",
         min_length=1
     )
-    new_docs_path: str = Field(
+    target_path: str = Field(
         default="docs-new",
         description="Path where migrated documentation should be created (relative to project root)",
         min_length=1
@@ -258,6 +267,11 @@ class SyncInput(BaseModel):
         default="reactive",
         description="Sync mode: 'reactive' (manual trigger) or 'proactive' (auto-detect changes)",
         pattern="^(reactive|proactive)$"
+    )
+    docs_path: Optional[str] = Field(
+        default=None,
+        description="Path to documentation directory (relative to project root). If not specified, will be auto-detected",
+        min_length=1
     )
     response_format: ResponseFormat = Field(
         default=ResponseFormat.MARKDOWN,

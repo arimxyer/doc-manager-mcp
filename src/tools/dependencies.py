@@ -330,10 +330,15 @@ async def track_dependencies(params: TrackDependenciesInput) -> str:
         if not project_path.exists():
             return f"Error: Project path does not exist: {project_path}"
 
-        # Find docs directory
-        docs_path = find_docs_directory(project_path)
-        if not docs_path:
-            return "Error: Could not find documentation directory."
+        # Find docs directory (use provided path or auto-detect)
+        if params.docs_path:
+            docs_path = project_path / params.docs_path
+            if not docs_path.exists():
+                return f"Error: Documentation directory not found at {docs_path}"
+        else:
+            docs_path = find_docs_directory(project_path)
+            if not docs_path:
+                return "Error: Could not find documentation directory. Specify docs_path parameter."
 
         # Find all markdown files
         markdown_files = _find_markdown_files(docs_path)

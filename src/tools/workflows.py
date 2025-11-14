@@ -495,12 +495,12 @@ async def migrate(params: MigrateInput) -> str:
             return f"Error: Project path does not exist: {project_path}"
 
         # Validate existing docs path
-        existing_docs = project_path / params.existing_docs_path
+        existing_docs = project_path / params.source_path
         if not existing_docs.exists():
             return f"Error: Existing documentation path does not exist: {existing_docs}"
 
         # Validate new docs path
-        new_docs = project_path / params.new_docs_path
+        new_docs = project_path / params.target_path
         if new_docs.exists():
             return f"Error: New documentation path already exists: {new_docs}. Please choose a different path or remove the existing directory."
 
@@ -516,7 +516,7 @@ async def migrate(params: MigrateInput) -> str:
         from ..models import AssessQualityInput
         quality_result = await assess_quality(AssessQualityInput(
             project_path=str(project_path),
-            docs_path=params.existing_docs_path,
+            docs_path=params.source_path,
             response_format=ResponseFormat.JSON
         ))
 
@@ -615,7 +615,7 @@ async def migrate(params: MigrateInput) -> str:
         from ..models import ValidateDocsInput
         validation_result = await validate_docs(ValidateDocsInput(
             project_path=str(project_path),
-            docs_path=params.new_docs_path,
+            docs_path=params.target_path,
             check_links=True,
             check_assets=False,
             check_snippets=False,
@@ -643,7 +643,7 @@ async def migrate(params: MigrateInput) -> str:
 
         new_quality_result = await assess_quality(AssessQualityInput(
             project_path=str(project_path),
-            docs_path=params.new_docs_path,
+            docs_path=params.target_path,
             response_format=ResponseFormat.JSON
         ))
 
@@ -691,21 +691,21 @@ async def migrate(params: MigrateInput) -> str:
 
         lines.append("3. **Update references**: Update any external references to old doc paths")
         lines.append("4. **Test new structure**: Ensure documentation builds correctly")
-        lines.append(f"5. **Remove old docs**: After verification, remove `{params.existing_docs_path}/`")
+        lines.append(f"5. **Remove old docs**: After verification, remove `{params.source_path}/`")
         lines.append("6. **Update configuration**: Update `.doc-manager.yml` if needed")
         lines.append("")
 
         lines.append("**Migration Files:**")
-        lines.append(f"- Old location: `{params.existing_docs_path}/`")
-        lines.append(f"- New location: `{params.new_docs_path}/`")
+        lines.append(f"- Old location: `{params.source_path}/`")
+        lines.append(f"- New location: `{params.target_path}/`")
 
         # Return JSON or Markdown based on response_format
         if params.response_format == ResponseFormat.JSON:
             return json.dumps({
                 "status": "success",
                 "message": "Documentation migrated successfully",
-                "source_path": params.existing_docs_path,
-                "target_path": params.new_docs_path,
+                "source_path": params.source_path,
+                "target_path": params.target_path,
                 "target_platform": params.target_platform.value,
                 "files_migrated": len(migrated_files),
                 "broken_links": len(broken_links),
@@ -832,8 +832,13 @@ async def sync(params: SyncInput) -> str:
         from ..models import ValidateDocsInput
         from ..utils import find_docs_directory
 
-        docs_path = find_docs_directory(project_path)
-        if docs_path:
+        # Use provided docs_path or auto-detect
+        if params.docs_path:
+            docs_path = project_path / params.docs_path
+        else:
+            docs_path = find_docs_directory(project_path)
+
+        if docs_path and docs_path.exists():
             validation_result = await validate_docs(ValidateDocsInput(
                 project_path=str(project_path),
                 docs_path=str(docs_path.relative_to(project_path)),
