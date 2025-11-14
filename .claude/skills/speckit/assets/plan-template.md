@@ -94,6 +94,26 @@ ios/ or android/
 **Structure Decision**: [Document the selected structure and reference the real
 directories captured above]
 
+## Testing Strategy
+
+**Coverage Baseline** (from `test-registry.sh export-for-plan --json`):
+- Total tests: [N] | Unit: [N] ([%]) | Integration: [N] ([%]) | E2E: [N] ([%])
+- Pyramid health: [HEALTHY/WARN/CRITICAL]
+- Existing tests for this spec: [N tests found OR "None - new spec"]
+
+**Test Pyramid Targets**:
+- Unit: ~70% ([N] tests) | Integration: ~20% ([N] tests) | E2E: ~10% ([N] tests)
+
+**Mocking Strategy**: [Which dependencies mocked vs. real in integration tests]
+
+**Component Test Coverage**:
+
+| Component/Module | Unit | Integration | E2E | Notes |
+|------------------|------|-------------|-----|-------|
+| [e.g., src/services/auth] | Yes | Yes | No | [Mock external APIs] |
+| [e.g., src/models/user] | Yes | No | No | [Pure logic, no I/O] |
+| [e.g., CLI commands] | No | Yes | Yes | [Test via integration/e2e only] |
+
 ## Complexity Tracking
 
 > **Fill ONLY if Constitution Check has violations that must be justified**

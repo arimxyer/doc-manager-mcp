@@ -240,6 +240,9 @@ Automation bash scripts executed by workflow commands:
 - **update-agent-context.sh**: Update agent-specific context files with new tech
 - **archive-specs.sh**: Archive completed or old spec directories
 - **common.sh**: Shared utilities for all scripts
+- **test-registry.sh**: Test registry management (init, scan, report, spec, retire, validate, export-for-plan)
+- **add-test-tags-universal.ts**: Auto-tag existing tests with metadata
+- **parse-test-file-universal.ts**: Parse test files and extract metadata (Python, JS/TS, Go, Rust)
 
 **Usage**: Called automatically by workflow commands with JSON output parsing.
 
@@ -302,6 +305,14 @@ Persistent project knowledge and principles:
 - MUST principles are mandatory
 - Violations flagged as CRITICAL
 - Consistency enforced across artifacts
+
+**Testing Standards**:
+- Test pyramid: 70% unit, 20% integration, 10% e2e
+- All tests tagged with @spec and metadata (see TEST-METADATA-SCHEMA.md)
+- Registry tracks coverage, health, and pyramid ratios
+- Automated via test-registry.sh (integrated in plan/tasks/implement steps)
+
+For comprehensive testing guide, see `references/speckit.testing.md`.
 
 ---
 

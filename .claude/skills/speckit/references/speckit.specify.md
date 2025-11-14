@@ -89,11 +89,13 @@ Given that feature description, do this:
       - [ ] All mandatory sections completed
       
       ## Requirement Completeness
-      
+
       - [ ] No [NEEDS CLARIFICATION] markers remain
       - [ ] Requirements are testable and unambiguous
+      - [ ] Requirements enable independent user story testing
       - [ ] Success criteria are measurable
       - [ ] Success criteria are technology-agnostic (no implementation details)
+      - [ ] Success criteria include test coverage targets when applicable
       - [ ] All acceptance scenarios are defined
       - [ ] Edge cases are identified
       - [ ] Scope is clearly bounded
@@ -221,6 +223,7 @@ Success criteria must be:
 - "System supports 10,000 concurrent users"
 - "95% of searches return results in under 1 second"
 - "Task completion rate improves by 40%"
+- "Feature achieves test pyramid targets: 70% unit, 20% integration, 10% e2e"
 
 **Bad examples** (implementation-focused):
 
