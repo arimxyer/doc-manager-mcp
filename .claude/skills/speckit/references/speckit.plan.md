@@ -34,6 +34,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 5. **Document testing strategy**: Fill the "Testing Strategy" section in plan.md:
    - Coverage Baseline: Use data from step 4 (total tests, pyramid health)
+   - Retirement Candidates: Run `test-registry.sh retire --filter <tag> --json` if spec changes/deprecates features
    - Test Pyramid Targets: Calculate expected distribution (70% unit, 20% integration, 10% e2e)
    - Component Test Coverage: Map spec requirements to test types needed
    - Note if bootstrap is recommended for untagged tests

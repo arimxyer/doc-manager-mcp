@@ -161,9 +161,12 @@ Every task MUST strictly follow this format:
 
 **Pyramid Health Considerations**:
 - Use test registry data (from step 2) to understand current pyramid state
-- If pyramid is inverted (WARN status): Prioritize unit test tasks
+- If pyramid is inverted (WARN status): Two strategies:
+  - **Add**: Prioritize unit test tasks to rebalance
+  - **Remove**: Use retirement workflow (see point 5) to retire excessive integration/e2e tests
 - Avoid generating excessive e2e tests (should be <10% of total)
 - Focus e2e tests on critical user journeys only
+- Example retirement filters: `@slow` (e2e tests), `@mockDependent` (integration tests)
 
 **Test Task Placement**:
 - Unit tests: Early in story phase (enable TDD)

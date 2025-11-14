@@ -100,6 +100,7 @@ directories captured above]
 - Total tests: [N] | Unit: [N] ([%]) | Integration: [N] ([%]) | E2E: [N] ([%])
 - Pyramid health: [HEALTHY/WARN/CRITICAL]
 - Existing tests for this spec: [N tests found OR "None - new spec"]
+- Retirement candidates: [N tests | Filter: @tag | Timing: Phase X]
 
 **Test Pyramid Targets**:
 - Unit: ~70% ([N] tests) | Integration: ~20% ([N] tests) | E2E: ~10% ([N] tests)
