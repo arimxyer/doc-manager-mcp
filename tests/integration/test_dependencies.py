@@ -13,6 +13,10 @@ from src.tools.dependencies import track_dependencies
 class TestDependencyTracking:
     """Integration tests for dependency tracking."""
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_track_file_path_references(self, tmp_path):
         """Test tracking file path references in docs."""
         docs_dir = tmp_path / "docs"
@@ -41,6 +45,10 @@ Modify settings in `src/settings.py`.
         assert "settings.py" in result
         assert "dependency" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_track_function_references(self, tmp_path):
         """Test tracking function references in docs."""
         docs_dir = tmp_path / "docs"
@@ -66,6 +74,10 @@ The `get_user_info()` method returns user data.
         assert "validate_token" in result
         assert "get_user_info" in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_track_class_references(self, tmp_path):
         """Test tracking class references in docs."""
         docs_dir = tmp_path / "docs"
@@ -91,6 +103,10 @@ Uses `DatabaseConnection` for storage.
         assert "BaseManager" in result
         assert "DatabaseConnection" in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_track_command_references(self, tmp_path):
         """Test tracking CLI command references."""
         docs_dir = tmp_path / "docs"
@@ -114,6 +130,10 @@ Execute `docmgr sync --auto` for synchronization.
         assert "validate" in result
         assert "sync" in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_track_config_key_references(self, tmp_path):
         """Test tracking configuration key references."""
         docs_dir = tmp_path / "docs"
@@ -137,6 +157,10 @@ Use `exclude` patterns to ignore files.
         assert "docs_path" in result
         assert "exclude" in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_bidirectional_graph_creation(self, tmp_path):
         """Test that bidirectional dependency graph is created."""
         docs_dir = tmp_path / "docs"
@@ -160,6 +184,10 @@ Use `exclude` patterns to ignore files.
             assert "doc_to_code" in deps
             assert "code_to_doc" in deps
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_multiple_docs_referencing_same_code(self, tmp_path):
         """Test multiple docs referencing the same code element."""
         docs_dir = tmp_path / "docs"
@@ -184,6 +212,10 @@ Use `exclude` patterns to ignore files.
             init_refs = [ref for ref in code_to_doc if "init" in ref.lower()]
             assert len(init_refs) > 0
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_track_across_nested_directories(self, tmp_path):
         """Test tracking dependencies across nested directory structure."""
         docs_dir = tmp_path / "docs"
@@ -204,6 +236,10 @@ Use `exclude` patterns to ignore files.
 
         assert "setup" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_json_output_format(self, tmp_path):
         """Test JSON output format."""
         docs_dir = tmp_path / "docs"
@@ -220,6 +256,10 @@ Use `exclude` patterns to ignore files.
         assert '"code_to_doc":' in result
         assert '"total_references":' in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_empty_docs_directory(self, tmp_path):
         """Test tracking with empty docs directory."""
         docs_dir = tmp_path / "docs"
@@ -233,6 +273,10 @@ Use `exclude` patterns to ignore files.
 
         assert "0 references" in result or "no references" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_nonexistent_docs_path(self, tmp_path):
         """Test error handling for nonexistent docs path."""
         result = await track_dependencies(TrackDependenciesInput(
@@ -243,6 +287,10 @@ Use `exclude` patterns to ignore files.
 
         assert "Error" in result or "not found" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_complex_code_references(self, tmp_path):
         """Test tracking complex code references."""
         docs_dir = tmp_path / "docs"
@@ -271,6 +319,10 @@ Call `User.authenticate(username, password)`.
         assert "user.py" in result or "User" in result
         assert "production.yaml" in result or "config" in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_save_dependencies_file(self, tmp_path):
         """Test that dependencies are saved to file."""
         docs_dir = tmp_path / "docs"

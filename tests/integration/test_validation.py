@@ -12,6 +12,11 @@ from src.tools.validation import validate_docs
 class TestDocumentationValidation:
     """Integration tests for documentation validation."""
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_validate_clean_documentation(self, tmp_path):
         """Test validating documentation with no issues."""
         docs_dir = tmp_path / "docs"
@@ -36,6 +41,11 @@ This is a clean documentation page.
         assert "documentation is valid" in result.lower()
         assert "0 issues" in result.lower() or "no issues" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_detect_broken_internal_links(self, tmp_path):
         """Test detecting broken internal markdown links."""
         docs_dir = tmp_path / "docs"
@@ -58,6 +68,11 @@ This is a clean documentation page.
         assert "nonexistent.md" in result
         assert "missing.md" in result
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_detect_missing_images(self, tmp_path):
         """Test detecting missing image files."""
         docs_dir = tmp_path / "docs"
@@ -80,6 +95,11 @@ This is a clean documentation page.
         assert "missing.png" in result
         assert "another-missing.jpg" in result
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_detect_missing_alt_text(self, tmp_path):
         """Test detecting images without alt text."""
         docs_dir = tmp_path / "docs"
@@ -105,6 +125,11 @@ This is a clean documentation page.
 
         assert "alt text" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_validate_code_snippet_syntax(self, tmp_path):
         """Test basic code snippet syntax validation."""
         docs_dir = tmp_path / "docs"
@@ -141,6 +166,11 @@ function test() {
         # JavaScript has unclosed block, JSON has missing comma
         assert "unmatched" in result.lower() or "syntax" in result.lower() or "issue" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_validate_with_custom_docs_path(self, tmp_path):
         """Test validation with custom docs path."""
         custom_docs = tmp_path / "documentation"
@@ -157,6 +187,11 @@ function test() {
         assert "broken link" in result.lower()
         assert "missing.md" in result
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_validate_nested_directories(self, tmp_path):
         """Test validation across nested directory structure."""
         docs_dir = tmp_path / "docs"
@@ -182,6 +217,11 @@ function test() {
         assert "missing.md" in result
 
     @pytest.mark.skip(reason="HTML file validation not yet implemented - only markdown files are validated")
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_validate_html_links(self, tmp_path):
         """Test validation of HTML anchor links."""
         docs_dir = tmp_path / "docs"
@@ -205,6 +245,11 @@ function test() {
 
         assert "missing.html" in result or "broken link" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_json_output_format(self, tmp_path):
         """Test JSON output format."""
         docs_dir = tmp_path / "docs"
@@ -221,6 +266,11 @@ function test() {
         assert '"type":' in result
         assert '"file":' in result
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_nonexistent_docs_path(self, tmp_path):
         """Test error handling for nonexistent docs path."""
         result = await validate_docs(ValidateDocsInput(
@@ -231,6 +281,11 @@ function test() {
 
         assert "Error" in result or "not found" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_multiple_issues_in_single_file(self, tmp_path):
         """Test detecting multiple issues in one file."""
         docs_dir = tmp_path / "docs"
@@ -260,6 +315,11 @@ def unclosed():
         issues_count = result.lower().count("issue") + result.lower().count("error")
         assert issues_count > 0
 
+    """
+    @spec 001
+    @testType integration
+    @mockDependent
+    """
     async def test_ignore_external_links(self, tmp_path):
         """Test that external links are not validated."""
         docs_dir = tmp_path / "docs"
