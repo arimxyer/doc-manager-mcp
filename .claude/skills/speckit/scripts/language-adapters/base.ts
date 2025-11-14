@@ -126,9 +126,11 @@ export abstract class BaseLanguageAdapter implements LanguageAdapter {
    * Default implementation for test type inference from file path
    */
   inferTestType(filePath: string): 'unit' | 'integration' | 'e2e' {
-    const pathLower = filePath.toLowerCase();
+    // Normalize path separators for cross-platform compatibility
+    const pathLower = filePath.toLowerCase().replace(/\\/g, '/');
 
-    if (pathLower.includes('/e2e/') || pathLower.includes('.e2e.') || pathLower.includes('end-to-end')) {
+    if (pathLower.includes('/e2e/') || pathLower.includes('.e2e.') ||
+        pathLower.includes('_e2e.') || pathLower.includes('end-to-end')) {
       return 'e2e';
     }
 

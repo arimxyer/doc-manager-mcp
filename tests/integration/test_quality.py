@@ -12,6 +12,10 @@ from src.tools.quality import assess_quality
 class TestQualityAssessment:
     """Integration tests for quality assessment."""
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_assess_high_quality_docs(self, tmp_path):
         """Test assessing high-quality documentation."""
         docs_dir = tmp_path / "docs"
@@ -68,6 +72,10 @@ result = initialize_config("/path/to/project", "mkdocs")
         # Should have good scores
         assert "excellent" in result.lower() or "good" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_assess_relevance_criterion(self, tmp_path):
         """Test relevance assessment."""
         docs_dir = tmp_path / "docs"
@@ -89,6 +97,10 @@ Here are my favorite recipes and vacation photos.
 
         assert "relevance" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_assess_accuracy_criterion(self, tmp_path):
         """Test accuracy assessment."""
         docs_dir = tmp_path / "docs"
@@ -115,6 +127,10 @@ Reference the `UndefinedFunction()` API.
 
         assert "accuracy" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_assess_purposefulness_criterion(self, tmp_path):
         """Test purposefulness assessment."""
         docs_dir = tmp_path / "docs"
@@ -147,6 +163,10 @@ Before starting, ensure you have Python 3.10+.
 
         assert "purposefulness" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_assess_uniqueness_criterion(self, tmp_path):
         """Test uniqueness assessment (duplicate content detection)."""
         docs_dir = tmp_path / "docs"
@@ -176,6 +196,10 @@ Then configure your project.
         assert "uniqueness" in result.lower()
         assert "duplicate" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_assess_consistency_criterion(self, tmp_path):
         """Test consistency assessment."""
         docs_dir = tmp_path / "docs"
@@ -204,6 +228,10 @@ Run command: `yarn add`
 
         assert "consistency" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_assess_clarity_criterion(self, tmp_path):
         """Test clarity assessment."""
         docs_dir = tmp_path / "docs"
@@ -226,6 +254,10 @@ See that file over there? Update it accordingly.
 
         assert "clarity" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_assess_structure_criterion(self, tmp_path):
         """Test structure assessment."""
         docs_dir = tmp_path / "docs"
@@ -247,6 +279,10 @@ See that file over there? Update it accordingly.
 
         assert "structure" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_json_output_format(self, tmp_path):
         """Test JSON output format."""
         docs_dir = tmp_path / "docs"
@@ -263,6 +299,10 @@ See that file over there? Update it accordingly.
         assert '"score":' in result
         assert '"findings":' in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_all_criteria_present(self, tmp_path):
         """Test that all 7 criteria are assessed."""
         docs_dir = tmp_path / "docs"
@@ -289,6 +329,10 @@ See that file over there? Update it accordingly.
         for criterion in criteria:
             assert criterion.lower() in result.lower(), f"Missing criterion: {criterion}"
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_empty_docs_directory(self, tmp_path):
         """Test assessment of empty docs directory."""
         docs_dir = tmp_path / "docs"
@@ -302,6 +346,10 @@ See that file over there? Update it accordingly.
 
         assert "no files" in result.lower() or "empty" in result.lower()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_nonexistent_docs_path(self, tmp_path):
         """Test error handling for nonexistent docs path."""
         result = await assess_quality(AssessQualityInput(

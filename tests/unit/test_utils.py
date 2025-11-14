@@ -16,6 +16,10 @@ from src.utils import (
 class TestCalculateChecksum:
     """Tests for calculate_checksum function."""
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_checksum_consistency(self, tmp_path):
         """Test that same content produces same checksum."""
         test_file = tmp_path / "test.txt"
@@ -27,6 +31,10 @@ class TestCalculateChecksum:
         assert checksum1 == checksum2
         assert len(checksum1) == 64  # SHA-256 hex length
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_checksum_different_content(self, tmp_path):
         """Test that different content produces different checksums."""
         file1 = tmp_path / "file1.txt"
@@ -40,6 +48,10 @@ class TestCalculateChecksum:
 
         assert checksum1 != checksum2
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_checksum_nonexistent_file(self, tmp_path):
         """Test checksum of nonexistent file returns empty string."""
         nonexistent = tmp_path / "nonexistent.txt"
@@ -51,60 +63,100 @@ class TestCalculateChecksum:
 class TestDetectProjectLanguage:
     """Tests for detect_project_language function."""
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_go(self, tmp_path):
         """Test Go project detection."""
         (tmp_path / "go.mod").write_text("module example.com/project")
         language = detect_project_language(tmp_path)
         assert language == "Go"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_python_requirements(self, tmp_path):
         """Test Python project detection via requirements.txt."""
         (tmp_path / "requirements.txt").write_text("pytest==7.0.0")
         language = detect_project_language(tmp_path)
         assert language == "Python"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_python_setup(self, tmp_path):
         """Test Python project detection via setup.py."""
         (tmp_path / "setup.py").write_text("from setuptools import setup")
         language = detect_project_language(tmp_path)
         assert language == "Python"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_javascript(self, tmp_path):
         """Test JavaScript project detection."""
         (tmp_path / "package.json").write_text('{"name": "test"}')
         language = detect_project_language(tmp_path)
         assert language == "JavaScript/TypeScript"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_rust(self, tmp_path):
         """Test Rust project detection."""
         (tmp_path / "Cargo.toml").write_text('[package]\nname = "test"')
         language = detect_project_language(tmp_path)
         assert language == "Rust"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_java_maven(self, tmp_path):
         """Test Java project detection via pom.xml."""
         (tmp_path / "pom.xml").write_text('<project></project>')
         language = detect_project_language(tmp_path)
         assert language == "Java"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_java_gradle(self, tmp_path):
         """Test Java project detection via build.gradle."""
         (tmp_path / "build.gradle").write_text('plugins {}')
         language = detect_project_language(tmp_path)
         assert language == "Java"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_ruby(self, tmp_path):
         """Test Ruby project detection."""
         (tmp_path / "Gemfile").write_text('source "https://rubygems.org"')
         language = detect_project_language(tmp_path)
         assert language == "Ruby"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_php(self, tmp_path):
         """Test PHP project detection."""
         (tmp_path / "composer.json").write_text('{"require": {}}')
         language = detect_project_language(tmp_path)
         assert language == "PHP"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_detect_unknown(self, tmp_path):
         """Test unknown project returns 'Unknown'."""
         language = detect_project_language(tmp_path)
@@ -114,6 +166,10 @@ class TestDetectProjectLanguage:
 class TestFindDocsDirectory:
     """Tests for find_docs_directory function."""
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_find_docs(self, tmp_path):
         """Test finding 'docs' directory."""
         docs_dir = tmp_path / "docs"
@@ -121,6 +177,10 @@ class TestFindDocsDirectory:
         found = find_docs_directory(tmp_path)
         assert found == docs_dir
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_find_doc(self, tmp_path):
         """Test finding 'doc' directory."""
         doc_dir = tmp_path / "doc"
@@ -128,6 +188,10 @@ class TestFindDocsDirectory:
         found = find_docs_directory(tmp_path)
         assert found == doc_dir
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_find_documentation(self, tmp_path):
         """Test finding 'documentation' directory."""
         doc_dir = tmp_path / "documentation"
@@ -135,6 +199,10 @@ class TestFindDocsDirectory:
         found = find_docs_directory(tmp_path)
         assert found == doc_dir
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_find_docsite(self, tmp_path):
         """Test finding 'docsite' directory."""
         doc_dir = tmp_path / "docsite"
@@ -142,6 +210,10 @@ class TestFindDocsDirectory:
         found = find_docs_directory(tmp_path)
         assert found == doc_dir
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_find_website_docs(self, tmp_path):
         """Test finding 'website/docs' directory."""
         doc_dir = tmp_path / "website" / "docs"
@@ -149,6 +221,10 @@ class TestFindDocsDirectory:
         found = find_docs_directory(tmp_path)
         assert found == doc_dir
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_priority_order(self, tmp_path):
         """Test that 'docs' takes priority over other names."""
         (tmp_path / "docs").mkdir()
@@ -156,6 +232,10 @@ class TestFindDocsDirectory:
         found = find_docs_directory(tmp_path)
         assert found.name == "docs"
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_no_docs_directory(self, tmp_path):
         """Test returns None when no docs directory found."""
         found = find_docs_directory(tmp_path)
@@ -165,6 +245,10 @@ class TestFindDocsDirectory:
 class TestHandleError:
     """Tests for handle_error function."""
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_handle_error_with_context(self):
         """Test error handling with context."""
         error = ValueError("test error")
@@ -174,6 +258,10 @@ class TestHandleError:
         assert "test_function" in result
         assert "test error" in result
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_handle_error_without_context(self):
         """Test error handling without context."""
         error = ValueError("test error")
@@ -182,6 +270,10 @@ class TestHandleError:
         assert "Error: ValueError" in result
         assert "test error" in result
 
+    """
+    @spec 001
+    @testType unit
+    """
     def test_handle_different_exception_types(self):
         """Test handling different exception types."""
         exceptions = [

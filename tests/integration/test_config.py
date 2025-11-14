@@ -13,6 +13,10 @@ from src.tools.config import initialize_config
 class TestConfigInitialization:
     """Integration tests for config initialization."""
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_initialize_basic_config(self, tmp_path):
         """Test initializing basic configuration."""
         result = await initialize_config(InitializeConfigInput(
@@ -32,6 +36,10 @@ class TestConfigInitialization:
             assert "exclude" in config
             assert "metadata" in config
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_initialize_with_custom_docs_path(self, tmp_path):
         """Test initializing with custom docs path."""
         result = await initialize_config(InitializeConfigInput(
@@ -47,6 +55,10 @@ class TestConfigInitialization:
             assert config["docs_path"] == "documentation"
             assert config["platform"] == "hugo"
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_initialize_with_sources(self, tmp_path):
         """Test initializing with source patterns."""
         result = await initialize_config(InitializeConfigInput(
@@ -62,6 +74,10 @@ class TestConfigInitialization:
             assert len(config["sources"]) == 2
             assert "src/**/*.py" in config["sources"]
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_overwrite_existing_config(self, tmp_path):
         """Test overwriting existing configuration."""
         # Create initial config
@@ -81,6 +97,10 @@ class TestConfigInitialization:
             config = yaml.safe_load(f)
             assert config["platform"] == "docusaurus"
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_json_output_format(self, tmp_path):
         """Test JSON output format."""
         result = await initialize_config(InitializeConfigInput(
@@ -93,6 +113,10 @@ class TestConfigInitialization:
         assert '"success"' in result.lower()
         assert '"config_path":' in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_all_platforms(self, tmp_path):
         """Test config initialization for all platforms."""
         platforms = [
@@ -115,6 +139,10 @@ class TestConfigInitialization:
             config_file = platform_dir / ".doc-manager.yml"
             assert config_file.exists()
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_config_with_detected_language(self, tmp_path):
         """Test that config includes detected language."""
         # Create a Python project indicator
@@ -131,6 +159,10 @@ class TestConfigInitialization:
             config = yaml.safe_load(f)
             assert config["metadata"]["language"] == "Python"
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_nonexistent_project_path(self):
         """Test error handling for nonexistent path."""
         result = await initialize_config(InitializeConfigInput(
@@ -142,6 +174,10 @@ class TestConfigInitialization:
         assert "Error" in result
         assert "does not exist" in result
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_default_exclude_patterns(self, tmp_path):
         """Test that default exclude patterns are included."""
         result = await initialize_config(InitializeConfigInput(
@@ -158,6 +194,10 @@ class TestConfigInitialization:
             assert any("dist" in pattern or "build" in pattern for pattern in exclude)
             assert any(".git" in pattern for pattern in exclude)
 
+    """
+    @spec 001
+    @testType integration
+    """
     async def test_metadata_includes_timestamp(self, tmp_path):
         """Test that metadata includes creation timestamp."""
         result = await initialize_config(InitializeConfigInput(
