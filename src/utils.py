@@ -21,17 +21,50 @@ def calculate_checksum(file_path: Path) -> str:
     except Exception:
         return ""
 
-def run_git_command(cwd: Path, *args) -> Optional[str]:
-    """Run a git command and return output."""
+def run_git_command(cwd: Path, *args, check_git_available: bool = True) -> Optional[str]:
+    """Run a git command and return output.
+
+    Args:
+        cwd: Working directory for git command
+        *args: Git command arguments (e.g., "status", "--short")
+        check_git_available: Whether to check git binary availability first
+
+    Returns:
+        Command output if successful, None otherwise
+
+    Raises:
+        RuntimeError: If git binary is not found (T018 - FR-002)
+
+    Security:
+        - Uses array form to prevent command injection
+        - 30-second timeout to prevent hangs
+        - Git availability check with clear error message
+    """
+    import shutil
+
+    # Check if git is available in PATH (T018)
+    if check_git_available:
+        if shutil.which('git') is None:
+            raise RuntimeError(
+                "Git is required but not found. Please install git and ensure it's in your PATH. "
+                "Visit https://git-scm.com/downloads for installation instructions."
+            )
+
     try:
         result = subprocess.run(
-            ["git", *args],
+            ["git", *args],  # Array form prevents command injection (T017)
             cwd=cwd,
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=30  # 30-second timeout (T019)
         )
         return result.stdout.strip() if result.returncode == 0 else None
+    except FileNotFoundError:
+        # Git binary not found even after check
+        raise RuntimeError("Git is required but not found. Please install git.")
+    except subprocess.TimeoutExpired:
+        # Command exceeded timeout
+        return None
     except Exception:
         return None
 

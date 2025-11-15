@@ -1,7 +1,8 @@
 """Pydantic models for doc-manager MCP server tool inputs."""
 
 from typing import Optional, List
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
+import re
 
 from .constants import ResponseFormat, DocumentationPlatform, QualityCriterion, ChangeDetectionMode
 
@@ -163,6 +164,38 @@ class MapChangesInput(BaseModel):
         default=ResponseFormat.MARKDOWN,
         description="Output format"
     )
+
+    @field_validator('since_commit')
+    @classmethod
+    def validate_commit_hash(cls, v: Optional[str]) -> Optional[str]:
+        """Validate git commit hash format to prevent command injection (FR-002).
+
+        Args:
+            v: Commit hash string or None
+
+        Returns:
+            Validated commit hash or None
+
+        Raises:
+            ValueError: If commit hash format is invalid
+
+        Security:
+            Prevents command injection by validating git commit hash format.
+            Only allows 7-40 hexadecimal characters (standard git hash format).
+            Rejects shell metacharacters and special sequences.
+        """
+        if v is None:
+            return v
+
+        # Validate format: 7-40 hexadecimal characters (short or full SHA)
+        if not re.match(r'^[0-9a-fA-F]{7,40}$', v):
+            raise ValueError(
+                f"Invalid git commit hash format: '{v}'. "
+                f"Expected 7-40 hexadecimal characters (e.g., 'abc1234' or full SHA). "
+                f"This prevents command injection attacks."
+            )
+
+        return v
 
 class TrackDependenciesInput(BaseModel):
     """Input for tracking code-to-docs dependencies."""

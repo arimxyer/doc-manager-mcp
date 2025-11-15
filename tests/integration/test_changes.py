@@ -321,3 +321,127 @@ def authenticate(username, password):
             "api" in result.lower()
         ])
         assert categories_found >= 2
+
+    """
+    @spec 001
+    @testType integration
+    @userStory US2
+    @functionalReq FR-002
+    """
+    async def test_command_injection_via_commit_hash_rejected(self, tmp_path):
+        """Test that shell metacharacters in commit hash are rejected (T022 - US2).
+
+        This integration test verifies that command injection attempts
+        are blocked by Pydantic validation before reaching git commands.
+        """
+        from pydantic import ValidationError
+
+        # Malicious commit hash attempts
+        malicious_hashes = [
+            "HEAD; rm -rf /",           # Command separator
+            "abc123 && echo pwned",     # Command chaining
+            "abc123 | cat /etc/passwd", # Pipe to command
+            "$(whoami)",                # Command substitution
+            "`whoami`",                 # Backtick substitution
+            "abc123 > /tmp/exploit",    # Redirection
+            "abc123\nrm -rf /",         # Newline injection
+            "'; DROP TABLE users; --", # SQL-style injection attempt
+        ]
+
+        for malicious_hash in malicious_hashes:
+            with pytest.raises(ValidationError) as exc_info:
+                MapChangesInput(
+                    project_path=str(tmp_path),
+                    since_commit=malicious_hash,
+                    mode=ChangeDetectionMode.GIT_DIFF,
+                    response_format=ResponseFormat.MARKDOWN
+                )
+
+            # Verify error message mentions invalid format
+            error = exc_info.value
+            assert "Invalid git commit hash format" in str(error), \
+                f"Expected validation error for: {malicious_hash}"
+
+            # Verify security reason is mentioned
+            assert "command injection" in str(error).lower(), \
+                f"Error should mention command injection for: {malicious_hash}"
+
+    """
+    @spec 001
+    @testType integration
+    @userStory US2
+    @functionalReq FR-002
+    """
+    async def test_valid_commit_hash_accepted_in_git_mode(self, tmp_path, monkeypatch):
+        """Test that valid commit hashes are accepted in git diff mode (T022 - US2).
+
+        This verifies that legitimate commit hashes pass validation
+        and reach the git command layer safely.
+        """
+        # Mock git command to avoid needing real git repo
+        def mock_run_git_command(cwd, *args, check_git_available=True):
+            # Verify arguments are in safe array form
+            assert args[0] == "diff"
+            assert args[1] == "--name-status"
+            # args[2] is the commit hash
+            assert args[3] == "HEAD"
+            return ""  # Empty diff
+
+        monkeypatch.setattr("src.tools.changes.run_git_command", mock_run_git_command)
+
+        # Valid commit hashes
+        valid_hashes = [
+            "abc1234",           # Short hash (7 chars)
+            "abcdef0123456789",  # Medium hash (16 chars)
+            "a" * 40,            # Full SHA-1 (40 chars)
+            "ABCDEF0",           # Uppercase allowed
+            "1234567",           # All digits allowed
+        ]
+
+        for valid_hash in valid_hashes:
+            # Should not raise ValidationError
+            result = await map_changes(MapChangesInput(
+                project_path=str(tmp_path),
+                since_commit=valid_hash,
+                mode=ChangeDetectionMode.GIT_DIFF,
+                response_format=ResponseFormat.MARKDOWN
+            ))
+
+            # Should execute successfully
+            assert isinstance(result, str)
+            assert "Error" not in result or "no changes" in result.lower()
+
+    """
+    @spec 001
+    @testType integration
+    @userStory US2
+    @functionalReq FR-002
+    """
+    async def test_missing_git_binary_failure_mode(self, tmp_path, monkeypatch):
+        """Test clear error when git binary is missing (T023 - US2).
+
+        Verifies that missing git binary produces a helpful error message
+        rather than cryptic failures.
+        """
+        # Mock shutil.which to simulate git not found
+        monkeypatch.setattr("shutil.which", lambda x: None if x == "git" else "/usr/bin/" + x)
+
+        # Attempt to use git diff mode without git installed
+        result = await map_changes(MapChangesInput(
+            project_path=str(tmp_path),
+            since_commit="abc1234",
+            mode=ChangeDetectionMode.GIT_DIFF,
+            response_format=ResponseFormat.MARKDOWN
+        ))
+
+        # Should contain clear error message
+        assert "Error" in result or "error" in result.lower()
+        assert "git" in result.lower()
+
+        # Should mention git is required or not found
+        assert any(phrase in result.lower() for phrase in [
+            "git is required",
+            "git not found",
+            "git binary",
+            "install git"
+        ]), f"Error message should clearly indicate git is missing: {result}"

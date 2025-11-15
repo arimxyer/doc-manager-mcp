@@ -82,17 +82,17 @@ Single project structure - all paths relative to repository root:
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Add commit hash field validator to MapChangesInput in src/models.py (FR-002)
-- [ ] T017 [P] [US2] Update git subprocess calls to use array form in src/tools/changes.py
-- [ ] T018 [P] [US2] Add git binary availability check in src/tools/changes.py with clear error message
-- [ ] T019 [US2] Ensure all git operations have 30-second timeout in src/tools/changes.py
+- [X] T016 [US2] Add commit hash field validator to MapChangesInput in src/models.py (FR-002)
+- [X] T017 [P] [US2] Update git subprocess calls to use array form in src/tools/changes.py
+- [X] T018 [P] [US2] Add git binary availability check in src/tools/changes.py with clear error message
+- [X] T019 [US2] Ensure all git operations have 30-second timeout in src/tools/changes.py
 
 ### Tests for User Story 2
 
-- [ ] T020 [P] [US2] Unit test for commit hash validator in tests/unit/test_validators.py
-- [ ] T021 [P] [US2] Unit test for git command construction in tests/unit/test_changes.py
-- [ ] T022 [US2] Integration test with shell metacharacters in commit hash in tests/integration/test_changes.py
-- [ ] T023 [US2] Integration test for missing git binary failure mode in tests/integration/test_changes.py
+- [X] T020 [P] [US2] Unit test for commit hash validator in tests/unit/test_validators.py
+- [X] T021 [P] [US2] Unit test for git command construction in tests/unit/test_changes.py
+- [X] T022 [US2] Integration test with shell metacharacters in commit hash in tests/integration/test_changes.py
+- [X] T023 [US2] Integration test for missing git binary failure mode in tests/integration/test_changes.py
 
 **Checkpoint**: 100% of malformed commit hashes rejected (SC-002)
 
