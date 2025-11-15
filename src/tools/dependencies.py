@@ -13,6 +13,28 @@ from ..models import TrackDependenciesInput
 from ..constants import ResponseFormat, MAX_FILES, OPERATION_TIMEOUT
 from ..utils import find_docs_directory, handle_error, validate_path_boundary, enforce_response_limit, safe_json_dumps, file_lock
 
+# ============================================================================
+# T082: Compiled regex patterns for performance (FR-023)
+# ============================================================================
+
+# Extract file path references (common patterns)
+FILE_PATH_PATTERN = re.compile(r'`([a-zA-Z0-9_\-/.]+\.(go|py|js|ts|tsx|jsx|java|rs|rb|php|c|cpp|h|hpp|cs|swift|kt|yaml|yml|json|cfg))`')
+
+# Extract function/method references
+FUNCTION_PATTERN = re.compile(r'`([A-Z][a-zA-Z0-9]*\.)?([a-z_][a-zA-Z0-9_]*)\(\)`')
+
+# Match markdown headings with function signatures
+HEADING_FUNCTION_PATTERN = re.compile(r'^#+\s+([a-z_][a-zA-Z0-9_]*)\s*\([^)]*\)', re.MULTILINE)
+
+# Extract class/type references
+CLASS_PATTERN = re.compile(r'`([A-Z][a-zA-Z0-9]+)(?!\()`')
+
+# Extract command references
+COMMAND_PATTERNS = [
+    re.compile(r'`([a-z][a-z0-9\-]+(?:\s+[a-z][a-z0-9\-]+)*(?:\s+--?[a-z][a-z0-9\-]*)*)`'),
+    re.compile(r'\$\s+([a-z][a-z0-9\-]+(?:\s+[a-z][a-z0-9\-]+)*(?:\s+--?[a-z][a-z0-9\-]*)*)')
+]
+
 
 def _find_markdown_files(docs_path: Path, project_path: Path) -> List[Path]:
     """Find all markdown files in documentation directory.
@@ -45,13 +67,11 @@ def _find_markdown_files(docs_path: Path, project_path: Path) -> List[Path]:
 
 
 def _extract_code_references(content: str, doc_file: Path) -> List[Dict[str, Any]]:
-    """Extract code references from documentation content."""
+    """Extract code references from documentation content (T082 - FR-023)."""
     references = []
 
-    # Extract file path references (common patterns)
-    # Pattern: `path/to/file.ext` or `file.ext` - matches backtick-wrapped paths
-    file_path_pattern = r'`([a-zA-Z0-9_\-/.]+\.(go|py|js|ts|tsx|jsx|java|rs|rb|php|c|cpp|h|hpp|cs|swift|kt|yaml|yml|json|cfg))`'
-    for match in re.finditer(file_path_pattern, content):
+    # Extract file path references using compiled pattern
+    for match in FILE_PATH_PATTERN.finditer(content):
         file_path = match.group(1)
         references.append({
             "type": "file_path",
@@ -59,10 +79,8 @@ def _extract_code_references(content: str, doc_file: Path) -> List[Dict[str, Any
             "doc_file": str(doc_file)
         })
 
-    # Extract function/method references
-    # Pattern: `functionName()` or `ClassName.methodName()` - matches backtick-wrapped functions with parentheses
-    function_pattern = r'`([A-Z][a-zA-Z0-9]*\.)?([a-z_][a-zA-Z0-9_]*)\(\)`'
-    for match in re.finditer(function_pattern, content):
+    # Extract function/method references using compiled pattern
+    for match in FUNCTION_PATTERN.finditer(content):
         func_name = match.group(0).strip('`')
         references.append({
             "type": "function",
@@ -70,9 +88,8 @@ def _extract_code_references(content: str, doc_file: Path) -> List[Dict[str, Any
             "doc_file": str(doc_file)
         })
 
-    # Also match markdown headings with function signatures: ## functionName(args)
-    heading_function_pattern = r'^#+\s+([a-z_][a-zA-Z0-9_]*)\s*\([^)]*\)'
-    for match in re.finditer(heading_function_pattern, content, re.MULTILINE):
+    # Match markdown headings with function signatures using compiled pattern
+    for match in HEADING_FUNCTION_PATTERN.finditer(content):
         func_name = match.group(1) + "()"
         references.append({
             "type": "function",
@@ -80,11 +97,8 @@ def _extract_code_references(content: str, doc_file: Path) -> List[Dict[str, Any
             "doc_file": str(doc_file)
         })
 
-    # Extract class/type references
-    # Pattern: `ClassName` (capitalized words in backticks) - but NOT followed by ()
-    # Use negative lookahead to exclude function calls
-    class_pattern = r'`([A-Z][a-zA-Z0-9]+)(?!\()`'
-    for match in re.finditer(class_pattern, content):
+    # Extract class/type references using compiled pattern
+    for match in CLASS_PATTERN.finditer(content):
         class_name = match.group(1)
         # Exclude common words and single letters
         if len(class_name) > 2 and class_name not in ['API', 'CLI', 'HTTP', 'HTTPS', 'URL', 'JSON', 'XML']:
@@ -94,15 +108,9 @@ def _extract_code_references(content: str, doc_file: Path) -> List[Dict[str, Any
                 "doc_file": str(doc_file)
             })
 
-    # Extract command references
-    # Pattern: command in backticks - matches `command subcommand --flag`
-    command_patterns = [
-        r'`([a-z][a-z0-9\-]+(?:\s+[a-z][a-z0-9\-]+)*(?:\s+--?[a-z][a-z0-9\-]*)*)`',  # `command subcommand --flag`
-        r'\$\s+([a-z][a-z0-9\-]+(?:\s+[a-z][a-z0-9\-]+)*(?:\s+--?[a-z][a-z0-9\-]*)*)'  # $ command subcommand --flag
-    ]
-
-    for pattern in command_patterns:
-        for match in re.finditer(pattern, content):
+    # Extract command references using compiled patterns
+    for pattern in COMMAND_PATTERNS:
+        for match in pattern.finditer(content):
             command = match.group(1)
             # Filter out common words and single-word commands that are likely prose
             first_word = command.split()[0]

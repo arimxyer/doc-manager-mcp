@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 from ..models import ValidateDocsInput
 from ..constants import ResponseFormat, MAX_FILES, OPERATION_TIMEOUT
-from ..utils import find_docs_directory, handle_error, enforce_response_limit, safe_json_dumps
+from ..utils import find_docs_directory, handle_error, enforce_response_limit, safe_json_dumps, safe_resolve
 
 
 def _find_markdown_files(docs_path: Path) -> List[Path]:
@@ -85,9 +85,12 @@ def _check_internal_link(link_url: str, file_path: Path, docs_root: Path) -> Opt
         # Relative to current file
         target = file_path.parent / url_without_anchor
 
-    # Normalize path
+    # Normalize path with recursion depth limit (FR-020)
     try:
-        target = target.resolve()
+        target = safe_resolve(target)
+    except RecursionError as e:
+        print(f"Warning: {e}", file=sys.stderr)
+        return f"Symlink recursion limit exceeded: {link_url}"
     except Exception as e:
         print(f"Warning: Failed to resolve link path {link_url}: {e}", file=sys.stderr)
         return f"Invalid path format: {link_url}"
@@ -205,7 +208,7 @@ def _validate_assets(docs_path: Path) -> List[Dict[str, Any]]:
                         image_path = md_file.parent / image_url
 
                     try:
-                        image_path = image_path.resolve()
+                        image_path = safe_resolve(image_path)
                         if not image_path.exists():
                             issues.append({
                                 "type": "missing_asset",
@@ -420,7 +423,7 @@ async def validate_docs(params: ValidateDocsInput) -> str:
         - Skips individual files that can't be read
     """
     try:
-        project_path = Path(params.project_path).resolve()
+        project_path = safe_resolve(Path(params.project_path))
 
         if not project_path.exists():
             return enforce_response_limit(f"Error: Project path does not exist: {project_path}")

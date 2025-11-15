@@ -282,8 +282,48 @@ def file_lock(file_path: Path, timeout: int = 5, retries: int = 3):
 
 
 # ============================================================================
-# T006: Path Validation Utility (FR-001, FR-003, FR-025, FR-028)
+# T006: Path Validation Utility (FR-001, FR-003, FR-020, FR-025, FR-028)
 # ============================================================================
+
+def safe_resolve(path: Path, max_depth: int = None) -> Path:
+    """Safely resolve path with recursion depth limit (FR-020).
+
+    Args:
+        path: Path to resolve
+        max_depth: Maximum symlink resolution depth (default: MAX_RECURSION_DEPTH from constants)
+
+    Returns:
+        Resolved path
+
+    Raises:
+        RecursionError: If symlink resolution exceeds max_depth
+
+    Note:
+        Prevents infinite loops from circular symlinks by limiting resolution depth.
+    """
+    from .constants import MAX_RECURSION_DEPTH
+
+    if max_depth is None:
+        max_depth = MAX_RECURSION_DEPTH
+
+    # Track symlink resolution depth
+    current_path = path
+    depth = 0
+
+    while current_path.is_symlink() and depth < max_depth:
+        current_path = Path(os.readlink(current_path))
+        if not current_path.is_absolute():
+            current_path = path.parent / current_path
+        depth += 1
+
+    if depth >= max_depth and current_path.is_symlink():
+        raise RecursionError(
+            f"Symlink resolution exceeded maximum depth ({max_depth})\n"
+            f"→ Check for circular symlinks or reduce symlink chain length."
+        )
+
+    return current_path.resolve()
+
 
 def validate_path_boundary(path: Path, project_root: Path) -> Path:
     """Validate path stays within project boundary (prevents path traversal).
