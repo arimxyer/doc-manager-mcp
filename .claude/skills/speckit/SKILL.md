@@ -308,9 +308,10 @@ Persistent project knowledge and principles:
 
 **Testing Standards**:
 - Test pyramid: 70% unit, 20% integration, 10% e2e
-- All tests tagged with @spec and metadata (see TEST-METADATA-SCHEMA.md)
+- All tests tagged with @spec and metadata (see `references/testing/metadata-schema.md`)
 - Registry auto-initializes during first plan execution
 - Brownfield projects: Use `test-registry.sh bootstrap` to tag existing tests
+- Test retirement: Use `test-registry.sh retire --filter <tag>` to identify obsolete tests
 - Automated tracking via test-registry.sh (integrated in plan/tasks/implement steps)
 
 For comprehensive testing guide, see `references/speckit.testing.md`.

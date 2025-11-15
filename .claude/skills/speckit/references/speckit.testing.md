@@ -58,7 +58,7 @@ The speckit testing strategy is built on three pillars:
 
 ## Test Metadata Tags
 
-All tests must be tagged with metadata for registry tracking. See `TEST-METADATA-SCHEMA.md` for complete reference.
+All tests must be tagged with metadata for registry tracking. See `testing/metadata-schema.md` for complete reference.
 
 ### Required Tags
 
@@ -503,5 +503,5 @@ test-registry.sh scan
 - **Quality Gates**: Block implementation if pyramid getting worse
 - **Workflow Integration**: Registry auto-initializes during first plan
 
-For command reference and examples, see `TEST-METADATA-SCHEMA.md`.
-For quick commands, see `TESTING.md`.
+For command reference and examples, see `testing/metadata-schema.md`.
+For quick commands, see `testing/quick-reference.md`.

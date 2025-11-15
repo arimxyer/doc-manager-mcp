@@ -124,7 +124,7 @@ Tests are auto-classified by path if no `@testType` tag:
 
 ## File Paths
 
-- **Schema**: `.claude/skills/speckit/TEST-METADATA-SCHEMA.md`
+- **Schema**: `.claude/skills/speckit/references/testing/metadata-schema.md`
 - **Comprehensive Guide**: `.claude/skills/speckit/references/speckit.testing.md`
 - **Test Registry**: `test-registry.json` (auto-generated, repo root)
 - **Scripts**: `.claude/skills/speckit/scripts/test-registry.sh`
@@ -140,6 +140,6 @@ Tests are auto-classified by path if no `@testType` tag:
 ---
 
 **See also**:
-- Full guide: `references/speckit.testing.md`
-- Tag schema: `TEST-METADATA-SCHEMA.md`
+- Full guide: `../speckit.testing.md`
+- Tag schema: `metadata-schema.md`
 - Skill overview: `skill.md`
