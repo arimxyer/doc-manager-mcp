@@ -193,4 +193,16 @@ export class RustAdapter extends BaseLanguageAdapter {
     return rustMockPatterns.some(pattern => sourceCode.includes(pattern)) ||
            super.isMockDependent(sourceCode);
   }
+
+  /**
+   * Insert metadata into Rust source code
+   * TODO: Implement proper handling of existing doc comments
+   */
+  insertMetadataIntoSource(
+    sourceCode: string,
+    testNode: SyntaxNode,
+    metadata: InferredMetadata
+  ): string {
+    throw new Error('insertMetadataIntoSource not yet implemented for Rust');
+  }
 }

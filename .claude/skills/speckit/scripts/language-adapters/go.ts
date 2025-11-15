@@ -138,4 +138,16 @@ export class GoAdapter extends BaseLanguageAdapter {
     return goMockPatterns.some(pattern => sourceCode.includes(pattern)) ||
            super.isMockDependent(sourceCode);
   }
+
+  /**
+   * Insert metadata into Go source code
+   * TODO: Implement proper handling of existing comments
+   */
+  insertMetadataIntoSource(
+    sourceCode: string,
+    testNode: SyntaxNode,
+    metadata: InferredMetadata
+  ): string {
+    throw new Error('insertMetadataIntoSource not yet implemented for Go');
+  }
 }

@@ -109,6 +109,17 @@ export interface LanguageAdapter {
    * Extract functional requirements from file content
    */
   extractFunctionalReqs(content: string): string[];
+
+  /**
+   * Insert metadata into source code at the correct location for a test node
+   * Handles language-specific concerns like decorators, existing docstrings, etc.
+   * Returns the modified source code
+   */
+  insertMetadataIntoSource(
+    sourceCode: string,
+    testNode: SyntaxNode,
+    metadata: InferredMetadata
+  ): string;
 }
 
 /**
@@ -121,6 +132,11 @@ export abstract class BaseLanguageAdapter implements LanguageAdapter {
   abstract findTestNodes(tree: Tree, sourceCode: string): TestLocation[];
   abstract extractCommentForNode(node: SyntaxNode, sourceCode: string): string;
   abstract generateMetadataComment(metadata: InferredMetadata, indent: string): string;
+  abstract insertMetadataIntoSource(
+    sourceCode: string,
+    testNode: SyntaxNode,
+    metadata: InferredMetadata
+  ): string;
 
   /**
    * Default implementation for test type inference from file path

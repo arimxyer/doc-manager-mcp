@@ -185,4 +185,105 @@ export class PythonAdapter extends BaseLanguageAdapter {
     return pythonMockPatterns.some(pattern => sourceCode.includes(pattern)) ||
            super.isMockDependent(sourceCode);
   }
+
+  /**
+   * Insert metadata into Python source code
+   * Handles decorators and existing docstrings properly
+   */
+  insertMetadataIntoSource(
+    sourceCode: string,
+    testNode: SyntaxNode,
+    metadata: InferredMetadata
+  ): string {
+    const lines = sourceCode.split('\n');
+
+    // Get the function body node
+    const body = testNode.childForFieldName('body');
+    if (!body) {
+      throw new Error('Function has no body');
+    }
+
+    // Get indentation from function definition line
+    const defLine = lines[testNode.startPosition.row];
+    const baseIndent = defLine.match(/^\s*/)?.[0] || '';
+    const bodyIndent = baseIndent + '    '; // Python uses 4-space indent
+
+    // Check if first statement in body is a docstring
+    const firstStatement = filterNullNodes(body.children).find(
+      (child) => child.type === 'expression_statement'
+    );
+
+    let hasExistingDocstring = false;
+    let docstringNode: SyntaxNode | null = null;
+
+    if (firstStatement) {
+      const stringNode = filterNullNodes(firstStatement.children).find(
+        (child) => child.type === 'string'
+      );
+      if (stringNode) {
+        hasExistingDocstring = true;
+        docstringNode = stringNode;
+      }
+    }
+
+    if (hasExistingDocstring && docstringNode) {
+      // Merge metadata into existing docstring
+      const docstringLine = docstringNode.startPosition.row;
+      const docstringText = lines[docstringLine];
+
+      // Check if it's a multi-line docstring (""")
+      if (docstringText.trim().startsWith('"""')) {
+        // Find the closing """
+        let closingLine = docstringLine;
+        for (let i = docstringLine; i < lines.length; i++) {
+          if (i > docstringLine && lines[i].includes('"""')) {
+            closingLine = i;
+            break;
+          }
+        }
+
+        // Generate metadata lines
+        const metadataLines: string[] = [];
+        metadataLines.push('');
+        if (metadata.spec) metadataLines.push(`${bodyIndent}@spec ${metadata.spec}`);
+        for (const story of metadata.userStories) {
+          metadataLines.push(`${bodyIndent}@userStory ${story}`);
+        }
+        for (const req of metadata.functionalReqs) {
+          metadataLines.push(`${bodyIndent}@functionalReq ${req}`);
+        }
+        metadataLines.push(`${bodyIndent}@testType ${metadata.testType}`);
+        if (metadata.mockDependent) {
+          metadataLines.push(`${bodyIndent}@mockDependent`);
+        }
+
+        // Insert metadata before closing """
+        lines.splice(closingLine, 0, ...metadataLines);
+      }
+    } else {
+      // No existing docstring - create one as first line of function body
+      // Find the line after the function definition (after decorators and def line)
+      const bodyStartLine = body.startPosition.row;
+
+      const metadataLines: string[] = [];
+      metadataLines.push(`${bodyIndent}"""`);
+      if (metadata.spec) metadataLines.push(`${bodyIndent}@spec ${metadata.spec}`);
+      for (const story of metadata.userStories) {
+        metadataLines.push(`${bodyIndent}@userStory ${story}`);
+      }
+      for (const req of metadata.functionalReqs) {
+        metadataLines.push(`${bodyIndent}@functionalReq ${req}`);
+      }
+      metadataLines.push(`${bodyIndent}@testType ${metadata.testType}`);
+      if (metadata.mockDependent) {
+        metadataLines.push(`${bodyIndent}@mockDependent`);
+      }
+      metadataLines.push(`${bodyIndent}"""`);
+
+      // Insert at the beginning of the function body
+      lines.splice(bodyStartLine, 0, ...metadataLines);
+    }
+
+    return lines.join('\n');
+  }
 }

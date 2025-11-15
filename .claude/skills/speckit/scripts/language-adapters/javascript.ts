@@ -202,4 +202,16 @@ export class JavaScriptAdapter extends BaseLanguageAdapter {
     return jsMockPatterns.some(pattern => sourceCode.includes(pattern)) ||
            super.isMockDependent(sourceCode);
   }
+
+  /**
+   * Insert metadata into JavaScript/TypeScript source code
+   * TODO: Implement proper handling of existing JSDoc comments
+   */
+  insertMetadataIntoSource(
+    sourceCode: string,
+    testNode: SyntaxNode,
+    metadata: InferredMetadata
+  ): string {
+    throw new Error('insertMetadataIntoSource not yet implemented for JavaScript/TypeScript');
+  }
 }
