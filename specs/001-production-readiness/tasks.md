@@ -227,9 +227,9 @@ Single project structure - all paths relative to repository root:
 - [x] T078 [P] [US7] Add 60-second timeout to src/tools/changes.py operations (FR-021)
 - [x] T079 [P] [US7] Add 60-second timeout to src/tools/dependencies.py operations (FR-021)
 - [x] T080 [P] [US7] Add 60-second timeout to src/tools/validation.py operations (FR-021)
-- [ ] T081 [P] [US7] Add recursion depth limit (100) to src/tools/validation.py (FR-020)
-- [ ] T082 [US7] Move regex compilation outside loop in src/tools/dependencies.py (FR-023)
-- [ ] T083 [US7] Verify streaming/bounded memory in all file processing loops (FR-022)
+- [x] T081 [P] [US7] Add recursion depth limit (100) to src/tools/validation.py (FR-020)
+- [x] T082 [US7] Move regex compilation outside loop in src/tools/dependencies.py (FR-023)
+- [x] T083 [US7] Verify streaming/bounded memory in all file processing loops (FR-022)
 
 ### Tests for User Story 7
 

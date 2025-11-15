@@ -5,8 +5,9 @@ from enum import Enum
 # Response size limit
 CHARACTER_LIMIT = 25000  # Maximum response size in characters
 
-# Resource limits (FR-019, FR-021)
+# Resource limits (FR-019, FR-020, FR-021)
 MAX_FILES = 10_000  # Maximum files to process per operation
+MAX_RECURSION_DEPTH = 100  # Maximum symlink resolution depth
 OPERATION_TIMEOUT = 60  # Operation timeout in seconds
 
 # Supported documentation platforms
