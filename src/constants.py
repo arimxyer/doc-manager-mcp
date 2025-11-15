@@ -5,6 +5,10 @@ from enum import Enum
 # Response size limit
 CHARACTER_LIMIT = 25000  # Maximum response size in characters
 
+# Resource limits (FR-019, FR-021)
+MAX_FILES = 10_000  # Maximum files to process per operation
+OPERATION_TIMEOUT = 60  # Operation timeout in seconds
+
 # Supported documentation platforms
 SUPPORTED_PLATFORMS = ["hugo", "docusaurus", "mkdocs", "sphinx", "vitepress", "jekyll", "gitbook"]
 
