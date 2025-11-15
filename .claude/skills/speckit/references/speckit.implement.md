@@ -130,10 +130,15 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Validate that tests pass and coverage meets requirements
    - **Update test registry** (if test-registry.json exists):
      - Run `scripts/test-registry.sh scan` from repo root to update registry with new/modified tests
-     - Run `scripts/test-registry.sh validate` to check JSDoc tags on new tests
+     - Run `scripts/test-registry.sh validate` to check metadata tags on new tests
      - Run `scripts/test-registry.sh report --json` to verify test pyramid health
-     - If pyramid violations exist (outside 70/20/10 ratio), report as warning
-     - Confirm all new tests have @spec tags with correct spec number
+     - **Quality gates**:
+       - **CRITICAL**: All new tests MUST have @spec tags (validate command checks this)
+       - **WARN**: Pyramid violations outside target ratios (70/20/10)
+       - **ACCEPTABLE**: Gradual improvement toward targets (e.g., moving from 60/30/10 to 65/25/10)
+       - **BLOCK**: Pyramid getting worse (e.g., adding only integration tests when already inverted)
+     - If BLOCK condition: Suggest retirement workflow or adding unit tests before proceeding
+     - If orphanedTests > 0 after implementation: Recommend running bootstrap
    - Confirm the implementation follows the technical plan
    - Report final status with summary of completed work
 
