@@ -161,20 +161,25 @@ async function processTestFile(
 
   for (const location of testsNeedingTags) {
     const { line, testName, node } = location;
-    const lines = modifiedContent.split('\n');
 
-    // Get indentation from the current line
-    const currentLine = lines[line - 1];
-    const indent = currentLine.match(/^\s*/)?.[0] || '';
-
-    // Generate metadata comment
-    const metadataComment = adapter.generateMetadataComment(fileLevelMetadata, indent);
-
-    // Insert comment before the test line
-    lines.splice(line - 1, 0, metadataComment);
-    modifiedContent = lines.join('\n');
-
-    changes.push(`  Line ${line}: Added metadata to ${testName}`);
+    // Use adapter-specific insertion method that handles decorators and existing docstrings
+    try {
+      modifiedContent = adapter.insertMetadataIntoSource(modifiedContent, node, fileLevelMetadata);
+      changes.push(`  Line ${line}: Added metadata to ${testName}`);
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('not yet implemented')) {
+        // Fallback to old method for languages that haven't implemented the new method
+        const lines = modifiedContent.split('\n');
+        const currentLine = lines[line - 1];
+        const indent = currentLine.match(/^\s*/)?.[0] || '';
+        const metadataComment = adapter.generateMetadataComment(fileLevelMetadata, indent);
+        lines.splice(line - 1, 0, metadataComment);
+        modifiedContent = lines.join('\n');
+        changes.push(`  Line ${line}: Added metadata to ${testName} (using fallback method)`);
+      } else {
+        throw error;
+      }
+    }
   }
 
   if (WRITE_MODE) {
