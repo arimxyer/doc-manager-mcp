@@ -247,11 +247,11 @@ Single project structure - all paths relative to repository root:
 
 **Purpose**: Fix remaining implementation bugs not covered by user stories
 
-- [ ] T089 [P] Fix line number off-by-one errors in src/tools/validation.py (FR-029)
-- [ ] T090 [P] Fix quality score silent defaults in src/tools/quality.py (FR-030)
-- [ ] T091 [P] Fix substring matching false positives in src/tools/dependencies.py (FR-026)
-- [ ] T092 [P] Ensure exclude_patterns respected in src/tools/memory.py (FR-027)
-- [ ] T093 [P] Ensure exclude_patterns respected in src/tools/changes.py (FR-027)
+- [x] T089 [P] Fix line number off-by-one errors in src/tools/validation.py (FR-029)
+- [x] T090 [P] Fix quality score silent defaults in src/tools/quality.py (FR-030)
+- [x] T091 [P] Fix substring matching false positives in src/tools/dependencies.py (FR-026)
+- [x] T092 [P] Ensure exclude_patterns respected in src/tools/memory.py (FR-027)
+- [x] T093 [P] Ensure exclude_patterns respected in src/tools/changes.py (FR-027)
 
 **Tests for Additional Bug Fixes**
 
