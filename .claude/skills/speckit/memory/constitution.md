@@ -1,50 +1,202 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# doc-manager MCP Server Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Accuracy and Transparency (NON-NEGOTIABLE)
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+**Accurate assessments and transparency are the #1 priority in this repository.**
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+- **MUST NOT** claim a task is complete when it's only partially done
+- **MUST NOT** mark a task as completed if tests are failing
+- **MUST NOT** skip steps in a task to save time
+- **MUST NOT** take shortcuts that deviate from the spec
+- **MUST NOT** implement differently than the spec describes
+- **MUST NOT** ignore acceptance criteria in spec
+- **MUST NOT** hide errors or issues encountered
+- **MUST** report the actual state of work, not aspirational state
+- **MUST** stop and document gaps if incomplete work is discovered
+- **MUST** explain clearly if a task cannot be completed
+- **MUST** surface spec errors immediately
+- **MUST** execute all steps in a task, even if they seem redundant
+- **MUST** test thoroughly before marking tasks complete
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+**Rationale**: Trust and code quality depend on honest reporting. Shortcuts compound technical debt and break production systems.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### II. Specification Adherence (NON-NEGOTIABLE)
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+If a spec exists, you **MUST** follow it with NO QUESTIONS ASKED, ONLY EXECUTION.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- **MUST** follow the spec exactly as written - no shortcuts, no deviations
+- **MUST** execute every step in the specified order
+- **MUST** meet all acceptance criteria before marking tasks complete
+- **MUST** implement features as described, not as interpreted
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+**When you think the spec is wrong:**
+1. **STOP implementation immediately**
+2. Document the specific issue
+3. Ask the user for clarification or correction
+4. Wait for spec update and approval
+5. **THEN** continue implementation
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**MUST NOT**:
+- Reinterpret the spec to make it "better"
+- Optimize or "improve" the spec on your own
+- Skip requirements that seem redundant
+- Assume the spec is outdated without confirmation
+
+**Rationale**: Specs represent deliberate planning and design. Time was taken to create them, so time should be taken to execute them faithfully.
+
+### III. Fail-Fast Error Handling (NON-NEGOTIABLE)
+
+All errors **MUST** be explicit and prevent silent failures.
+
+- **MUST NOT** use bare `except:` blocks that hide errors
+- **MUST** raise specific exception types with clear messages
+- **MUST** fail immediately when errors occur (no silent continues)
+- **MUST** propagate errors to callers with context
+- **MUST** log errors before raising them
+- **MUST** validate inputs and fail early on invalid data
+- **MUST** report skipped/failed operations to users
+
+**Rationale**: Silent failures corrupt data, mislead users, and make debugging impossible. Explicit errors enable quick diagnosis and fix.
+
+### IV. Comprehensive Testing (NON-NEGOTIABLE)
+
+All new code **MUST** have tests before being merged.
+
+- **Test Pyramid**: 70% unit, 20% integration, 10% e2e
+- **MUST** write tests for all new functions and classes
+- **MUST** achieve 100% test pass rate before merging
+- **MUST** include edge case and error path testing
+- **MUST** tag all tests with metadata (@spec, @testType, @mockDependent)
+- **MUST** update tests when changing functionality
+- **SHOULD** use test-driven development (tests before implementation)
+
+**Rationale**: Tests are the safety net that enables confident refactoring and prevents regressions.
+
+### V. Security First
+
+Security standards **MUST** be strictly followed.
+
+- **MUST NOT** introduce OWASP Top 10 vulnerabilities
+- **MUST NOT** store sensitive data insecurely
+- **MUST** validate all user inputs for path traversal, injection attacks
+- **MUST** sanitize outputs to prevent XSS
+- **MUST** use secure defaults (fail closed, not open)
+- **MUST** document security assumptions and threat models
+- **SHOULD** perform security review before marking features complete
+
+**Rationale**: Security vulnerabilities put users and systems at risk. Prevention is cheaper than remediation.
+
+### VI. Frequent Commits
+
+Commit **MUST** be made frequently and often when working through spec tasks.
+
+**When to commit:**
+- After completing each task
+- After completing each phase of a spec
+- After any significant milestone or working state
+- Before switching to a different task
+- When updating relevant spec documentation
+
+**Commit message format:**
+```
+<type>: <description>
+
+<body explaining changes>
+
+<phase reference if applicable>
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+**Rationale**: Frequent commits enable easy rollback, provide clear audit trail, and allow atomic changes that can be reviewed independently.
+
+### VII. Architectural Integrity
+
+Architectural layers **MUST** never be mixed.
+
+- **MUST** respect separation of concerns (models, tools, utils, constants)
+- **MUST NOT** mix business logic with presentation
+- **MUST NOT** import higher-level modules from lower-level modules
+- **MUST** keep dependencies unidirectional
+- **MUST** validate that changes respect existing architecture
+
+**Rationale**: Mixed layers create circular dependencies, make testing difficult, and violate single responsibility principle.
+
+## Quality Standards
+
+### Code Quality
+
+- **MUST** be concise and direct in communication
+- **MUST** update documentation when changing dependencies/frameworks
+- **MUST** update documentation when changing file organization
+- **SHOULD** follow PEP 8 for Python code
+- **SHOULD** use type hints for all function signatures
+
+### Performance Standards
+
+- **MUST** avoid O(n²) or worse algorithms where O(n) or O(n log n) is possible
+- **SHOULD** cache expensive computations when safe to do so
+- **SHOULD** use incremental processing for large datasets
+- **MUST** profile before optimizing (no premature optimization)
+
+### Documentation Standards
+
+- **MUST** update relevant documentation when features change
+- **MUST** include docstrings for all public functions and classes
+- **SHOULD** provide examples in docstrings for complex functions
+- **MUST** document assumptions and limitations
+
+## Development Workflow
+
+### Pre-Implementation
+
+1. Read relevant specs and design documents
+2. Understand acceptance criteria
+3. Review related code for patterns
+4. Plan approach before coding
+
+### During Implementation
+
+1. Write tests first (TDD) when possible
+2. Implement feature following spec exactly
+3. Run tests frequently
+4. Commit after each task
+5. Update task checkboxes as you progress
+
+### Post-Implementation
+
+1. Verify all tests pass (100% pass rate)
+2. Verify all acceptance criteria met
+3. Update documentation
+4. Security review
+5. Mark task complete only when all above done
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### Constitution Authority
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+- This constitution **supersedes** all other practices
+- When CLAUDE.md conflicts with constitution, constitution wins
+- Amendments require explicit user approval
+- All specs **MUST** comply with constitution principles
+
+### Compliance
+
+- All code reviews **MUST** verify constitution compliance
+- Constitution violations are **CRITICAL** severity
+- Specs that violate constitution **MUST** be revised before planning
+- Implementation that violates constitution **MUST** be fixed before merging
+
+### Amendment Process
+
+1. Propose amendment with rationale
+2. Update constitution with version bump
+3. Update dependent artifacts (templates, specs, plans)
+4. Document migration path for existing code
+5. Ratify with user approval
+
+**Version**: 1.0.0 | **Ratified**: 2025-01-14 | **Last Amended**: 2025-01-14
