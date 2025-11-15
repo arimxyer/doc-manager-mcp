@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 
 from ..models import InitializeMemoryInput
-from ..constants import ResponseFormat
+from ..constants import ResponseFormat, MAX_FILES
 from ..utils import (
     detect_project_language,
     find_docs_directory,
@@ -76,6 +76,12 @@ async def initialize_memory(params: InitializeMemoryInput) -> str:
         checksums = {}
         file_count = 0
         for file_path in project_path.rglob("*"):
+            if file_count >= MAX_FILES:
+                raise ValueError(
+                    f"File count limit exceeded (maximum: {MAX_FILES:,} files)\n"
+                    f"→ Consider processing a smaller directory or increasing the limit."
+                )
+
             if file_path.is_file() and not any(part.startswith('.') for part in file_path.parts):
                 # Validate path boundary and check for malicious symlinks (T028 - FR-028)
                 try:

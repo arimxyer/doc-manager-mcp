@@ -7,7 +7,7 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 
 from ..models import MapChangesInput
-from ..constants import ResponseFormat, ChangeDetectionMode
+from ..constants import ResponseFormat, ChangeDetectionMode, MAX_FILES
 from ..utils import calculate_checksum, run_git_command, handle_error, validate_path_boundary, enforce_response_limit, safe_json_dumps
 
 
@@ -31,7 +31,14 @@ def _get_changed_files_from_checksums(project_path: Path, baseline: Dict[str, An
     baseline_checksums = baseline.get("files", {})
 
     # Check existing files for changes
+    file_count = 0
     for file_path in project_path.rglob("*"):
+        if file_count >= MAX_FILES:
+            raise ValueError(
+                f"File count limit exceeded (maximum: {MAX_FILES:,} files)\n"
+                f"→ Consider processing a smaller directory or increasing the limit."
+            )
+
         if file_path.is_file() and not any(part.startswith('.') for part in file_path.parts):
             # Validate path boundary and check for malicious symlinks (T029 - FR-028)
             try:
@@ -60,6 +67,8 @@ def _get_changed_files_from_checksums(project_path: Path, baseline: Dict[str, An
                         "file": relative_path,
                         "change_type": "added"
                     })
+
+            file_count += 1
 
     # Check for deleted files
     for baseline_file in baseline_checksums.keys():

@@ -7,15 +7,25 @@ from typing import List, Dict, Any, Optional
 from urllib.parse import urlparse
 
 from ..models import ValidateDocsInput
-from ..constants import ResponseFormat
+from ..constants import ResponseFormat, MAX_FILES
 from ..utils import find_docs_directory, handle_error, enforce_response_limit, safe_json_dumps
 
 
 def _find_markdown_files(docs_path: Path) -> List[Path]:
     """Find all markdown files in documentation directory."""
     markdown_files = []
+    file_count = 0
+
     for pattern in ["**/*.md", "**/*.markdown"]:
-        markdown_files.extend(docs_path.glob(pattern))
+        for file_path in docs_path.glob(pattern):
+            if file_count >= MAX_FILES:
+                raise ValueError(
+                    f"File count limit exceeded (maximum: {MAX_FILES:,} files)\n"
+                    f"→ Consider processing a smaller directory or increasing the limit."
+                )
+            markdown_files.append(file_path)
+            file_count += 1
+
     return sorted(markdown_files)
 
 

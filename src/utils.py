@@ -437,10 +437,13 @@ def enforce_response_limit(response: str, limit: int = 25000) -> str:
     if len(response) <= limit:
         return response
 
-    # Leave room for truncation marker
-    truncated = response[:limit - 100]
-    truncated += "\n\n[Response truncated - exceeded 25,000 character limit]"
-    truncated += "\n[Tip: Request specific sections or use filters to reduce output size]"
+    # Leave room for truncation marker (126 characters total)
+    truncation_message = (
+        "\n\n[Response truncated - exceeded 25,000 character limit]"
+        "\n[Tip: Request specific sections or use filters to reduce output size]"
+    )
+    truncated = response[:limit - len(truncation_message)]
+    truncated += truncation_message
 
     return truncated
 

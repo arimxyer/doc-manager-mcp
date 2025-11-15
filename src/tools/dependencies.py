@@ -8,7 +8,7 @@ from typing import List, Dict, Any, Set
 from datetime import datetime
 
 from ..models import TrackDependenciesInput
-from ..constants import ResponseFormat
+from ..constants import ResponseFormat, MAX_FILES
 from ..utils import find_docs_directory, handle_error, validate_path_boundary, enforce_response_limit, safe_json_dumps, file_lock
 
 
@@ -23,12 +23,19 @@ def _find_markdown_files(docs_path: Path, project_path: Path) -> List[Path]:
         List of validated markdown file paths
     """
     markdown_files = []
+    file_count = 0
     for pattern in ["**/*.md", "**/*.markdown"]:
         for file_path in docs_path.glob(pattern):
+            if file_count >= MAX_FILES:
+                raise ValueError(
+                    f"File count limit exceeded (maximum: {MAX_FILES:,} files)\n"
+                    f"→ Consider processing a smaller directory or increasing the limit."
+                )
             # Validate path boundary and check for malicious symlinks (T030 - FR-028)
             try:
                 validated_path = validate_path_boundary(file_path, project_path)
                 markdown_files.append(file_path)
+                file_count += 1
             except ValueError:
                 # Skip files that escape project boundary or malicious symlinks
                 continue
@@ -131,6 +138,7 @@ def _extract_code_references(content: str, doc_file: Path) -> List[Dict[str, Any
 def _find_source_files(project_path: Path, docs_path: Path) -> List[Path]:
     """Find all source code and configuration files in the project."""
     source_files = []
+    file_count = 0
 
     # Common source file extensions (code + config files)
     extensions = [
@@ -145,6 +153,11 @@ def _find_source_files(project_path: Path, docs_path: Path) -> List[Path]:
     for ext in extensions:
         pattern = f"**/*{ext}"
         for file_path in project_path.glob(pattern):
+            if file_count >= MAX_FILES:
+                raise ValueError(
+                    f"File count limit exceeded (maximum: {MAX_FILES:,} files)\n"
+                    f"→ Consider processing a smaller directory or increasing the limit."
+                )
             # Validate path boundary and check for malicious symlinks (T030 - FR-028)
             try:
                 validated_path = validate_path_boundary(file_path, project_path)
@@ -159,6 +172,7 @@ def _find_source_files(project_path: Path, docs_path: Path) -> List[Path]:
             if file_path.is_relative_to(docs_path):
                 continue
             source_files.append(file_path)
+            file_count += 1
 
     return source_files
 
