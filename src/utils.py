@@ -54,17 +54,19 @@ def run_git_command(cwd: Path, *args, check_git_available: bool = True) -> str |
             )
 
     try:
-        result = subprocess.run(
-            ["git", *args],  # Array form prevents command injection (T017)
+        # Security: Using array form with hardcoded "git" binary and validated args
+        # to prevent command injection. All args are from trusted internal sources.
+        result = subprocess.run(  # noqa: S603
+            ["git", *args],  # Array form prevents command injection (T017)  # noqa: S607
             cwd=cwd,
             capture_output=True,
             text=True,
             timeout=30  # 30-second timeout (T019)
         )
         return result.stdout.strip() if result.returncode == 0 else None
-    except FileNotFoundError:
+    except FileNotFoundError as err:
         # Git binary not found even after check
-        raise RuntimeError("Git is required but not found. Please install git.")
+        raise RuntimeError("Git is required but not found. Please install git.") from err
     except subprocess.TimeoutExpired:
         # Command exceeded timeout
         return None
@@ -186,7 +188,7 @@ def matches_exclude_pattern(path: str, exclude_patterns: list[str]) -> bool:
                 return True
             # Check if any component matches
             parts = normalized_path.split('/')
-            for i, part in enumerate(parts):
+            for i, _part in enumerate(parts):
                 remaining = '/'.join(parts[i:])
                 if fnmatch.fnmatch(remaining, pattern_suffix):
                     return True
@@ -269,8 +271,9 @@ def file_lock(file_path: Path, timeout: int = 5, retries: int = 3):
                 else:
                     import fcntl
                     fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
-            except Exception:
-                pass  # Best effort release
+            except Exception:  # noqa: S110
+                # Best effort release - failures during cleanup are non-critical
+                pass
 
         if lock_handle:
             lock_handle.close()
@@ -279,15 +282,16 @@ def file_lock(file_path: Path, timeout: int = 5, retries: int = 3):
         try:
             if lock_file_path.exists():
                 lock_file_path.unlink()
-        except Exception:
-            pass  # Best effort cleanup
+        except Exception:  # noqa: S110
+            # Best effort cleanup - lock file removal failures are non-critical
+            pass
 
 
 # ============================================================================
 # T006: Path Validation Utility (FR-001, FR-003, FR-020, FR-025, FR-028)
 # ============================================================================
 
-def safe_resolve(path: Path, max_depth: int = None) -> Path:
+def safe_resolve(path: Path, max_depth: int | None = None) -> Path:
     """Safely resolve path with recursion depth limit (FR-020).
 
     Args:
@@ -352,8 +356,8 @@ def validate_path_boundary(path: Path, project_root: Path) -> Path:
         try:
             # Check if resolved path is relative to project root
             resolved.relative_to(project_root.resolve())
-        except ValueError:
-            raise ValueError(f"Symlink escapes project boundary: {path.name} points outside project root")
+        except ValueError as err:
+            raise ValueError(f"Symlink escapes project boundary: {path.name} points outside project root") from err
     else:
         # Regular path resolution
         resolved = path.resolve()
@@ -361,8 +365,8 @@ def validate_path_boundary(path: Path, project_root: Path) -> Path:
     # Verify resolved path is within project boundary (FR-025)
     try:
         resolved.relative_to(project_root.resolve())
-    except ValueError:
-        raise ValueError(f"Path escapes project boundary: {path.name} is outside project root")
+    except ValueError as err:
+        raise ValueError(f"Path escapes project boundary: {path.name} is outside project root") from err
 
     return resolved
 
@@ -517,6 +521,6 @@ def safe_json_dumps(obj: any, **kwargs) -> str:
         }
         try:
             return json.dumps(error_response, indent=2)
-        except:
+        except Exception:
             # Fallback if even error serialization fails
             return '{"status": "error", "message": "Critical JSON serialization failure"}'

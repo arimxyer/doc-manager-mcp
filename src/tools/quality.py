@@ -361,7 +361,7 @@ def _assess_clarity(docs_path: Path, markdown_files: list[Path]) -> dict[str, An
             # Check for internal links
             link_pattern = r'\[([^\]]+)\]\(([^\)]+)\)'
             links = re.findall(link_pattern, content)
-            internal_links = [l for l in links if not l[1].startswith(('http://', 'https://'))]
+            internal_links = [link for link in links if not link[1].startswith(('http://', 'https://'))]
             if internal_links:
                 files_with_links += 1
                 total_internal_links += len(internal_links)
@@ -524,7 +524,7 @@ def _format_quality_report(results: list[dict[str, Any]], response_format: Respo
             if result.get('issues'):
                 lines.append("**Issues:**")
                 for issue in result['issues']:
-                    severity_emoji = "⚠️" if issue['severity'] == 'warning' else "ℹ️"
+                    severity_emoji = "⚠️" if issue['severity'] == 'warning' else "ℹ️"  # noqa: RUF001
                     lines.append(f"- {severity_emoji} {issue['message']}")
                 lines.append("")
 

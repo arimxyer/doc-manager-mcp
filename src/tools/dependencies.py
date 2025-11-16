@@ -64,7 +64,7 @@ def _find_markdown_files(docs_path: Path, project_path: Path) -> list[Path]:
                 )
             # Validate path boundary and check for malicious symlinks (T030 - FR-028)
             try:
-                validated_path = validate_path_boundary(file_path, project_path)
+                _ = validate_path_boundary(file_path, project_path)
                 markdown_files.append(file_path)
                 file_count += 1
             except ValueError:
@@ -177,7 +177,7 @@ def _find_source_files(project_path: Path, docs_path: Path) -> list[Path]:
                 )
             # Validate path boundary and check for malicious symlinks (T030 - FR-028)
             try:
-                validated_path = validate_path_boundary(file_path, project_path)
+                _ = validate_path_boundary(file_path, project_path)
             except ValueError:
                 # Skip files that escape project boundary or malicious symlinks
                 continue
@@ -259,10 +259,10 @@ def _match_references_to_sources(references: list[dict[str, Any]], source_files:
                     dependencies[doc_file].add(relative_path)
 
     # Convert sets to sorted lists
-    return {k: sorted(list(v)) for k, v in dependencies.items()}
+    return {k: sorted(v) for k, v in dependencies.items()}
 
 
-def _build_reverse_index(dependencies: dict[str, list[str]], all_references: list[dict[str, Any]] = None) -> dict[str, list[str]]:
+def _build_reverse_index(dependencies: dict[str, list[str]], all_references: list[dict[str, Any]] | None = None) -> dict[str, list[str]]:
     """Build reverse index: source_file/reference -> [doc_files].
 
     Includes both matched source files and unmatched references (functions, classes, etc.)
@@ -281,7 +281,7 @@ def _build_reverse_index(dependencies: dict[str, list[str]], all_references: lis
     if all_references:
         # Find which references were NOT matched to source files
         matched_refs = set()
-        for doc_file, source_files in dependencies.items():
+        for _doc_file, source_files in dependencies.items():
             for source_file in source_files:
                 matched_refs.add(source_file)
 
@@ -318,8 +318,8 @@ def _build_reference_index(all_references: list[dict[str, Any]]) -> dict[str, li
 
 
 def _save_dependencies_to_memory(project_path: Path, dependencies: dict[str, list[str]],
-                                 reverse_index: dict[str, list[str]], all_references: list[dict[str, Any]] = None,
-                                 reference_index: dict[str, list[str]] = None):
+                                 reverse_index: dict[str, list[str]], all_references: list[dict[str, Any]] | None = None,
+                                 reference_index: dict[str, list[str]] | None = None):
     """Save dependency graph to memory directory."""
     memory_dir = project_path / ".doc-manager"
 
@@ -492,11 +492,11 @@ def with_timeout(timeout_seconds):
                     func(*args, **kwargs),
                     timeout=timeout_seconds
                 )
-            except asyncio.TimeoutError:
+            except asyncio.TimeoutError as err:
                 raise TimeoutError(
                     f"Operation exceeded timeout ({timeout_seconds}s)\n"
                     f"→ Consider processing fewer files or increasing timeout limit."
-                )
+                ) from err
         return wrapper
     return decorator
 

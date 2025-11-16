@@ -59,7 +59,7 @@ def _get_changed_files_from_checksums(project_path: Path, baseline: dict[str, An
         if file_path.is_file() and not any(part.startswith('.') for part in file_path.parts):
             # Validate path boundary and check for malicious symlinks (T029 - FR-028)
             try:
-                validated_path = validate_path_boundary(file_path, project_path)
+                _ = validate_path_boundary(file_path, project_path)
             except ValueError:
                 # Skip files that escape project boundary or malicious symlinks
                 continue
@@ -197,7 +197,6 @@ def _map_to_affected_docs(changed_files: list[dict[str, str]], project_path: Pat
 
     for change in changed_files:
         file_path = change["file"]
-        change_type = change["change_type"]
         category = _categorize_change(file_path)
 
         # Skip if it's already a documentation change
@@ -508,8 +507,8 @@ async def map_changes(params: MapChangesInput) -> str:
             timeout=OPERATION_TIMEOUT
         )
         return result
-    except asyncio.TimeoutError:
+    except asyncio.TimeoutError as err:
         raise TimeoutError(
             f"Operation exceeded timeout ({OPERATION_TIMEOUT}s)\n"
             f"→ Consider processing fewer files or increasing timeout limit."
-        )
+        ) from err
