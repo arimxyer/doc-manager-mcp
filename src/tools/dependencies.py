@@ -1,17 +1,24 @@
 """Dependency tracking tools for doc-manager."""
 
-from pathlib import Path
+import asyncio
 import json
 import re
 import sys
-import asyncio
-from typing import List, Dict, Any, Set
 from datetime import datetime
 from functools import wraps
+from pathlib import Path
+from typing import Any
 
+from ..constants import MAX_FILES, OPERATION_TIMEOUT, ResponseFormat
 from ..models import TrackDependenciesInput
-from ..constants import ResponseFormat, MAX_FILES, OPERATION_TIMEOUT
-from ..utils import find_docs_directory, handle_error, validate_path_boundary, enforce_response_limit, safe_json_dumps, file_lock
+from ..utils import (
+    enforce_response_limit,
+    file_lock,
+    find_docs_directory,
+    handle_error,
+    safe_json_dumps,
+    validate_path_boundary,
+)
 
 # ============================================================================
 # T082: Compiled regex patterns for performance (FR-023)
@@ -36,7 +43,7 @@ COMMAND_PATTERNS = [
 ]
 
 
-def _find_markdown_files(docs_path: Path, project_path: Path) -> List[Path]:
+def _find_markdown_files(docs_path: Path, project_path: Path) -> list[Path]:
     """Find all markdown files in documentation directory.
 
     Args:
@@ -66,7 +73,7 @@ def _find_markdown_files(docs_path: Path, project_path: Path) -> List[Path]:
     return sorted(markdown_files)
 
 
-def _extract_code_references(content: str, doc_file: Path) -> List[Dict[str, Any]]:
+def _extract_code_references(content: str, doc_file: Path) -> list[dict[str, Any]]:
     """Extract code references from documentation content (T082 - FR-023)."""
     references = []
 
@@ -145,7 +152,7 @@ def _extract_code_references(content: str, doc_file: Path) -> List[Dict[str, Any
     return references
 
 
-def _find_source_files(project_path: Path, docs_path: Path) -> List[Path]:
+def _find_source_files(project_path: Path, docs_path: Path) -> list[Path]:
     """Find all source code and configuration files in the project."""
     source_files = []
     file_count = 0
@@ -187,8 +194,8 @@ def _find_source_files(project_path: Path, docs_path: Path) -> List[Path]:
     return source_files
 
 
-def _match_references_to_sources(references: List[Dict[str, Any]], source_files: List[Path],
-                                 project_path: Path) -> Dict[str, List[str]]:
+def _match_references_to_sources(references: list[dict[str, Any]], source_files: list[Path],
+                                 project_path: Path) -> dict[str, list[str]]:
     """Match documentation references to actual source files."""
     dependencies = {}  # doc_file -> [source_files]
 
@@ -218,7 +225,7 @@ def _match_references_to_sources(references: List[Dict[str, Any]], source_files:
 
             for source_file in source_files:
                 try:
-                    with open(source_file, 'r', encoding='utf-8') as f:
+                    with open(source_file, encoding='utf-8') as f:
                         content = f.read()
 
                     # Look for function/class definitions
@@ -255,7 +262,7 @@ def _match_references_to_sources(references: List[Dict[str, Any]], source_files:
     return {k: sorted(list(v)) for k, v in dependencies.items()}
 
 
-def _build_reverse_index(dependencies: Dict[str, List[str]], all_references: List[Dict[str, Any]] = None) -> Dict[str, List[str]]:
+def _build_reverse_index(dependencies: dict[str, list[str]], all_references: list[dict[str, Any]] = None) -> dict[str, list[str]]:
     """Build reverse index: source_file/reference -> [doc_files].
 
     Includes both matched source files and unmatched references (functions, classes, etc.)
@@ -294,7 +301,7 @@ def _build_reverse_index(dependencies: Dict[str, List[str]], all_references: Lis
     return reverse_index
 
 
-def _build_reference_index(all_references: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+def _build_reference_index(all_references: list[dict[str, Any]]) -> dict[str, list[str]]:
     """Build index of references to docs that mention them: reference -> [doc_files]."""
     ref_index = {}
 
@@ -310,9 +317,9 @@ def _build_reference_index(all_references: List[Dict[str, Any]]) -> Dict[str, Li
     return ref_index
 
 
-def _save_dependencies_to_memory(project_path: Path, dependencies: Dict[str, List[str]],
-                                 reverse_index: Dict[str, List[str]], all_references: List[Dict[str, Any]] = None,
-                                 reference_index: Dict[str, List[str]] = None):
+def _save_dependencies_to_memory(project_path: Path, dependencies: dict[str, list[str]],
+                                 reverse_index: dict[str, list[str]], all_references: list[dict[str, Any]] = None,
+                                 reference_index: dict[str, list[str]] = None):
     """Save dependency graph to memory directory."""
     memory_dir = project_path / ".doc-manager"
 
@@ -355,11 +362,10 @@ def _save_dependencies_to_memory(project_path: Path, dependencies: Dict[str, Lis
                 json.dump(data, f, indent=2)
     except Exception as e:
         print(f"Warning: Failed to save dependencies to {dependency_file}: {e}", file=sys.stderr)
-        pass
 
 
-def _format_dependency_report(dependencies: Dict[str, List[str]], reverse_index: Dict[str, List[str]],
-                              total_references: int, all_references: List[Dict[str, Any]],
+def _format_dependency_report(dependencies: dict[str, list[str]], reverse_index: dict[str, list[str]],
+                              total_references: int, all_references: list[dict[str, Any]],
                               response_format: ResponseFormat) -> str:
     """Format dependency tracking report."""
     if response_format == ResponseFormat.JSON:
@@ -551,7 +557,7 @@ async def track_dependencies(params: TrackDependenciesInput) -> str:
             # Extract references from all docs
             for md_file in markdown_files:
                 try:
-                    with open(md_file, 'r', encoding='utf-8') as f:
+                    with open(md_file, encoding='utf-8') as f:
                         content = f.read()
 
                     references = _extract_code_references(content, md_file.relative_to(docs_path))

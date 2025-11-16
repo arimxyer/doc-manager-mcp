@@ -1,18 +1,17 @@
 """Workflow orchestration tools for doc-manager."""
 
-from pathlib import Path
 import json
-from typing import Dict, Any
 from datetime import datetime
+from pathlib import Path
 
+from ..constants import DocumentationPlatform, ResponseFormat
 from ..models import BootstrapInput, MigrateInput, SyncInput
-from ..constants import ResponseFormat, DocumentationPlatform
-from ..utils import handle_error, detect_project_language, enforce_response_limit, safe_json_dumps
-from .platform import detect_platform
+from ..utils import detect_project_language, enforce_response_limit, handle_error, safe_json_dumps
+from .changes import map_changes
 from .config import initialize_config
 from .memory import initialize_memory
+from .platform import detect_platform
 from .quality import assess_quality
-from .changes import map_changes
 from .validation import validate_docs
 
 
@@ -194,9 +193,9 @@ async def bootstrap(params: BootstrapInput) -> str:
         lines.append("✓ Documentation bootstrapped successfully!")
         lines.append("")
         lines.append("**What was created:**")
-        lines.append(f"- Configuration: `.doc-manager.yml`")
+        lines.append("- Configuration: `.doc-manager.yml`")
         lines.append(f"- Documentation: `{params.docs_path}/` with {len(created_files)} files")
-        lines.append(f"- Memory system: `.doc-manager/memory/`")
+        lines.append("- Memory system: `.doc-manager/memory/`")
         lines.append("")
 
         lines.append("## Next Steps")
@@ -204,8 +203,8 @@ async def bootstrap(params: BootstrapInput) -> str:
         lines.append("1. **Customize templates**: Fill in project-specific content in the created files")
         lines.append("2. **Add examples**: Include code examples and screenshots")
         lines.append("3. **Configure platform**: Set up your chosen documentation platform")
-        lines.append(f"4. **Run validation**: Use `docmgr_validate_docs` to check for issues")
-        lines.append(f"5. **Assess quality**: Use `docmgr_assess_quality` to measure improvements")
+        lines.append("4. **Run validation**: Use `docmgr_validate_docs` to check for issues")
+        lines.append("5. **Assess quality**: Use `docmgr_assess_quality` to measure improvements")
         lines.append("")
 
         lines.append("**Platform-Specific Setup:**")
@@ -315,7 +314,7 @@ def _create_installation_template(project_path: Path) -> str:
     project_name = project_path.name
     language = detect_project_language(project_path)
 
-    content = f"""# Installation
+    content = """# Installation
 
 ## Prerequisites
 
@@ -402,7 +401,7 @@ See [Installation Guide](installation.md) for detailed instructions.
 def _create_usage_template(project_path: Path) -> str:
     """Create basic usage guide template."""
     project_name = project_path.name
-    return f"""# Basic Usage
+    return """# Basic Usage
 
 ## Common Tasks
 

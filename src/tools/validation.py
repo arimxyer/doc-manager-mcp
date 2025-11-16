@@ -1,18 +1,23 @@
 """Documentation validation tools for doc-manager."""
 
-from pathlib import Path
+import asyncio
 import re
 import sys
-import asyncio
-from typing import List, Dict, Any, Optional
-from urllib.parse import urlparse
+from pathlib import Path
+from typing import Any
 
+from ..constants import MAX_FILES, OPERATION_TIMEOUT, ResponseFormat
 from ..models import ValidateDocsInput
-from ..constants import ResponseFormat, MAX_FILES, OPERATION_TIMEOUT
-from ..utils import find_docs_directory, handle_error, enforce_response_limit, safe_json_dumps, safe_resolve
+from ..utils import (
+    enforce_response_limit,
+    find_docs_directory,
+    handle_error,
+    safe_json_dumps,
+    safe_resolve,
+)
 
 
-def _find_markdown_files(docs_path: Path) -> List[Path]:
+def _find_markdown_files(docs_path: Path) -> list[Path]:
     """Find all markdown files in documentation directory."""
     markdown_files = []
     file_count = 0
@@ -30,7 +35,7 @@ def _find_markdown_files(docs_path: Path) -> List[Path]:
     return sorted(markdown_files)
 
 
-def _extract_links(content: str, file_path: Path) -> List[Dict[str, Any]]:
+def _extract_links(content: str, file_path: Path) -> list[dict[str, Any]]:
     """Extract all links from markdown content."""
     links = []
 
@@ -62,7 +67,7 @@ def _extract_links(content: str, file_path: Path) -> List[Dict[str, Any]]:
     return links
 
 
-def _check_internal_link(link_url: str, file_path: Path, docs_root: Path) -> Optional[str]:
+def _check_internal_link(link_url: str, file_path: Path, docs_root: Path) -> str | None:
     """Check if internal link is valid. Returns error message if broken."""
     # Skip external links and anchors
     if link_url.startswith(('http://', 'https://', 'mailto:', 'ftp://')):
@@ -102,14 +107,14 @@ def _check_internal_link(link_url: str, file_path: Path, docs_root: Path) -> Opt
     return None
 
 
-def _check_broken_links(docs_path: Path) -> List[Dict[str, Any]]:
+def _check_broken_links(docs_path: Path) -> list[dict[str, Any]]:
     """Check for broken internal and external links."""
     issues = []
     markdown_files = _find_markdown_files(docs_path)
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             links = _extract_links(content, md_file)
@@ -134,13 +139,13 @@ def _check_broken_links(docs_path: Path) -> List[Dict[str, Any]]:
                 "severity": "error",
                 "file": str(md_file.relative_to(docs_path)),
                 "line": 1,
-                "message": f"Failed to read file: {str(e)}"
+                "message": f"Failed to read file: {e!s}"
             })
 
     return issues
 
 
-def _extract_images(content: str, file_path: Path) -> List[Dict[str, Any]]:
+def _extract_images(content: str, file_path: Path) -> list[dict[str, Any]]:
     """Extract all images from markdown content."""
     images = []
 
@@ -173,14 +178,14 @@ def _extract_images(content: str, file_path: Path) -> List[Dict[str, Any]]:
     return images
 
 
-def _validate_assets(docs_path: Path) -> List[Dict[str, Any]]:
+def _validate_assets(docs_path: Path) -> list[dict[str, Any]]:
     """Validate asset links and alt text."""
     issues = []
     markdown_files = _find_markdown_files(docs_path)
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             images = _extract_images(content, md_file)
@@ -235,13 +240,13 @@ def _validate_assets(docs_path: Path) -> List[Dict[str, Any]]:
                 "severity": "error",
                 "file": str(md_file.relative_to(docs_path)),
                 "line": 1,
-                "message": f"Failed to read file: {str(e)}"
+                "message": f"Failed to read file: {e!s}"
             })
 
     return issues
 
 
-def _extract_code_blocks(content: str, file_path: Path) -> List[Dict[str, Any]]:
+def _extract_code_blocks(content: str, file_path: Path) -> list[dict[str, Any]]:
     """Extract code blocks from markdown content."""
     code_blocks = []
 
@@ -261,14 +266,14 @@ def _extract_code_blocks(content: str, file_path: Path) -> List[Dict[str, Any]]:
     return code_blocks
 
 
-def _validate_code_snippets(docs_path: Path) -> List[Dict[str, Any]]:
+def _validate_code_snippets(docs_path: Path) -> list[dict[str, Any]]:
     """Extract and validate code snippets."""
     issues = []
     markdown_files = _find_markdown_files(docs_path)
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             code_blocks = _extract_code_blocks(content, md_file)
@@ -316,13 +321,13 @@ def _validate_code_snippets(docs_path: Path) -> List[Dict[str, Any]]:
                 "severity": "error",
                 "file": str(md_file.relative_to(docs_path)),
                 "line": 1,
-                "message": f"Failed to read file: {str(e)}"
+                "message": f"Failed to read file: {e!s}"
             })
 
     return issues
 
 
-def _format_validation_report(issues: List[Dict[str, Any]], response_format: ResponseFormat) -> str:
+def _format_validation_report(issues: list[dict[str, Any]], response_format: ResponseFormat) -> str:
     """Format validation report as JSON or Markdown."""
     if response_format == ResponseFormat.JSON:
         return enforce_response_limit(safe_json_dumps({

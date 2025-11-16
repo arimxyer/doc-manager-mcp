@@ -10,6 +10,11 @@ dependencies = [
     "pyyaml>=6.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.0",
+]
+
 [project.scripts]
 doc-manager = "server:main"
 
@@ -19,3 +24,36 @@ packages = ["src"]
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+# Enable recommended rules + common issue detection
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "W",   # pycodestyle warnings
+    "I",   # isort (import sorting)
+    "N",   # pep8-naming
+    "UP",  # pyupgrade (modern Python syntax)
+    "B",   # flake8-bugbear (common bugs)
+    "S",   # flake8-bandit (security issues)
+    "C4",  # flake8-comprehensions
+    "PIE", # flake8-pie (misc lints)
+    "RUF", # ruff-specific rules
+]
+
+# Ignore rules that are too strict for this project
+ignore = [
+    "S101",  # Allow assert statements (used in tests)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can have additional flexibility
+"tests/**/*.py" = [
+    "S101",  # assert allowed
+    "S105",  # hardcoded passwords ok in tests
+    "S106",  # hardcoded passwords ok in tests
+]

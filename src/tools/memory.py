@@ -1,26 +1,27 @@
 """Memory system tools for doc-manager."""
 
-from pathlib import Path
-from datetime import datetime
-import json
 import asyncio
+import json
+from datetime import datetime
 from functools import wraps
+from pathlib import Path
 
+from ..constants import MAX_FILES, OPERATION_TIMEOUT, ResponseFormat
 from ..models import InitializeMemoryInput
-from ..constants import ResponseFormat, MAX_FILES, OPERATION_TIMEOUT
 from ..utils import (
-    detect_project_language,
-    find_docs_directory,
-    run_git_command,
     calculate_checksum,
+    detect_project_language,
+    enforce_response_limit,
+    file_lock,
+    find_docs_directory,
     handle_error,
     load_config,
     matches_exclude_pattern,
-    validate_path_boundary,
-    enforce_response_limit,
+    run_git_command,
     safe_json_dumps,
-    file_lock
+    validate_path_boundary,
 )
+
 
 def with_timeout(timeout_seconds):
     """Decorator to add timeout enforcement to async functions.
