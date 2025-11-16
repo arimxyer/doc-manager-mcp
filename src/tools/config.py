@@ -113,7 +113,7 @@ async def initialize_config(params: InitializeConfigInput) -> str:
                 "platform": platform.value,
                 "docs_path": docs_path,
                 "language": language,
-                "exclude_patterns": len(params.exclude_patterns),
+                "exclude_patterns": len(params.exclude_patterns or []),
                 "sources": len(sources)
             }, indent=2))
         else:
@@ -123,7 +123,7 @@ async def initialize_config(params: InitializeConfigInput) -> str:
 - Platform: {platform.value}
 - Documentation Path: {docs_path}
 - Primary Language: {language}
-- Exclude Patterns: {len(params.exclude_patterns)} patterns
+- Exclude Patterns: {len(params.exclude_patterns or [])} patterns
 - Source Patterns: {len(sources)} patterns
 
 Next steps:
