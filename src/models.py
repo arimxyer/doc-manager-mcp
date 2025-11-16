@@ -98,11 +98,11 @@ def _validate_glob_pattern(pattern: str, field_name: str = "pattern") -> None:
         ValueError: If pattern is dangerous or too long
     """
     # Check pattern length (FR-007)
-    MAX_PATTERN_LENGTH = 512
-    if len(pattern) > MAX_PATTERN_LENGTH:
+    max_pattern_length = 512
+    if len(pattern) > max_pattern_length:
         raise ValueError(
             f"Invalid {field_name}: pattern too long ({len(pattern)} chars). "
-            f"Maximum allowed: {MAX_PATTERN_LENGTH} characters"
+            f"Maximum allowed: {max_pattern_length} characters"
         )
 
     # Check for ReDoS-vulnerable patterns (FR-008)

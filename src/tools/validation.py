@@ -387,11 +387,11 @@ def with_timeout(timeout_seconds):
                     func(*args, **kwargs),
                     timeout=timeout_seconds
                 )
-            except asyncio.TimeoutError:
+            except asyncio.TimeoutError as err:
                 raise TimeoutError(
                     f"Operation exceeded timeout ({timeout_seconds}s)\n"
                     f"→ Consider processing fewer files or increasing timeout limit."
-                )
+                ) from err
         return wrapper
     return decorator
 

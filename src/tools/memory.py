@@ -41,11 +41,11 @@ def with_timeout(timeout_seconds):
                     func(*args, **kwargs),
                     timeout=timeout_seconds
                 )
-            except asyncio.TimeoutError:
+            except asyncio.TimeoutError as err:
                 raise TimeoutError(
                     f"Operation exceeded timeout ({timeout_seconds}s)\n"
                     f"→ Consider processing fewer files or increasing timeout limit."
-                )
+                ) from err
         return wrapper
     return decorator
 
@@ -115,7 +115,7 @@ async def initialize_memory(params: InitializeMemoryInput) -> str:
             if file_path.is_file() and not any(part.startswith('.') for part in file_path.parts):
                 # Validate path boundary and check for malicious symlinks (T028 - FR-028)
                 try:
-                    validated_path = validate_path_boundary(file_path, project_path)
+                    _ = validate_path_boundary(file_path, project_path)
                 except ValueError:
                     # Skip files that escape project boundary or malicious symlinks
                     continue

@@ -311,7 +311,6 @@ Detailed technical reference documentation.
 
 def _create_installation_template(project_path: Path) -> str:
     """Create installation guide template."""
-    project_name = project_path.name
     language = detect_project_language(project_path)
 
     content = """# Installation
@@ -400,7 +399,6 @@ See [Installation Guide](installation.md) for detailed instructions.
 
 def _create_usage_template(project_path: Path) -> str:
     """Create basic usage guide template."""
-    project_name = project_path.name
     return """# Basic Usage
 
 ## Common Tasks
