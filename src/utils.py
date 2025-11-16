@@ -1,14 +1,17 @@
 """Utility functions for doc-manager MCP server."""
 
-from typing import Optional, Dict, Any, List
-from pathlib import Path
-from contextlib import contextmanager
-import hashlib
-import subprocess
-import yaml
 import fnmatch
+import hashlib
+import os
 import platform
+import subprocess
 import time
+from contextlib import contextmanager
+from pathlib import Path
+from typing import Any
+
+import yaml
+
 
 def calculate_checksum(file_path: Path) -> str:
     """Calculate SHA-256 checksum of a file."""
@@ -21,7 +24,7 @@ def calculate_checksum(file_path: Path) -> str:
     except Exception:
         return ""
 
-def run_git_command(cwd: Path, *args, check_git_available: bool = True) -> Optional[str]:
+def run_git_command(cwd: Path, *args, check_git_available: bool = True) -> str | None:
     """Run a git command and return output.
 
     Args:
@@ -88,7 +91,7 @@ def detect_project_language(project_path: Path) -> str:
 
     return "Unknown"
 
-def find_docs_directory(project_path: Path) -> Optional[Path]:
+def find_docs_directory(project_path: Path) -> Path | None:
     """Find documentation directory in project."""
     common_doc_dirs = ["docs", "doc", "documentation", "docsite", "website/docs"]
 
@@ -99,19 +102,19 @@ def find_docs_directory(project_path: Path) -> Optional[Path]:
 
     return None
 
-def load_config(project_path: Path) -> Optional[Dict[str, Any]]:
+def load_config(project_path: Path) -> dict[str, Any] | None:
     """Load .doc-manager.yml configuration."""
     config_path = project_path / ".doc-manager.yml"
     if not config_path.exists():
         return None
 
     try:
-        with open(config_path, 'r', encoding='utf-8') as f:
+        with open(config_path, encoding='utf-8') as f:
             return yaml.safe_load(f)
     except Exception:
         return None
 
-def save_config(project_path: Path, config: Dict[str, Any]) -> bool:
+def save_config(project_path: Path, config: dict[str, Any]) -> bool:
     """Save .doc-manager.yml configuration."""
     config_path = project_path / ".doc-manager.yml"
     try:
@@ -157,7 +160,7 @@ def handle_error(e: Exception, context: str = "", log_to_stderr: bool = True) ->
 
     return error_msg
 
-def matches_exclude_pattern(path: str, exclude_patterns: List[str]) -> bool:
+def matches_exclude_pattern(path: str, exclude_patterns: list[str]) -> bool:
     """Check if a path matches any of the exclude patterns.
 
     Args:
@@ -224,7 +227,6 @@ def file_lock(file_path: Path, timeout: int = 5, retries: int = 3):
             # Read/write state file safely
             data = json.load(f)
     """
-    import sys
 
     lock_file_path = file_path.with_suffix(file_path.suffix + '.lock')
     lock_handle = None
@@ -246,7 +248,7 @@ def file_lock(file_path: Path, timeout: int = 5, retries: int = 3):
 
                 acquired = True
                 break  # Lock acquired successfully
-            except (IOError, OSError) as e:
+            except OSError as e:
                 if attempt < retries - 1:
                     # Wait before retry
                     time.sleep(1)
@@ -431,7 +433,6 @@ def operation_timeout(seconds: int = 60):
             process_files()
     """
     import signal
-    import sys
 
     def timeout_handler(signum, frame):
         raise TimeoutError(f"Operation exceeded {seconds}s timeout")

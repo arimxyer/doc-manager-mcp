@@ -1,32 +1,41 @@
 """Change mapping tools for doc-manager."""
 
-from pathlib import Path
+import asyncio
 import json
 import sys
-from typing import List, Dict, Any, Optional
 from datetime import datetime
-import asyncio
+from pathlib import Path
+from typing import Any
 
+from ..constants import MAX_FILES, OPERATION_TIMEOUT, ChangeDetectionMode, ResponseFormat
 from ..models import MapChangesInput
-from ..constants import ResponseFormat, ChangeDetectionMode, MAX_FILES, OPERATION_TIMEOUT
-from ..utils import calculate_checksum, run_git_command, handle_error, validate_path_boundary, enforce_response_limit, safe_json_dumps, load_config, matches_exclude_pattern
+from ..utils import (
+    calculate_checksum,
+    enforce_response_limit,
+    handle_error,
+    load_config,
+    matches_exclude_pattern,
+    run_git_command,
+    safe_json_dumps,
+    validate_path_boundary,
+)
 
 
-def _load_baseline(project_path: Path) -> Optional[Dict[str, Any]]:
+def _load_baseline(project_path: Path) -> dict[str, Any] | None:
     """Load baseline checksums from memory."""
     baseline_path = project_path / ".doc-manager" / "memory" / "repo-baseline.json"
     if not baseline_path.exists():
         return None
 
     try:
-        with open(baseline_path, 'r', encoding='utf-8') as f:
+        with open(baseline_path, encoding='utf-8') as f:
             return json.load(f)
     except Exception as e:
         print(f"Warning: Failed to load baseline from {baseline_path}: {e}", file=sys.stderr)
         return None
 
 
-def _get_changed_files_from_checksums(project_path: Path, baseline: Dict[str, Any]) -> List[Dict[str, str]]:
+def _get_changed_files_from_checksums(project_path: Path, baseline: dict[str, Any]) -> list[dict[str, str]]:
     """Compare current checksums with baseline to find changed files."""
     changed_files = []
     baseline_checksums = baseline.get("files", {})
@@ -94,7 +103,7 @@ def _get_changed_files_from_checksums(project_path: Path, baseline: Dict[str, An
     return changed_files
 
 
-def _get_changed_files_from_git(project_path: Path, since_commit: str) -> List[Dict[str, str]]:
+def _get_changed_files_from_git(project_path: Path, since_commit: str) -> list[dict[str, str]]:
     """Get changed files from git diff."""
     changed_files = []
 
@@ -182,7 +191,7 @@ def _categorize_change(file_path: str) -> str:
     return "other"
 
 
-def _map_to_affected_docs(changed_files: List[Dict[str, str]], project_path: Path) -> List[Dict[str, Any]]:
+def _map_to_affected_docs(changed_files: list[dict[str, str]], project_path: Path) -> list[dict[str, Any]]:
     """Map changed files to affected documentation."""
     affected_docs = {}  # Use dict to deduplicate
 
@@ -294,7 +303,7 @@ def _map_to_affected_docs(changed_files: List[Dict[str, str]], project_path: Pat
     return result
 
 
-def _add_affected_doc(affected_docs: Dict, doc_path: str, reason: str, priority: str, source_file: str):
+def _add_affected_doc(affected_docs: dict, doc_path: str, reason: str, priority: str, source_file: str):
     """Add or update affected documentation entry."""
     if doc_path not in affected_docs:
         affected_docs[doc_path] = {
@@ -312,8 +321,8 @@ def _add_affected_doc(affected_docs: Dict, doc_path: str, reason: str, priority:
             affected_docs[doc_path]["affected_by"].append(source_file)
 
 
-def _format_changes_report(changed_files: List[Dict[str, str]], affected_docs: List[Dict[str, Any]],
-                           response_format: ResponseFormat, baseline_info: Optional[Dict] = None) -> str:
+def _format_changes_report(changed_files: list[dict[str, str]], affected_docs: list[dict[str, Any]],
+                           response_format: ResponseFormat, baseline_info: dict | None = None) -> str:
     """Format change mapping report."""
     if response_format == ResponseFormat.JSON:
         return enforce_response_limit(safe_json_dumps({

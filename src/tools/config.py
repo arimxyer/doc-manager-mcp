@@ -1,11 +1,19 @@
 """Configuration management tools for doc-manager."""
 
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
-from ..models import InitializeConfigInput
 from ..constants import DocumentationPlatform, ResponseFormat
-from ..utils import detect_project_language, find_docs_directory, save_config, handle_error, enforce_response_limit, safe_json_dumps
+from ..models import InitializeConfigInput
+from ..utils import (
+    detect_project_language,
+    enforce_response_limit,
+    find_docs_directory,
+    handle_error,
+    safe_json_dumps,
+    save_config,
+)
+
 
 async def initialize_config(params: InitializeConfigInput) -> str:
     """Initialize .doc-manager.yml configuration file for the project.

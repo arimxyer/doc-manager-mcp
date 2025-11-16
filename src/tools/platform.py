@@ -1,16 +1,16 @@
 """Platform detection tools for doc-manager."""
 
-from pathlib import Path
 import json
 import sys
-from typing import List, Dict, Any
+from pathlib import Path
+from typing import Any
 
-from ..models import DetectPlatformInput
 from ..constants import ResponseFormat
-from ..utils import detect_project_language, handle_error, enforce_response_limit, safe_json_dumps
+from ..models import DetectPlatformInput
+from ..utils import detect_project_language, enforce_response_limit, handle_error, safe_json_dumps
 
 
-def _check_root_configs(project_path: Path) -> List[Dict[str, Any]]:
+def _check_root_configs(project_path: Path) -> list[dict[str, Any]]:
     """Check root-level configuration files (fast path)."""
     detected = []
 
@@ -71,7 +71,7 @@ def _check_root_configs(project_path: Path) -> List[Dict[str, Any]]:
     return detected
 
 
-def _check_doc_directories(project_path: Path) -> List[Dict[str, Any]]:
+def _check_doc_directories(project_path: Path) -> list[dict[str, Any]]:
     """Check common documentation directories (targeted search)."""
     detected = []
     doc_dirs = ["docsite", "docs", "documentation", "website", "site"]
@@ -125,7 +125,7 @@ def _check_doc_directories(project_path: Path) -> List[Dict[str, Any]]:
     return detected
 
 
-def _check_dependencies(project_path: Path) -> List[Dict[str, Any]]:
+def _check_dependencies(project_path: Path) -> list[dict[str, Any]]:
     """Parse dependency files to detect platforms from dependencies."""
     detected = []
 
@@ -133,7 +133,7 @@ def _check_dependencies(project_path: Path) -> List[Dict[str, Any]]:
     package_json = project_path / "package.json"
     if package_json.exists():
         try:
-            with open(package_json, 'r', encoding='utf-8') as f:
+            with open(package_json, encoding='utf-8') as f:
                 data = json.load(f)
                 deps = {**data.get("dependencies", {}), **data.get("devDependencies", {})}
 
@@ -151,13 +151,12 @@ def _check_dependencies(project_path: Path) -> List[Dict[str, Any]]:
                     })
         except Exception as e:
             print(f"Warning: Failed to parse package.json: {e}", file=sys.stderr)
-            pass
 
     # Check requirements.txt or setup.py for Python projects
     requirements_txt = project_path / "requirements.txt"
     if requirements_txt.exists():
         try:
-            with open(requirements_txt, 'r', encoding='utf-8') as f:
+            with open(requirements_txt, encoding='utf-8') as f:
                 content = f.read().lower()
                 if "mkdocs" in content:
                     detected.append({
@@ -173,13 +172,12 @@ def _check_dependencies(project_path: Path) -> List[Dict[str, Any]]:
                     })
         except Exception as e:
             print(f"Warning: Failed to read requirements.txt: {e}", file=sys.stderr)
-            pass
 
     # Check setup.py for Sphinx (common in Python projects)
     setup_py = project_path / "setup.py"
     if setup_py.exists() and not detected:  # Only if nothing else detected
         try:
-            with open(setup_py, 'r', encoding='utf-8') as f:
+            with open(setup_py, encoding='utf-8') as f:
                 content = f.read().lower()
                 # Prefer Sphinx for setup.py-based projects (setuptools pattern)
                 if "sphinx" in content or "setuptools" in content:
@@ -190,13 +188,12 @@ def _check_dependencies(project_path: Path) -> List[Dict[str, Any]]:
                     })
         except Exception as e:
             print(f"Warning: Failed to read setup.py: {e}", file=sys.stderr)
-            pass
 
     # Check go.mod for Go projects
     go_mod = project_path / "go.mod"
     if go_mod.exists():
         try:
-            with open(go_mod, 'r', encoding='utf-8') as f:
+            with open(go_mod, encoding='utf-8') as f:
                 content = f.read().lower()
                 if "hugo" in content:
                     detected.append({
@@ -206,7 +203,6 @@ def _check_dependencies(project_path: Path) -> List[Dict[str, Any]]:
                     })
         except Exception as e:
             print(f"Warning: Failed to read go.mod: {e}", file=sys.stderr)
-            pass
 
     return detected
 
@@ -310,7 +306,7 @@ async def detect_platform(params: DetectPlatformInput) -> str:
             for reason in rationale:
                 lines.append(f"- {reason}")
             lines.append("")
-            lines.append(f"### Project Context:")
+            lines.append("### Project Context:")
             lines.append(f"- Primary Language: {language}")
 
             return enforce_response_limit("\n".join(lines))

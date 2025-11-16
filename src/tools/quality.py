@@ -1,17 +1,17 @@
 """Quality assessment tools for doc-manager."""
 
-from pathlib import Path
 import re
 import sys
-from typing import List, Dict, Any, Set
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
+from ..constants import QualityCriterion, ResponseFormat
 from ..models import AssessQualityInput
-from ..constants import ResponseFormat, QualityCriterion
-from ..utils import find_docs_directory, handle_error, enforce_response_limit, safe_json_dumps
+from ..utils import enforce_response_limit, find_docs_directory, handle_error, safe_json_dumps
 
 
-def _find_markdown_files(docs_path: Path) -> List[Path]:
+def _find_markdown_files(docs_path: Path) -> list[Path]:
     """Find all markdown files in documentation directory."""
     markdown_files = []
     for pattern in ["**/*.md", "**/*.markdown"]:
@@ -19,7 +19,7 @@ def _find_markdown_files(docs_path: Path) -> List[Path]:
     return sorted(markdown_files)
 
 
-def _assess_relevance(docs_path: Path, markdown_files: List[Path]) -> Dict[str, Any]:
+def _assess_relevance(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if documentation addresses current user needs and use cases."""
     issues = []
     findings = []
@@ -36,7 +36,7 @@ def _assess_relevance(docs_path: Path, markdown_files: List[Path]) -> Dict[str, 
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             # Check for deprecated markers
@@ -49,7 +49,6 @@ def _assess_relevance(docs_path: Path, markdown_files: List[Path]) -> Dict[str, 
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
-            pass
 
     if deprecated_count > 0:
         findings.append(f"Found {deprecated_count} references to deprecated/outdated content across {len(files_with_deprecated)} files")
@@ -86,7 +85,7 @@ def _assess_relevance(docs_path: Path, markdown_files: List[Path]) -> Dict[str, 
     }
 
 
-def _assess_accuracy(docs_path: Path, markdown_files: List[Path]) -> Dict[str, Any]:
+def _assess_accuracy(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if documentation reflects actual codebase and system behavior."""
     issues = []
     findings = []
@@ -98,7 +97,7 @@ def _assess_accuracy(docs_path: Path, markdown_files: List[Path]) -> Dict[str, A
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             # Find code blocks
@@ -115,7 +114,6 @@ def _assess_accuracy(docs_path: Path, markdown_files: List[Path]) -> Dict[str, A
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
-            pass
 
     if total_code_blocks > 0:
         findings.append(f"Found {total_code_blocks} code blocks across {files_with_code} files")
@@ -144,7 +142,7 @@ def _assess_accuracy(docs_path: Path, markdown_files: List[Path]) -> Dict[str, A
     }
 
 
-def _assess_purposefulness(docs_path: Path, markdown_files: List[Path]) -> Dict[str, Any]:
+def _assess_purposefulness(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if documents have clear goals and target audiences."""
     issues = []
     findings = []
@@ -171,7 +169,7 @@ def _assess_purposefulness(docs_path: Path, markdown_files: List[Path]) -> Dict[
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             # Check for H1 header
@@ -184,7 +182,6 @@ def _assess_purposefulness(docs_path: Path, markdown_files: List[Path]) -> Dict[
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
-            pass
 
     findings.append(f"Document types found: {', '.join([f'{k}: {v}' for k, v in doc_types.items() if v > 0])}")
     findings.append(f"{files_with_headers}/{len(markdown_files)} files have clear H1 headers")
@@ -210,7 +207,7 @@ def _assess_purposefulness(docs_path: Path, markdown_files: List[Path]) -> Dict[
     }
 
 
-def _assess_uniqueness(docs_path: Path, markdown_files: List[Path]) -> Dict[str, Any]:
+def _assess_uniqueness(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if there's redundant or duplicate information."""
     issues = []
     findings = []
@@ -220,7 +217,7 @@ def _assess_uniqueness(docs_path: Path, markdown_files: List[Path]) -> Dict[str,
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             # Find H1 and H2 headers
@@ -241,7 +238,6 @@ def _assess_uniqueness(docs_path: Path, markdown_files: List[Path]) -> Dict[str,
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
-            pass
 
     # Find duplicate headers (same header text in multiple files)
     duplicate_headers = {k: v for k, v in headers.items() if len(v) > 1}
@@ -270,7 +266,7 @@ def _assess_uniqueness(docs_path: Path, markdown_files: List[Path]) -> Dict[str,
     }
 
 
-def _assess_consistency(docs_path: Path, markdown_files: List[Path]) -> Dict[str, Any]:
+def _assess_consistency(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess terminology, formatting, and style consistency."""
     issues = []
     findings = []
@@ -285,7 +281,7 @@ def _assess_consistency(docs_path: Path, markdown_files: List[Path]) -> Dict[str
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             # Check code block language tags
@@ -303,7 +299,6 @@ def _assess_consistency(docs_path: Path, markdown_files: List[Path]) -> Dict[str
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
-            pass
 
     if code_langs_without_lang > 0:
         issues.append({
@@ -336,7 +331,7 @@ def _assess_consistency(docs_path: Path, markdown_files: List[Path]) -> Dict[str
     }
 
 
-def _assess_clarity(docs_path: Path, markdown_files: List[Path]) -> Dict[str, Any]:
+def _assess_clarity(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess language precision, examples, and navigation."""
     issues = []
     findings = []
@@ -352,7 +347,7 @@ def _assess_clarity(docs_path: Path, markdown_files: List[Path]) -> Dict[str, An
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             # Count words (rough estimate)
@@ -378,7 +373,6 @@ def _assess_clarity(docs_path: Path, markdown_files: List[Path]) -> Dict[str, An
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
-            pass
 
     avg_words = total_words // len(markdown_files) if markdown_files else 0
 
@@ -415,7 +409,7 @@ def _assess_clarity(docs_path: Path, markdown_files: List[Path]) -> Dict[str, An
     }
 
 
-def _assess_structure(docs_path: Path, markdown_files: List[Path]) -> Dict[str, Any]:
+def _assess_structure(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess logical organization and hierarchy."""
     issues = []
     findings = []
@@ -430,7 +424,7 @@ def _assess_structure(docs_path: Path, markdown_files: List[Path]) -> Dict[str, 
 
     for md_file in markdown_files:
         try:
-            with open(md_file, 'r', encoding='utf-8') as f:
+            with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
             # Extract all headings with their levels
@@ -449,7 +443,6 @@ def _assess_structure(docs_path: Path, markdown_files: List[Path]) -> Dict[str, 
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
-            pass
 
     if heading_issues > 0:
         issues.append({
@@ -481,7 +474,7 @@ def _assess_structure(docs_path: Path, markdown_files: List[Path]) -> Dict[str, 
     }
 
 
-def _format_quality_report(results: List[Dict[str, Any]], response_format: ResponseFormat) -> str:
+def _format_quality_report(results: list[dict[str, Any]], response_format: ResponseFormat) -> str:
     """Format quality assessment report."""
     if response_format == ResponseFormat.JSON:
         return enforce_response_limit(safe_json_dumps({
@@ -542,7 +535,7 @@ def _format_quality_report(results: List[Dict[str, Any]], response_format: Respo
         return enforce_response_limit("\n".join(lines))
 
 
-def _calculate_overall_score(results: List[Dict[str, Any]]) -> str:
+def _calculate_overall_score(results: list[dict[str, Any]]) -> str:
     """Calculate overall quality score from individual criteria."""
     score_values = {'excellent': 4, 'good': 3, 'fair': 2, 'poor': 1}
 

@@ -1,11 +1,11 @@
 """Pydantic models for doc-manager MCP server tool inputs."""
 
-from typing import Optional, List
-from pydantic import BaseModel, Field, ConfigDict, field_validator
 import re
 from pathlib import Path
 
-from .constants import ResponseFormat, DocumentationPlatform, QualityCriterion, ChangeDetectionMode
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from .constants import ChangeDetectionMode, DocumentationPlatform, QualityCriterion, ResponseFormat
 
 
 def _validate_project_path(v: str) -> str:
@@ -29,8 +29,8 @@ def _validate_project_path(v: str) -> str:
     # Check for path traversal sequences
     if '..' in v:
         raise ValueError(
-            f"Invalid project path: contains path traversal sequence '..'. "
-            f"Use absolute paths only to prevent directory traversal attacks."
+            "Invalid project path: contains path traversal sequence '..'. "
+            "Use absolute paths only to prevent directory traversal attacks."
         )
 
     # Convert to Path and verify it's absolute
@@ -52,7 +52,7 @@ def _validate_project_path(v: str) -> str:
     return str(path.resolve())
 
 
-def _validate_relative_path(v: Optional[str], field_name: str = "path") -> Optional[str]:
+def _validate_relative_path(v: str | None, field_name: str = "path") -> str | None:
     """Shared validator for relative path fields (FR-001).
 
     Args:
@@ -123,10 +123,10 @@ def _validate_glob_pattern(pattern: str, field_name: str = "pattern") -> None:
 
 
 def _validate_pattern_list(
-    patterns: Optional[List[str]],
+    patterns: list[str] | None,
     field_name: str = "patterns",
     max_items: int = 50
-) -> Optional[List[str]]:
+) -> list[str] | None:
     """Validate list of glob patterns (FR-006, FR-007, FR-008).
 
     Args:
@@ -176,21 +176,21 @@ class InitializeConfigInput(BaseModel):
         description="Absolute path to project root directory (e.g., '/home/user/my-project', 'C:\\Users\\user\\project')",
         min_length=1
     )
-    platform: Optional[DocumentationPlatform] = Field(
+    platform: DocumentationPlatform | None = Field(
         default=None,
         description="Documentation platform to use. If not specified, will be auto-detected. Options: hugo, docusaurus, mkdocs, sphinx, vitepress, jekyll, gitbook"
     )
-    exclude_patterns: Optional[List[str]] = Field(
+    exclude_patterns: list[str] | None = Field(
         default_factory=lambda: ["**/node_modules", "**/dist", "**/vendor", "**/*.log", "**/.git"],
         description="Glob patterns to exclude from documentation analysis",
         max_length=50
     )
-    docs_path: Optional[str] = Field(
+    docs_path: str | None = Field(
         default=None,
         description="Path to documentation directory (relative to project root). If not specified, will be auto-detected",
         min_length=1
     )
-    sources: Optional[List[str]] = Field(
+    sources: list[str] | None = Field(
         default=None,
         description="Source file patterns to track for documentation (e.g., 'src/**/*.py')",
         max_length=50
@@ -208,19 +208,19 @@ class InitializeConfigInput(BaseModel):
 
     @field_validator('docs_path')
     @classmethod
-    def validate_docs_path(cls, v: Optional[str]) -> Optional[str]:
+    def validate_docs_path(cls, v: str | None) -> str | None:
         """Validate docs path using shared validator (FR-001)."""
         return _validate_relative_path(v, field_name="docs_path")
 
     @field_validator('exclude_patterns')
     @classmethod
-    def validate_exclude_patterns(cls, v: Optional[List[str]]) -> Optional[List[str]]:
+    def validate_exclude_patterns(cls, v: list[str] | None) -> list[str] | None:
         """Validate exclude patterns (FR-006, FR-007, FR-008) (T036)."""
         return _validate_pattern_list(v, field_name="exclude_patterns", max_items=50)
 
     @field_validator('sources')
     @classmethod
-    def validate_sources(cls, v: Optional[List[str]]) -> Optional[List[str]]:
+    def validate_sources(cls, v: list[str] | None) -> list[str] | None:
         """Validate source patterns (FR-006, FR-007, FR-008) (T037)."""
         return _validate_pattern_list(v, field_name="sources", max_items=50)
 
@@ -279,11 +279,11 @@ class AssessQualityInput(BaseModel):
         description="Absolute path to project root directory",
         min_length=1
     )
-    docs_path: Optional[str] = Field(
+    docs_path: str | None = Field(
         default=None,
         description="Path to documentation directory relative to project root (e.g., 'docs/', 'documentation/'). If not specified, will be auto-detected"
     )
-    criteria: Optional[List[QualityCriterion]] = Field(
+    criteria: list[QualityCriterion] | None = Field(
         default=None,
         description="Specific criteria to assess. If not specified, all 7 criteria will be assessed"
     )
@@ -305,7 +305,7 @@ class ValidateDocsInput(BaseModel):
         description="Absolute path to project root directory",
         min_length=1
     )
-    docs_path: Optional[str] = Field(
+    docs_path: str | None = Field(
         default=None,
         description="Path to documentation directory relative to project root"
     )
@@ -339,7 +339,7 @@ class MapChangesInput(BaseModel):
         description="Absolute path to project root directory",
         min_length=1
     )
-    since_commit: Optional[str] = Field(
+    since_commit: str | None = Field(
         default=None,
         description="Git commit hash to compare from. If not specified, uses checksums from memory"
     )
@@ -354,7 +354,7 @@ class MapChangesInput(BaseModel):
 
     @field_validator('since_commit')
     @classmethod
-    def validate_commit_hash(cls, v: Optional[str]) -> Optional[str]:
+    def validate_commit_hash(cls, v: str | None) -> str | None:
         """Validate git commit hash format to prevent command injection (FR-002).
 
         Args:
@@ -397,7 +397,7 @@ class TrackDependenciesInput(BaseModel):
         description="Absolute path to project root directory",
         min_length=1
     )
-    docs_path: Optional[str] = Field(
+    docs_path: str | None = Field(
         default=None,
         description="Path to documentation directory (relative to project root). If not specified, will be auto-detected",
         min_length=1
@@ -420,7 +420,7 @@ class BootstrapInput(BaseModel):
         description="Absolute path to project root directory",
         min_length=1
     )
-    platform: Optional[DocumentationPlatform] = Field(
+    platform: DocumentationPlatform | None = Field(
         default=None,
         description="Documentation platform to use. If not specified, will be auto-detected and recommended"
     )
@@ -457,7 +457,7 @@ class MigrateInput(BaseModel):
         description="Path where migrated documentation should be created (relative to project root)",
         min_length=1
     )
-    target_platform: Optional[DocumentationPlatform] = Field(
+    target_platform: DocumentationPlatform | None = Field(
         default=None,
         description="Target platform for migration. If not specified, will preserve existing platform"
     )
@@ -488,7 +488,7 @@ class SyncInput(BaseModel):
         description="Sync mode: 'reactive' (manual trigger) or 'proactive' (auto-detect changes)",
         pattern="^(reactive|proactive)$"
     )
-    docs_path: Optional[str] = Field(
+    docs_path: str | None = Field(
         default=None,
         description="Path to documentation directory (relative to project root). If not specified, will be auto-detected",
         min_length=1
