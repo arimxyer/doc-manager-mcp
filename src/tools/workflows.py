@@ -807,6 +807,9 @@ async def sync(params: SyncInput) -> str:
         lines.append("## Step 2: Affected Documentation")
         lines.append("")
 
+        # Initialize priority lists
+        high_priority: list = []
+
         if not affected_docs:
             lines.append("✓ No documentation impacts detected")
             lines.append("  (Changes only affected tests, infrastructure, or docs themselves)")
@@ -851,6 +854,9 @@ async def sync(params: SyncInput) -> str:
         else:
             docs_path = find_docs_directory(project_path)
 
+        # Initialize validation metrics
+        total_issues: int | None = None
+
         if docs_path and docs_path.exists():
             validation_result = await validate_docs(ValidateDocsInput(
                 project_path=str(project_path),
@@ -877,6 +883,9 @@ async def sync(params: SyncInput) -> str:
         # Step 4: Quality assessment
         lines.append("## Step 4: Quality Assessment")
         lines.append("")
+
+        # Initialize quality metrics
+        overall_score: str | None = None
 
         if docs_path:
             from ..models import AssessQualityInput
@@ -965,8 +974,8 @@ async def sync(params: SyncInput) -> str:
         lines.append(f"**Documentation Impact:** {len(affected_docs)} files affected")
 
         if docs_path:
-            lines.append(f"**Validation Issues:** {total_issues if 'total_issues' in locals() else 'N/A'}")
-            lines.append(f"**Quality Score:** {overall_score if 'overall_score' in locals() else 'N/A'}")
+            lines.append(f"**Validation Issues:** {total_issues if total_issues is not None else 'N/A'}")
+            lines.append(f"**Quality Score:** {overall_score if overall_score is not None else 'N/A'}")
 
         lines.append("")
         lines.append("**Next Steps:**")
@@ -985,8 +994,8 @@ async def sync(params: SyncInput) -> str:
                 "changes": total_changes,
                 "affected_docs": len(affected_docs),
                 "recommendations": [doc["file"] for doc in affected_docs[:10]],
-                "validation_issues": total_issues if 'total_issues' in locals() else None,
-                "quality_score": overall_score if 'overall_score' in locals() else None
+                "validation_issues": total_issues,
+                "quality_score": overall_score
             }, indent=2))
         else:
             return enforce_response_limit("\n".join(lines))
