@@ -1,4 +1,4 @@
-User observations - from testing out the mcp server in pass-cli:\
+User observations - from testing out the mcp server in pass-cli:
 
 Claude code response:
 "doc-manager - Validate Documentation (MCP)(project_path:
