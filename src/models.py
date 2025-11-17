@@ -3,7 +3,7 @@
 import re
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .constants import ChangeDetectionMode, DocumentationPlatform, QualityCriterion
 
@@ -325,8 +325,53 @@ class MapChangesInput(BaseModel):
     )
     mode: ChangeDetectionMode = Field(
         default=ChangeDetectionMode.CHECKSUM,
-        description="Change detection mode: 'checksum' for file hash comparison or 'git_diff' for git-based diff"
+        description="Change detection mode: 'checksum' for file hash comparison or 'git_diff' for git-based diff. Note: use underscore, not hyphen (git_diff, not git-diff)"
     )
+
+    @field_validator('mode', mode='before')
+    @classmethod
+    def validate_mode(cls, v: str | ChangeDetectionMode) -> ChangeDetectionMode:
+        """Validate change detection mode with helpful error messages.
+
+        Args:
+            v: Mode string or enum value
+
+        Returns:
+            Validated ChangeDetectionMode enum
+
+        Raises:
+            ValueError: If mode is invalid, with suggestions for correction
+        """
+        if isinstance(v, ChangeDetectionMode):
+            return v
+
+        # Common mistakes mapping
+        mode_suggestions = {
+            'git': 'git_diff',
+            'git-diff': 'git_diff',
+            'diff': 'git_diff',
+            'git diff': 'git_diff',
+            'hash': 'checksum',
+            'checksums': 'checksum',
+        }
+
+        # Try to match against valid modes
+        try:
+            return ChangeDetectionMode(v)
+        except ValueError:
+            # Provide helpful suggestion if available
+            suggestion = mode_suggestions.get(v.lower() if isinstance(v, str) else v)
+            valid_modes = ', '.join([f"'{m.value}'" for m in ChangeDetectionMode])
+
+            if suggestion:
+                raise ValueError(
+                    f"Invalid mode: '{v}'. Did you mean '{suggestion}'? "
+                    f"Valid modes: {valid_modes}"
+                )
+            else:
+                raise ValueError(
+                    f"Invalid mode: '{v}'. Valid modes: {valid_modes}"
+                )
 
     @field_validator('since_commit')
     @classmethod
@@ -355,10 +400,26 @@ class MapChangesInput(BaseModel):
             raise ValueError(
                 f"Invalid git commit hash format: '{v}'. "
                 f"Expected 7-40 hexadecimal characters (e.g., 'abc1234' or full SHA). "
-                f"This prevents command injection attacks."
+                f"Git refs like 'HEAD~3' are not accepted to prevent command injection attacks."
             )
 
         return v
+
+    @model_validator(mode='after')
+    def validate_mode_requirements(self) -> 'MapChangesInput':
+        """Validate that mode-specific requirements are met.
+
+        Raises:
+            ValueError: If git_diff mode is used without since_commit
+        """
+        if self.mode == ChangeDetectionMode.GIT_DIFF and self.since_commit is None:
+            raise ValueError(
+                "since_commit is required when mode='git_diff'. "
+                "Provide a git commit SHA (e.g., 'abc1234') to compare from. "
+                "Use mode='checksum' if you want to compare against memory baseline instead."
+            )
+
+        return self
 
 class TrackDependenciesInput(BaseModel):
     """Input for tracking code-to-docs dependencies."""

@@ -343,10 +343,9 @@ async def _map_changes_impl(params: MapChangesInput) -> str | dict[str, Any]:
         baseline_info = None
 
         if params.mode == ChangeDetectionMode.GIT_DIFF:
-            # Use git diff
-            since_commit = params.since_commit or "HEAD~1"
-            changed_files = await _get_changed_files_from_git(project_path, since_commit)
-            baseline_info = {"git_commit": since_commit}
+            # Use git diff (since_commit is validated as required by model_validator)
+            changed_files = await _get_changed_files_from_git(project_path, params.since_commit)
+            baseline_info = {"git_commit": params.since_commit}
         else:
             # Use checksum comparison from memory (default: CHECKSUM mode)
             baseline = _load_baseline(project_path)
@@ -380,20 +379,34 @@ async def map_changes(params: MapChangesInput) -> str | dict[str, Any]:
     Args:
         params (MapChangesInput): Validated input parameters containing:
             - project_path (str): Absolute path to project root
-            - since_commit (Optional[str]): Git commit to compare from (uses memory baseline if not specified)
+            - mode (ChangeDetectionMode): Detection mode - either:
+                * 'checksum': Compare file hashes against memory baseline (default)
+                * 'git_diff': Use git diff to detect changes (requires since_commit)
+            - since_commit (Optional[str]): Git commit SHA to compare from (7-40 hex chars)
+                * Required when mode='git_diff'
+                * Ignored when mode='checksum'
+                * Example: 'abc1234' or full SHA
+                * Note: Does not accept git refs like 'HEAD~3' (security: prevents command injection)
             - response_format (ResponseFormat): Output format (markdown or json)
 
     Returns:
         str: Change mapping report with affected documentation
 
     Examples:
-        - Use when: After making code changes
-        - Use when: Before updating documentation
-        - Use when: In CI/CD to detect doc update needs
+        Mode 1 - Checksum comparison (default):
+            - Compares current files against .doc-manager/memory/repo-baseline.json
+            - Run docmgr_initialize_memory first to create baseline
+            - Use when: Tracking changes since last memory snapshot
+
+        Mode 2 - Git diff:
+            - Uses git diff to detect changes since specified commit
+            - Requires since_commit parameter with actual SHA hash
+            - Use when: Comparing against specific git commit
 
     Error Handling:
         - Returns error if project_path doesn't exist
-        - Returns error if no baseline found and no commit specified
+        - Returns error if mode='checksum' and no baseline found
+        - Returns error if mode='git_diff' and since_commit not provided
         - Returns empty change list if no changes detected
         - Raises TimeoutError if operation exceeds OPERATION_TIMEOUT (60s)
     """
