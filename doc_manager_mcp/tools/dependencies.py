@@ -50,6 +50,63 @@ SEMANTIC_COMMAND_PATTERNS = [
     re.compile(r'^#+\s+(?:the\s+)?([a-z][a-z0-9\-]+)\s+(?:command|subcommand|cmd)', re.IGNORECASE | re.MULTILINE),
 ]
 
+# Universal blocklist of common tools that are almost never project-specific
+UNIVERSAL_BLOCKLIST = {
+    'git', 'docker', 'npm', 'yarn', 'pip', 'brew', 'apt', 'yum', 'dnf',
+    'curl', 'wget', 'tar', 'zip', 'unzip', 'ssh', 'scp', 'rsync',
+    'sudo', 'su', 'chmod', 'chown', 'apt-get', 'systemctl', 'service',
+    'ps', 'kill', 'top', 'htop', 'df', 'du', 'mount', 'umount',
+    'make', 'cmake', 'gcc', 'clang', 'javac', 'maven', 'gradle',
+    'python', 'python3', 'node', 'ruby', 'php', 'java', 'go',
+    'bash', 'sh', 'zsh', 'fish', 'powershell', 'cmd',
+}
+
+
+def _detect_project_name(project_path: Path) -> str | None:
+    """Auto-detect the project's CLI command name.
+
+    Detection order:
+    1. .doc-manager.yml config file (project_name field)
+    2. Git repository name
+    3. Parent directory name
+
+    Args:
+        project_path: Path to project root
+
+    Returns:
+        Detected project name or None
+    """
+    # Try .doc-manager.yml config
+    config_path = project_path / '.doc-manager.yml'
+    if config_path.exists():
+        try:
+            import yaml
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+                if config and 'project_name' in config:
+                    return config['project_name']
+        except Exception:
+            pass  # Fail gracefully if yaml not available or file malformed
+
+    # Try git repository name
+    git_dir = project_path / '.git'
+    if git_dir.exists() and git_dir.is_dir():
+        try:
+            # Get remote URL
+            config_file = git_dir / 'config'
+            if config_file.exists():
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    # Extract repo name from URL
+                    match = re.search(r'url = .*/([^/]+?)(?:\.git)?$', content, re.MULTILINE)
+                    if match:
+                        return match.group(1)
+        except Exception:
+            pass
+
+    # Fallback: use directory name
+    return project_path.name
+
 
 def _extract_subcommand(reference: str) -> str | None:
     """Extract subcommand chain from a command reference.
@@ -231,21 +288,24 @@ def _extract_code_references(content: str, doc_file: Path) -> list[dict[str, Any
     return references
 
 
-def _extract_commands_from_code_blocks(content: str, doc_file: Path, indexer: SymbolIndexer | None = None) -> list[dict[str, Any]]:
+def _extract_commands_from_code_blocks(content: str, doc_file: Path, indexer: SymbolIndexer | None = None, project_name: str | None = None) -> list[dict[str, Any]]:
     """Extract command references from fenced code blocks using TreeSitter.
+
+    Only extracts commands matching the project name to reduce noise.
 
     Args:
         content: Documentation file content
         doc_file: Path to documentation file
         indexer: Optional SymbolIndexer with markdown parser
+        project_name: Project CLI name to filter for (e.g., "pass-cli")
 
     Returns:
         List of command references from code blocks
     """
     references = []
 
-    # Skip if TreeSitter not available
-    if not indexer:
+    # Skip if TreeSitter not available or no project name
+    if not indexer or not project_name:
         return references
 
     try:
@@ -293,16 +353,14 @@ def _extract_commands_from_code_blocks(content: str, doc_file: Path, indexer: Sy
                     continue
 
                 command = ' '.join(command_words)
-
-                # Filter out common shell built-ins that aren't CLI commands
-                shell_builtins = {
-                    'cd', 'pwd', 'ls', 'cat', 'echo', 'cp', 'mv', 'rm', 'mkdir',
-                    'touch', 'chmod', 'chown', 'grep', 'find', 'sed', 'awk',
-                    'export', 'source', 'alias', 'unalias', 'set', 'unset'
-                }
-
                 first_word = command_words[0]
-                if first_word in shell_builtins:
+
+                # Skip if first word is in universal blocklist
+                if first_word in UNIVERSAL_BLOCKLIST:
+                    continue
+
+                # Only extract commands that start with the project name
+                if not command.startswith(project_name):
                     continue
 
                 # Add command reference
@@ -476,8 +534,15 @@ def _match_references_to_sources(
     return {k: sorted(v) for k, v in dependencies.items()}
 
 
-def _build_reverse_index(dependencies: dict[str, list[str]], all_references: list[dict[str, Any]] | None = None) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+def _build_reverse_index(dependencies: dict[str, list[str]], all_references: list[dict[str, Any]] | None = None, project_name: str | None = None) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
     """Build reverse indices: code_to_doc (real files) and unmatched_references (strings).
+
+    Filters unmatched_references to only include project-relevant references.
+
+    Args:
+        dependencies: Mapping of doc files to matched source files
+        all_references: All extracted references
+        project_name: Project name for filtering (e.g., "pass-cli")
 
     Returns:
         tuple: (code_to_doc, unmatched_references)
@@ -530,7 +595,7 @@ def _build_reverse_index(dependencies: dict[str, list[str]], all_references: lis
                             matched_ref_pairs.add((doc_file, reference))
                             break
 
-        # Add unmatched references to separate dictionary
+        # Add unmatched references to separate dictionary (filtered)
         for ref in all_references:
             ref_type = ref["type"]
             reference = ref["reference"]
@@ -539,6 +604,14 @@ def _build_reverse_index(dependencies: dict[str, list[str]], all_references: lis
             # For non-file references that weren't matched, add to unmatched_refs
             if ref_type in ["function", "class", "command", "semantic_command", "config_key"]:
                 if (doc_file, reference) not in matched_ref_pairs:
+                    # Filter: Only include project-relevant references
+                    if ref_type == "command" and project_name:
+                        # For commands, only include if it starts with project name
+                        first_word = reference.split()[0] if reference else ""
+                        if first_word in UNIVERSAL_BLOCKLIST or not reference.startswith(project_name):
+                            continue  # Skip blocklisted or non-project commands
+
+                    # Add to unmatched refs
                     if reference not in unmatched_refs:
                         unmatched_refs[reference] = []
                     if doc_file not in unmatched_refs[reference]:
@@ -674,6 +747,10 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
             if not docs_path:
                 return {"error": "Could not find documentation directory. Specify docs_path parameter."}
 
+        # Detect project name for smart command filtering
+        project_name = _detect_project_name(project_path)
+        print(f"Detected project name: {project_name}", file=sys.stderr)
+
         # Find source files and build TreeSitter index FIRST (needed for markdown extraction)
         source_files = _find_source_files(project_path, docs_path)
 
@@ -715,7 +792,7 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
                     all_references.extend(references)
 
                     # Extract commands from fenced code blocks (TreeSitter markdown)
-                    code_block_refs = _extract_commands_from_code_blocks(content, md_file.relative_to(docs_path), symbol_index)
+                    code_block_refs = _extract_commands_from_code_blocks(content, md_file.relative_to(docs_path), symbol_index, project_name)
                     all_references.extend(code_block_refs)
                 except Exception as e:
                     print(f"Warning: Failed to read markdown file {md_file}: {e}", file=sys.stderr)
@@ -725,7 +802,7 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
         dependencies = _match_references_to_sources(all_references, source_files, project_path, symbol_index)
 
         # Build reverse indices: code_to_doc (real files) and unmatched_references (strings)
-        code_to_doc, unmatched_refs = _build_reverse_index(dependencies, all_references)
+        code_to_doc, unmatched_refs = _build_reverse_index(dependencies, all_references, project_name)
 
         # Build reference index (reference text -> docs that mention it)
         reference_index = _build_reference_index(all_references)
