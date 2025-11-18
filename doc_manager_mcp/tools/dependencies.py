@@ -51,6 +51,50 @@ SEMANTIC_COMMAND_PATTERNS = [
 ]
 
 
+def _extract_subcommand(reference: str) -> str | None:
+    """Extract subcommand from a command reference.
+
+    Handles references like:
+    - "pass-cli add github" → "add"
+    - "git commit -m" → "commit"
+    - "docker run --rm" → "run"
+    - "add" → "add"
+
+    Args:
+        reference: Command reference string
+
+    Returns:
+        Subcommand name or None if not found
+    """
+    # Known CLI tool names to skip
+    cli_tools = {
+        "pass-cli", "git", "docker", "npm", "yarn", "pip", "cargo",
+        "go", "node", "python", "python3", "ruby", "php", "java",
+        "kubectl", "helm", "terraform", "ansible", "make", "brew"
+    }
+
+    words = reference.strip().split()
+    if not words:
+        return None
+
+    # Determine starting position (skip CLI tool name if present)
+    start_idx = 1 if words[0] in cli_tools else 0
+
+    # Find first valid subcommand (stop at flags)
+    for i in range(start_idx, len(words)):
+        word = words[i]
+
+        # Stop at flags
+        if word.startswith('-'):
+            break
+
+        # Check if word is a valid subcommand name
+        if re.match(r'^[a-z][a-z0-9\-]*$', word):
+            return word
+
+    return None
+
+
 def _find_markdown_files(docs_path: Path, project_path: Path) -> list[Path]:
     """Find all markdown files in documentation directory.
 
@@ -178,6 +222,94 @@ def _extract_code_references(content: str, doc_file: Path) -> list[dict[str, Any
     return references
 
 
+def _extract_commands_from_code_blocks(content: str, doc_file: Path, indexer: SymbolIndexer | None = None) -> list[dict[str, Any]]:
+    """Extract command references from fenced code blocks using TreeSitter.
+
+    Args:
+        content: Documentation file content
+        doc_file: Path to documentation file
+        indexer: Optional SymbolIndexer with markdown parser
+
+    Returns:
+        List of command references from code blocks
+    """
+    references = []
+
+    # Skip if TreeSitter not available
+    if not indexer:
+        return references
+
+    try:
+        # Extract bash code blocks using TreeSitter markdown parser
+        code_blocks = indexer.extract_bash_code_blocks(content)
+
+        # Parse each code block for commands
+        for block in code_blocks:
+            lines = block.strip().split('\n')
+
+            for line in lines:
+                # Skip comments and empty lines
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+
+                # Remove shell prompts ($ or #)
+                if line.startswith('$ ') or line.startswith('# '):
+                    line = line[2:]
+
+                # Skip variable assignments (export FOO=bar, VAR=value)
+                if re.match(r'^[A-Z_]+=', line):
+                    continue
+
+                # Skip control structures (if, for, while, etc.)
+                if re.match(r'^\s*(if|then|else|elif|fi|for|while|do|done|case|esac)\b', line):
+                    continue
+
+                # Extract command (first word(s) before flags)
+                words = line.split()
+                if not words:
+                    continue
+
+                # Build command string (tool + subcommand, stop at flags)
+                command_words = []
+                for word in words:
+                    if word.startswith('-'):
+                        break
+                    # Stop at pipes, redirects, or other shell operators
+                    if word in ('|', '>', '>>', '<', '&&', '||', ';'):
+                        break
+                    command_words.append(word)
+
+                if not command_words:
+                    continue
+
+                command = ' '.join(command_words)
+
+                # Filter out common shell built-ins that aren't CLI commands
+                shell_builtins = {
+                    'cd', 'pwd', 'ls', 'cat', 'echo', 'cp', 'mv', 'rm', 'mkdir',
+                    'touch', 'chmod', 'chown', 'grep', 'find', 'sed', 'awk',
+                    'export', 'source', 'alias', 'unalias', 'set', 'unset'
+                }
+
+                first_word = command_words[0]
+                if first_word in shell_builtins:
+                    continue
+
+                # Add command reference
+                references.append({
+                    "type": "command",
+                    "reference": command,
+                    "doc_file": str(doc_file)
+                })
+
+    except Exception as e:
+        # Fail gracefully if TreeSitter markdown parsing fails
+        print(f"Warning: Failed to extract code blocks from {doc_file}: {e}", file=sys.stderr)
+
+    return references
+
+
 def _find_source_files(project_path: Path, docs_path: Path) -> list[Path]:
     """Find all source code and configuration files in the project."""
     source_files = []
@@ -299,7 +431,9 @@ def _match_references_to_sources(
 
         # Match command references to CLI source files
         elif ref_type == "command":
-            command_name = reference.split()[0]
+            command_name = _extract_subcommand(reference)
+            if not command_name:
+                continue  # Skip if we couldn't extract a valid subcommand
             for source_file in source_files:
                 relative_path = str(source_file.relative_to(project_path)).replace('\\', '/')
                 # T091: Use precise path matching with path separators to avoid false positives (FR-026)
@@ -531,24 +665,7 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
             if not docs_path:
                 return {"error": "Could not find documentation directory. Specify docs_path parameter."}
 
-        # Find all markdown files
-        markdown_files = _find_markdown_files(docs_path, project_path)
-        all_references = []
-
-        if markdown_files:
-            # Extract references from all docs
-            for md_file in markdown_files:
-                try:
-                    with open(md_file, encoding='utf-8') as f:
-                        content = f.read()
-
-                    references = _extract_code_references(content, md_file.relative_to(docs_path))
-                    all_references.extend(references)
-                except Exception as e:
-                    print(f"Warning: Failed to read markdown file {md_file}: {e}", file=sys.stderr)
-                    continue
-
-        # Find source files
+        # Find source files and build TreeSitter index FIRST (needed for markdown extraction)
         source_files = _find_source_files(project_path, docs_path)
 
         # Build symbol index with TreeSitter for accurate validation
@@ -572,6 +689,28 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
                 "error": str(e)
             }
             print(f"Warning: TreeSitter indexing failed: {e}. Falling back to file-based matching.", file=sys.stderr)
+
+        # Find all markdown files
+        markdown_files = _find_markdown_files(docs_path, project_path)
+        all_references = []
+
+        if markdown_files:
+            # Extract references from all docs (using TreeSitter for code blocks)
+            for md_file in markdown_files:
+                try:
+                    with open(md_file, encoding='utf-8') as f:
+                        content = f.read()
+
+                    # Extract inline references (backticks, prose)
+                    references = _extract_code_references(content, md_file.relative_to(docs_path))
+                    all_references.extend(references)
+
+                    # Extract commands from fenced code blocks (TreeSitter markdown)
+                    code_block_refs = _extract_commands_from_code_blocks(content, md_file.relative_to(docs_path), symbol_index)
+                    all_references.extend(code_block_refs)
+                except Exception as e:
+                    print(f"Warning: Failed to read markdown file {md_file}: {e}", file=sys.stderr)
+                    continue
 
         # Match references to actual source files (with symbol index validation)
         dependencies = _match_references_to_sources(all_references, source_files, project_path, symbol_index)
