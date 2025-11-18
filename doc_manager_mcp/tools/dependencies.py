@@ -52,9 +52,10 @@ SEMANTIC_COMMAND_PATTERNS = [
 
 
 def _extract_subcommand(reference: str) -> str | None:
-    """Extract subcommand from a command reference.
+    """Extract subcommand chain from a command reference.
 
     Handles references like:
+    - "pass-cli vault backup create" → "vault_backup_create"
     - "pass-cli add github" → "add"
     - "git commit -m" → "commit"
     - "docker run --rm" → "run"
@@ -64,7 +65,7 @@ def _extract_subcommand(reference: str) -> str | None:
         reference: Command reference string
 
     Returns:
-        Subcommand name or None if not found
+        Subcommand name (with underscores for multi-word) or None if not found
     """
     # Known CLI tool names to skip
     cli_tools = {
@@ -80,7 +81,8 @@ def _extract_subcommand(reference: str) -> str | None:
     # Determine starting position (skip CLI tool name if present)
     start_idx = 1 if words[0] in cli_tools else 0
 
-    # Find first valid subcommand (stop at flags)
+    # Collect all subcommand words (stop at flags or arguments)
+    subcommands = []
     for i in range(start_idx, len(words)):
         word = words[i]
 
@@ -88,11 +90,18 @@ def _extract_subcommand(reference: str) -> str | None:
         if word.startswith('-'):
             break
 
-        # Check if word is a valid subcommand name
+        # Check if word is a valid subcommand name (lowercase, alphanumeric, hyphens)
         if re.match(r'^[a-z][a-z0-9\-]*$', word):
-            return word
+            subcommands.append(word)
+        else:
+            # Stop at first non-subcommand word (likely an argument)
+            break
 
-    return None
+    if not subcommands:
+        return None
+
+    # Join multi-word subcommands with underscores (e.g., "vault backup create" → "vault_backup_create")
+    return '_'.join(subcommands)
 
 
 def _find_markdown_files(docs_path: Path, project_path: Path) -> list[Path]:
