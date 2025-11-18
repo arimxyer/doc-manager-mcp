@@ -333,23 +333,25 @@ def _match_references_to_sources(
     return {k: sorted(v) for k, v in dependencies.items()}
 
 
-def _build_reverse_index(dependencies: dict[str, list[str]], all_references: list[dict[str, Any]] | None = None) -> dict[str, list[str]]:
-    """Build reverse index: source_file/reference -> [doc_files].
+def _build_reverse_index(dependencies: dict[str, list[str]], all_references: list[dict[str, Any]] | None = None) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    """Build reverse indices: code_to_doc (real files) and unmatched_references (strings).
 
-    For matched references (semantic commands, functions, etc.), they are consolidated
-    under their source file path. Only unmatched references appear as separate entries.
+    Returns:
+        tuple: (code_to_doc, unmatched_references)
+            - code_to_doc: Real source file paths -> [doc_files]
+            - unmatched_references: Unmatched reference strings -> [doc_files]
     """
-    reverse_index = {}
+    code_to_doc = {}
+    unmatched_refs = {}
 
-    # Add matched source files
+    # Add matched source files to code_to_doc
     for doc_file, source_files in dependencies.items():
         for source_file in source_files:
-            if source_file not in reverse_index:
-                reverse_index[source_file] = []
-            reverse_index[source_file].append(doc_file)
+            if source_file not in code_to_doc:
+                code_to_doc[source_file] = []
+            code_to_doc[source_file].append(doc_file)
 
-    # Add only unmatched references as separate entries
-    # Matched semantic commands should only appear under their source file
+    # Separate unmatched references into their own dictionary
     if all_references:
         # Build set of (doc, reference) pairs that resulted in matches
         matched_ref_pairs = set()
@@ -385,21 +387,21 @@ def _build_reverse_index(dependencies: dict[str, list[str]], all_references: lis
                             matched_ref_pairs.add((doc_file, reference))
                             break
 
-        # Add unmatched references as separate entries
+        # Add unmatched references to separate dictionary
         for ref in all_references:
             ref_type = ref["type"]
             reference = ref["reference"]
             doc_file = ref["doc_file"]
 
-            # For non-file references that weren't matched, add as separate entries
+            # For non-file references that weren't matched, add to unmatched_refs
             if ref_type in ["function", "class", "command", "semantic_command", "config_key"]:
                 if (doc_file, reference) not in matched_ref_pairs:
-                    if reference not in reverse_index:
-                        reverse_index[reference] = []
-                    if doc_file not in reverse_index[reference]:
-                        reverse_index[reference].append(doc_file)
+                    if reference not in unmatched_refs:
+                        unmatched_refs[reference] = []
+                    if doc_file not in unmatched_refs[reference]:
+                        unmatched_refs[reference].append(doc_file)
 
-    return reverse_index
+    return code_to_doc, unmatched_refs
 
 
 def _build_reference_index(all_references: list[dict[str, Any]]) -> dict[str, list[str]]:
@@ -419,9 +421,10 @@ def _build_reference_index(all_references: list[dict[str, Any]]) -> dict[str, li
 
 
 def _save_dependencies_to_memory(project_path: Path, dependencies: dict[str, list[str]],
-                                 reverse_index: dict[str, list[str]], all_references: list[dict[str, Any]] | None = None,
+                                 code_to_doc: dict[str, list[str]], unmatched_refs: dict[str, list[str]],
+                                 all_references: list[dict[str, Any]] | None = None,
                                  reference_index: dict[str, list[str]] | None = None):
-    """Save dependency graph to memory directory."""
+    """Save dependency graph to memory directory with separated file and reference mappings."""
     memory_dir = project_path / ".doc-manager"
 
     # Create memory directory if it doesn't exist
@@ -436,7 +439,8 @@ def _save_dependencies_to_memory(project_path: Path, dependencies: dict[str, lis
     data = {
         "generated_at": datetime.now().isoformat(),
         "doc_to_code": dependencies,
-        "code_to_doc": reverse_index
+        "code_to_doc": code_to_doc,  # ✓ ONLY real source files
+        "unmatched_references": unmatched_refs  # ✓ SEPARATED
     }
 
     # Add reference index (reference -> docs that mention it)
@@ -465,17 +469,27 @@ def _save_dependencies_to_memory(project_path: Path, dependencies: dict[str, lis
         print(f"Warning: Failed to save dependencies to {dependency_file}: {e}", file=sys.stderr)
 
 
-def _format_dependency_report(dependencies: dict[str, list[str]], reverse_index: dict[str, list[str]],
-                              total_references: int, all_references: list[dict[str, Any]]) -> dict[str, Any]:
-    """Format dependency tracking report."""
-    return {
+def _format_dependency_report(dependencies: dict[str, list[str]], code_to_doc: dict[str, list[str]],
+                              unmatched_refs: dict[str, list[str]], total_references: int,
+                              all_references: list[dict[str, Any]],
+                              tree_sitter_stats: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Format dependency tracking report with separated file and reference mappings."""
+    report = {
         "generated_at": datetime.now().isoformat(),
         "total_references": total_references,
         "total_doc_files": len(dependencies),
-        "total_source_files": len(reverse_index),
+        "total_source_files": len(code_to_doc),  # ✓ ACCURATE: only real files
+        "total_unmatched_references": len(unmatched_refs),  # ✓ NEW
         "doc_to_code": dependencies,
-        "code_to_doc": reverse_index
+        "code_to_doc": code_to_doc,  # ✓ ONLY real source files
+        "unmatched_references": unmatched_refs  # ✓ SEPARATED
     }
+
+    # Add TreeSitter indexing stats if available
+    if tree_sitter_stats:
+        report["tree_sitter"] = tree_sitter_stats
+
+    return report
 
 
 async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
@@ -539,28 +553,39 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
 
         # Build symbol index with TreeSitter for accurate validation
         symbol_index = None
+        tree_sitter_stats = None
         try:
             indexer = SymbolIndexer()
             indexer.index_project(project_path)
             symbol_index = indexer
-            print(f"Indexed {indexer.get_index_stats()['total_symbols']} symbols from {indexer.get_index_stats()['files_indexed']} files", file=sys.stderr)
+            stats = indexer.get_index_stats()
+            tree_sitter_stats = {
+                "enabled": True,
+                "total_symbols": stats['total_symbols'],
+                "files_indexed": stats['files_indexed'],
+                "by_type": stats['by_type']
+            }
+            print(f"TreeSitter: Indexed {stats['total_symbols']} symbols from {stats['files_indexed']} files", file=sys.stderr)
         except Exception as e:
+            tree_sitter_stats = {
+                "enabled": False,
+                "error": str(e)
+            }
             print(f"Warning: TreeSitter indexing failed: {e}. Falling back to file-based matching.", file=sys.stderr)
 
         # Match references to actual source files (with symbol index validation)
         dependencies = _match_references_to_sources(all_references, source_files, project_path, symbol_index)
 
-        # Build reverse index (source file/reference -> docs)
-        # Includes both matched files and unmatched references
-        reverse_index = _build_reverse_index(dependencies, all_references)
+        # Build reverse indices: code_to_doc (real files) and unmatched_references (strings)
+        code_to_doc, unmatched_refs = _build_reverse_index(dependencies, all_references)
 
         # Build reference index (reference text -> docs that mention it)
         reference_index = _build_reference_index(all_references)
 
         # Save to memory
-        _save_dependencies_to_memory(project_path, dependencies, reverse_index, all_references, reference_index)
+        _save_dependencies_to_memory(project_path, dependencies, code_to_doc, unmatched_refs, all_references, reference_index)
 
-        return _format_dependency_report(dependencies, reverse_index, len(all_references), all_references)
+        return _format_dependency_report(dependencies, code_to_doc, unmatched_refs, len(all_references), all_references, tree_sitter_stats)
 
     except Exception as e:
         return {"error": str(e), "tool": "track_dependencies"}
