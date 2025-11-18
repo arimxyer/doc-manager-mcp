@@ -20,6 +20,7 @@ try:
     js_language = get_language("javascript")
     ts_language = get_language("typescript")
     tsx_language = get_language("tsx")
+    md_language = get_language("markdown")
 
     TREE_SITTER_AVAILABLE = True
 except ImportError:
@@ -29,6 +30,7 @@ except ImportError:
     js_language = None
     ts_language = None
     tsx_language = None
+    md_language = None
     print(
         "Warning: TreeSitter not available. Run: pip install tree-sitter tree-sitter-language-pack",
         file=sys.stderr,
@@ -88,6 +90,7 @@ class SymbolIndexer:
         assert js_language is not None
         assert ts_language is not None
         assert tsx_language is not None
+        assert md_language is not None
 
         self.parsers = {
             "go": self._create_parser(go_language),
@@ -95,6 +98,7 @@ class SymbolIndexer:
             "javascript": self._create_parser(js_language),
             "typescript": self._create_parser(ts_language),
             "tsx": self._create_parser(tsx_language),
+            "markdown": self._create_parser(md_language),
         }
 
         # Symbol index: symbol_name -> list of Symbol objects
@@ -447,3 +451,53 @@ class SymbolIndexer:
             "files_indexed": len(files),
             "by_type": type_counts,
         }
+
+    def extract_bash_code_blocks(self, content: str) -> list[str]:
+        """Extract bash code from fenced code blocks in markdown.
+
+        Args:
+            content: Markdown file content
+
+        Returns:
+            List of code block contents (strings)
+        """
+        if "markdown" not in self.parsers:
+            return []
+
+        # TreeSitter works with bytes - convert once and use throughout
+        source_bytes = content.encode("utf8")
+        tree = self.parsers["markdown"].parse(source_bytes)
+        code_blocks = []
+
+        # Find all fenced code blocks
+        for node in self._find_all_nodes(tree.root_node, "fenced_code_block"):
+            # Check if it's a bash/shell block
+            info_node = self._find_child_by_type(node, "info_string")
+            if info_node:
+                # Extract from bytes, then decode
+                lang = source_bytes[info_node.start_byte:info_node.end_byte].decode("utf8").strip()
+                if lang in ("bash", "sh", "shell", "console"):
+                    # Get the code content
+                    code_node = self._find_child_by_type(node, "code_fence_content")
+                    if code_node:
+                        # Extract from bytes, then decode
+                        code = source_bytes[code_node.start_byte:code_node.end_byte].decode("utf8")
+                        code_blocks.append(code)
+
+        return code_blocks
+
+    def _find_all_nodes(self, node: Any, node_type: str) -> list[Any]:
+        """Recursively find all nodes of a given type."""
+        results = []
+        if node.type == node_type:
+            results.append(node)
+        for child in node.children:
+            results.extend(self._find_all_nodes(child, node_type))
+        return results
+
+    def _find_child_by_type(self, node: Any, child_type: str) -> Any | None:
+        """Find first child node with given type."""
+        for child in node.children:
+            if child.type == child_type:
+                return child
+        return None
