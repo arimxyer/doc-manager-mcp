@@ -307,6 +307,14 @@ class ValidateDocsInput(BaseModel):
         default=True,
         description="Extract and validate code snippets"
     )
+    validate_code_syntax: bool = Field(
+        default=False,
+        description="Validate code example syntax using TreeSitter (semantic validation)"
+    )
+    validate_symbols: bool = Field(
+        default=False,
+        description="Validate that documented symbols (functions/classes) exist in codebase"
+    )
 
 class MapChangesInput(BaseModel):
     """Input for mapping code changes to documentation."""

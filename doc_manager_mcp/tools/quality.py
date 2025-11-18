@@ -10,6 +10,13 @@ from ..constants import QualityCriterion
 from ..indexing.markdown_parser import MarkdownParser
 from ..models import AssessQualityInput
 from ..utils import enforce_response_limit, find_docs_directory, handle_error
+from .quality_helpers import (
+    check_heading_case_consistency,
+    check_list_formatting_consistency,
+    calculate_documentation_coverage,
+    detect_multiple_h1s,
+    detect_undocumented_apis,
+)
 
 
 def _find_markdown_files(docs_path: Path) -> list[Path]:
@@ -108,7 +115,7 @@ def _assess_relevance(docs_path: Path, markdown_files: list[Path]) -> dict[str, 
     }
 
 
-def _assess_accuracy(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
+def _assess_accuracy(project_path: Path, docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if documentation reflects actual codebase and system behavior."""
     issues = []
     findings = []
@@ -147,9 +154,27 @@ def _assess_accuracy(docs_path: Path, markdown_files: list[Path]) -> dict[str, A
             "message": "No code examples found - consider adding concrete examples"
         })
 
-    # Note: Full accuracy validation requires running code examples
-    # This is a simplified assessment
-    score = "good" if total_code_blocks > 0 else "fair"
+    # Calculate documentation coverage
+    coverage_data = calculate_documentation_coverage(project_path, docs_path)
+    coverage_pct = coverage_data.get("coverage_percentage", 0.0)
+
+    if coverage_pct > 0:
+        findings.append(f"API documentation coverage: {coverage_pct}% ({coverage_data['documented_symbols']}/{coverage_data['total_symbols']} public symbols)")
+
+        if coverage_pct < 50:
+            issues.append({
+                "severity": "warning",
+                "message": f"Low API documentation coverage ({coverage_pct}%) - many public symbols are undocumented"
+            })
+        elif coverage_pct < 80:
+            findings.append("API documentation coverage could be improved")
+
+    # Calculate score based on both code examples and API coverage
+    score = "good"
+    if total_code_blocks == 0 or coverage_pct < 50:
+        score = "fair"
+    elif coverage_pct >= 80 and total_code_blocks > 10:
+        score = "excellent"
 
     return {
         "criterion": "accuracy",
@@ -159,7 +184,8 @@ def _assess_accuracy(docs_path: Path, markdown_files: list[Path]) -> dict[str, A
         "metrics": {
             "total_code_blocks": total_code_blocks,
             "files_with_code": files_with_code,
-            "languages": list(code_blocks_by_lang.keys())
+            "languages": list(code_blocks_by_lang.keys()),
+            "api_coverage": coverage_data
         },
         "note": "Full accuracy assessment requires executing code examples and validating outputs"
     }
@@ -472,6 +498,9 @@ def _assess_structure(docs_path: Path, markdown_files: list[Path]) -> dict[str, 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
 
+    # Check for multiple H1s using helper function
+    multiple_h1_issues = detect_multiple_h1s(docs_path)
+
     if heading_issues > 0:
         issues.append({
             "severity": "warning",
@@ -484,10 +513,18 @@ def _assess_structure(docs_path: Path, markdown_files: list[Path]) -> dict[str, 
             "message": f"Maximum heading depth is H{max_heading_depth} - consider restructuring deeply nested content"
         })
 
+    if multiple_h1_issues:
+        issues.append({
+            "severity": "warning",
+            "message": f"{len(multiple_h1_issues)} files have incorrect number of H1 headers (should be exactly 1)"
+        })
+
     findings.append(f"Maximum heading depth: H{max_heading_depth}")
     findings.append(f"Files organized in {len(subdirs)} subdirectories")
 
-    score = "good" if heading_issues < 3 and max_heading_depth <= 4 else "fair"
+    # Adjust score based on H1 issues
+    score_penalty = len(multiple_h1_issues) > 0
+    score = "good" if heading_issues < 3 and max_heading_depth <= 4 and not score_penalty else "fair"
 
     return {
         "criterion": "structure",
@@ -498,24 +535,53 @@ def _assess_structure(docs_path: Path, markdown_files: list[Path]) -> dict[str, 
             "subdirectories": len(subdirs),
             "max_heading_depth": max_heading_depth,
             "files_with_hierarchy_issues": heading_issues
-        }
+        },
+        "multiple_h1_issues": multiple_h1_issues
     }
 
 
-def _format_quality_report(results: list[dict[str, Any]]) -> dict[str, Any]:
+def _format_quality_report(
+    results: list[dict[str, Any]],
+    undocumented_apis: list[dict[str, Any]] | None = None,
+    coverage_data: dict[str, Any] | None = None,
+    list_formatting: dict[str, Any] | None = None,
+    heading_case: dict[str, Any] | None = None
+) -> dict[str, Any]:
     """Format quality assessment report."""
-    return {
+    report = {
         "assessed_at": datetime.now().isoformat(),
-        "overall_score": _calculate_overall_score(results),
+        "overall_score": _calculate_overall_score(results, coverage_data),
         "criteria": results
     }
 
-def _calculate_overall_score(results: list[dict[str, Any]]) -> str:
-    """Calculate overall quality score from individual criteria."""
+    # Add documentation coverage if provided
+    if coverage_data is not None:
+        report["coverage"] = coverage_data
+
+    # Add undocumented APIs if provided
+    if undocumented_apis is not None:
+        report["undocumented_apis"] = {
+            "count": len(undocumented_apis),
+            "symbols": undocumented_apis[:50]  # Limit to first 50 for readability
+        }
+
+    # Add list formatting consistency if provided
+    if list_formatting is not None:
+        report["list_formatting"] = list_formatting
+
+    # Add heading case consistency if provided
+    if heading_case is not None:
+        report["heading_case"] = heading_case
+
+    return report
+
+def _calculate_overall_score(results: list[dict[str, Any]], coverage_data: dict[str, Any] | None = None) -> str:
+    """Calculate overall quality score from individual criteria and coverage."""
     score_values = {'excellent': 4, 'good': 3, 'fair': 2, 'poor': 1}
 
     # Validate and sum scores with explicit logging for invalid values
     total = 0
+    count = 0
     for r in results:
         score = r.get('score', '')
         if score not in score_values:
@@ -524,8 +590,26 @@ def _calculate_overall_score(results: list[dict[str, Any]]) -> str:
             total += 2
         else:
             total += score_values[score]
+        count += 1
 
-    avg = total / len(results) if results else 2
+    # Factor in coverage percentage if available
+    if coverage_data and 'coverage_percentage' in coverage_data:
+        coverage_pct = coverage_data['coverage_percentage']
+        # Map coverage percentage to score (0-100% -> 1-4)
+        # <30%: poor (1), 30-50%: fair (2), 50-75%: good (3), >75%: excellent (4)
+        if coverage_pct >= 75:
+            coverage_score = 4
+        elif coverage_pct >= 50:
+            coverage_score = 3
+        elif coverage_pct >= 30:
+            coverage_score = 2
+        else:
+            coverage_score = 1
+
+        total += coverage_score
+        count += 1
+
+    avg = total / count if count > 0 else 2
 
     if avg >= 3.5:
         return "excellent"
@@ -610,7 +694,7 @@ async def assess_quality(params: AssessQualityInput) -> str | dict[str, Any]:
             if criterion == QualityCriterion.RELEVANCE:
                 results.append(_assess_relevance(docs_path, markdown_files))
             elif criterion == QualityCriterion.ACCURACY:
-                results.append(_assess_accuracy(docs_path, markdown_files))
+                results.append(_assess_accuracy(project_path, docs_path, markdown_files))
             elif criterion == QualityCriterion.PURPOSEFULNESS:
                 results.append(_assess_purposefulness(docs_path, markdown_files))
             elif criterion == QualityCriterion.UNIQUENESS:
@@ -622,7 +706,23 @@ async def assess_quality(params: AssessQualityInput) -> str | dict[str, Any]:
             elif criterion == QualityCriterion.STRUCTURE:
                 results.append(_assess_structure(docs_path, markdown_files))
 
-        return enforce_response_limit(_format_quality_report(results))
+        # Calculate documentation coverage
+        coverage_data = calculate_documentation_coverage(project_path, docs_path)
+
+        # Detect undocumented APIs
+        undocumented_apis = detect_undocumented_apis(project_path, docs_path)
+
+        # Check formatting consistency
+        list_formatting = check_list_formatting_consistency(docs_path)
+        heading_case = check_heading_case_consistency(docs_path)
+
+        return enforce_response_limit(_format_quality_report(
+            results,
+            undocumented_apis,
+            coverage_data,
+            list_formatting,
+            heading_case
+        ))
 
     except Exception as e:
         return enforce_response_limit(handle_error(e, "assess_quality"))

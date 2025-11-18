@@ -9,6 +9,7 @@ from typing import Any
 from ..constants import MAX_FILES
 from ..indexing.code_validator import CodeValidator
 from ..indexing.markdown_parser import MarkdownParser
+from ..indexing.tree_sitter import SymbolIndexer
 from ..models import ValidateDocsInput
 from ..utils import (
     enforce_response_limit,
@@ -16,6 +17,7 @@ from ..utils import (
     handle_error,
     safe_resolve,
 )
+from .validation_helpers import validate_code_examples, validate_documented_symbols
 
 
 def _find_markdown_files(docs_path: Path) -> list[Path]:
@@ -321,6 +323,95 @@ def _validate_code_snippets(docs_path: Path) -> list[dict[str, Any]]:
     return issues
 
 
+def _validate_code_syntax(docs_path: Path) -> list[dict[str, Any]]:
+    """Validate code example syntax using TreeSitter (semantic validation)."""
+    issues = []
+    markdown_files = _find_markdown_files(docs_path)
+
+    for md_file in markdown_files:
+        try:
+            with open(md_file, encoding='utf-8') as f:
+                content = f.read()
+
+            # Use validation_helpers function for code example validation
+            file_issues = validate_code_examples(content, md_file, docs_path)
+            issues.extend(file_issues)
+
+        except Exception as e:
+            issues.append({
+                "type": "read_error",
+                "severity": "error",
+                "file": str(md_file.relative_to(docs_path)),
+                "line": 1,
+                "message": f"Failed to read file: {e!s}"
+            })
+
+    return issues
+
+
+def _validate_code_syntax(docs_path: Path, project_path: Path) -> list[dict[str, Any]]:
+    """Validate code example syntax using TreeSitter (semantic validation)."""
+    issues = []
+    markdown_files = _find_markdown_files(docs_path)
+
+    for md_file in markdown_files:
+        try:
+            with open(md_file, encoding='utf-8') as f:
+                content = f.read()
+
+            # Use validation_helpers function
+            file_issues = validate_code_examples(content, md_file, project_path)
+            issues.extend(file_issues)
+
+        except Exception as e:
+            issues.append({
+                "type": "read_error",
+                "severity": "error",
+                "file": str(md_file.relative_to(docs_path)),
+                "line": 1,
+                "message": f"Failed to read file: {e!s}"
+            })
+
+    return issues
+
+
+def _validate_symbols(docs_path: Path, project_path: Path, symbol_index=None) -> list[dict[str, Any]]:
+    """Validate that documented symbols exist in codebase."""
+    issues = []
+    markdown_files = _find_markdown_files(docs_path)
+
+    # Build symbol index once if not provided
+    if symbol_index is None:
+        try:
+            indexer = SymbolIndexer()
+            indexer.index_project(project_path)
+            symbol_index = indexer.index
+        except Exception as e:
+            # TreeSitter not available or indexing failed
+            print(f"Warning: Symbol indexing failed: {e}", file=sys.stderr)
+            return []
+
+    for md_file in markdown_files:
+        try:
+            with open(md_file, encoding='utf-8') as f:
+                content = f.read()
+
+            # Use validation_helpers function
+            file_issues = validate_documented_symbols(content, md_file, project_path, symbol_index)
+            issues.extend(file_issues)
+
+        except Exception as e:
+            issues.append({
+                "type": "read_error",
+                "severity": "error",
+                "file": str(md_file.relative_to(docs_path)),
+                "line": 1,
+                "message": f"Failed to read file: {e!s}"
+            })
+
+    return issues
+
+
 def _format_validation_report(issues: list[dict[str, Any]]) -> dict[str, Any]:
     """Format validation report as structured data."""
     return {
@@ -360,6 +451,8 @@ async def validate_docs(params: ValidateDocsInput) -> str | dict[str, Any]:
     1. Broken Links - Checks internal markdown and HTML links
     2. Asset Validation - Verifies images exist and have alt text
     3. Code Snippet Validation - Basic syntax checking for code blocks
+    4. Code Syntax Validation - TreeSitter-based semantic validation (optional)
+    5. Symbol Validation - Verify documented symbols exist in codebase (optional)
 
     Args:
         params (ValidateDocsInput): Validated input parameters containing:
@@ -368,6 +461,8 @@ async def validate_docs(params: ValidateDocsInput) -> str | dict[str, Any]:
             - check_links (bool): Enable link validation (default: True)
             - check_assets (bool): Enable asset validation (default: True)
             - check_snippets (bool): Enable code snippet validation (default: True)
+            - validate_code_syntax (bool): Enable TreeSitter syntax validation (default: False)
+            - validate_symbols (bool): Validate documented symbols exist (default: False)
             - response_format (ResponseFormat): Output format (markdown or json)
 
     Returns:
@@ -416,6 +511,14 @@ async def validate_docs(params: ValidateDocsInput) -> str | dict[str, Any]:
         if params.check_snippets:
             snippet_issues = _validate_code_snippets(docs_path)
             all_issues.extend(snippet_issues)
+
+        if params.validate_code_syntax:
+            syntax_issues = _validate_code_syntax(docs_path, project_path)
+            all_issues.extend(syntax_issues)
+
+        if params.validate_symbols:
+            symbol_issues = _validate_symbols(docs_path, project_path)
+            all_issues.extend(symbol_issues)
 
         return enforce_response_limit(_format_validation_report(all_issues))
 
