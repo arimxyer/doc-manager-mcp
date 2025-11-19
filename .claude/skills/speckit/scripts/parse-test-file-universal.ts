@@ -64,7 +64,7 @@ interface TestMetadata {
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const FILE_PATH = args.find(arg => !arg.startsWith('--'));
+const FILE_PATH = args.find(arg => !arg.startsWith('--')) as string;
 const JSON_MODE = args.includes('--json');
 
 if (!FILE_PATH) {
@@ -205,7 +205,7 @@ async function main() {
   try {
     const results = await parseTestFile(FILE_PATH);
 
-    if (JSON_MODE || true) {  // Always output JSON for consistency
+    if (JSON_MODE) {
       console.log(JSON.stringify(results, null, 2));
     } else {
       console.log(`Found ${results.length} tests in ${FILE_PATH}`);

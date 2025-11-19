@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch"
+  },
   "dependencies": {
     "glob": "^11.0.3",
     "tree-sitter-go": "^0.25.0",
