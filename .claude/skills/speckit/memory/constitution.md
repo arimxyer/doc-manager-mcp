@@ -1,36 +1,45 @@
 <!--
-Sync Impact Report - Constitution v1.0.0
+Sync Impact Report - Constitution v1.2.0
 ========================================
 
-Version Change: N/A → 1.0.0 (Initial ratification)
-Date: 2025-11-14
+Version Change: 1.1.0 → 1.2.0
+Date: 2025-11-19
 
 Modified Principles:
-- N/A (initial creation)
+- Principle IV: Comprehensive Testing Following TDD Principles
+  - Clarified TDD wording: "failing tests" → "tests before implementation (TDD red-green-refactor cycle)"
+  - Removed "when applicable" from Development Workflow (line 201) to enforce NON-NEGOTIABLE status
+  - Expanded with 5 subsections: TDD, Test Pyramid Distribution, Test Metadata and Registry, Test Retirement, Quality Gates
+  - Added test registry integration (validate, scan, bootstrap commands)
+  - Added pyramid health enforcement (HEALTHY/WARN/CRITICAL states)
+  - Added test retirement workflow (retire AFTER replacement, common triggers)
+  - Clarified metadata tags: @spec required, others optional with specific purposes
+  - Added quality gates (block phase completion on validation failure, CRITICAL pyramid status)
 
 Added Sections:
-- Core Principles (7 principles: Accuracy/Transparency, Specification Adherence, Fail-Fast Error Handling, Comprehensive Testing, Security First, Frequent Commits, Architectural Integrity)
-- Quality Standards (Code, Performance, Documentation)
-- Development Workflow (Pre-Implementation, During Implementation, Post-Implementation)
-- Governance (Constitution Authority, Compliance, Amendment Process)
+- Principle IV subsections: TDD, Test Pyramid Distribution, Test Metadata and Registry, Test Retirement, Quality Gates
 
 Removed Sections:
-- N/A (initial creation)
+- None
 
 Template Consistency Validation:
-✅ plan-template.md - Constitution Check section (line 32) can derive gates from principles
-✅ spec-template.md - Success criteria align with test coverage requirements (SC-005)
-✅ tasks-template.md - Test pyramid targets (70/20/10) match Principle IV requirement
-✅ references/*.md - No agent-specific names found requiring generic guidance
+✅ plan-template.md - Constitution Check section can derive test registry gates from Principle IV
+✅ spec-template.md - Success criteria align with 70/20/10 pyramid and quality gates (SC-005)
+✅ tasks-template.md - Test pyramid targets match expanded Principle IV requirements
+✅ speckit.testing.md - All test registry commands, retirement workflow, and pyramid enforcement now codified in constitution
 
 Follow-up TODOs:
-- None - all placeholders filled
+- ✅ Updated speckit.plan.md (reference workflow) to include quality gates and TDD red-green-refactor terminology
+- ✅ Updated speckit.tasks.md (reference workflow) to include quality gate checkpoint tasks and blocking conditions
+- ✅ Updated speckit.specify.md (reference workflow) to include test registry validation in success criteria examples
 
-Rationale for v1.0.0:
-- Initial constitution created from CLAUDE.md project instructions and established patterns
-- Codifies existing practices: fail-fast error handling, specification adherence, test-driven development
-- Establishes NON-NEGOTIABLE principles for production-ready development
-- Provides governance framework for future amendments
+Rationale for v1.2.0:
+- Bridges gap between constitution and comprehensive testing workflow (speckit.testing.md)
+- Codifies test registry as mandatory infrastructure (not optional tooling)
+- Enforces pyramid health through quality gates (prevents inverted pyramids)
+- Establishes test retirement as continuous practice (prevents test bloat)
+- Clarifies metadata tag requirements (reduces ambiguity about "MUST tag all tests")
+- Aligns TDD workflow terminology with industry standard (red-green-refactor)
 -->
 
 # doc-manager MCP Server Constitution
@@ -95,19 +104,67 @@ All errors **MUST** be explicit and prevent silent failures.
 
 **Rationale**: Silent failures corrupt data, mislead users, and make debugging impossible. Explicit errors enable quick diagnosis and fix.
 
-### IV. Comprehensive Testing (NON-NEGOTIABLE)
+### IV. Comprehensive Testing Following TDD Principles (NON-NEGOTIABLE)
 
 All new code **MUST** have tests before being merged.
 
-- **Test Pyramid**: 70% unit, 20% integration, 10% e2e
-- **MUST** write tests for all new functions and classes
-- **MUST** achieve 100% test pass rate before merging
-- **MUST** include edge case and error path testing
-- **MUST** tag all tests with metadata (@spec, @testType, @mockDependent)
-- **MUST** update tests when changing functionality
-- **SHOULD** use test-driven development (tests before implementation)
+#### Test-Driven Development (TDD)
 
-**Rationale**: Tests are the safety net that enables confident refactoring and prevents regressions.
+- **MUST** write tests before implementation (TDD red-green-refactor cycle)
+- **MUST** write tests for all newly defined functions and classes before implementing them
+- **MUST** cover all acceptance criteria with tests
+- **MUST** achieve 100% test pass rate before moving onto the next phase and marking tasks complete in a phase section
+- **MUST** achieve 100% test pass rate before marking the entire spec complete
+- **MUST** include edge case and error path testing
+- **MUST** update tests when changing functionality
+
+#### Test Pyramid Distribution
+
+- **Target Ratio**: 70% unit, 20% integration, 10% e2e
+- **MUST** maintain pyramid health (HEALTHY status: ±10% of targets)
+- **MUST** address WARN status (inverted pyramid) before phase completion
+- **MUST** block phase completion if pyramid status is CRITICAL (e2e >20%)
+- **SHOULD** add unit tests or retire excessive integration/e2e tests to fix pyramid
+
+#### Test Metadata and Registry
+
+- **MUST** tag all tests with @spec number (required for test registry tracking)
+- **SHOULD** use optional tags when applicable:
+  - @testType (unit|integration|e2e) - only if path inference incorrect
+  - @mockDependent - flags tests using mocks (retirement candidates)
+  - @slow - tests taking >1 second (optimization candidates)
+  - @retirementCandidate - explicitly marks for planned removal
+  - @contractTest - API contract tests (affected by API changes)
+  - @userStory, @functionalReq - traceability tags
+- **MUST** run `test-registry.sh validate` before marking phase complete
+- **MUST** run `test-registry.sh scan` after adding/retiring tests to update registry
+- **MUST** bootstrap existing tests before planning in brownfield projects:
+  ```bash
+  test-registry.sh bootstrap --spec <number>
+  ```
+
+#### Test Retirement
+
+- **MUST** retire obsolete tests when replacement coverage exists
+- **MUST** retire tests AFTER replacement works, never before
+- **SHOULD** retire in same phase that makes tests obsolete
+- **MUST** document retirement reason in commit message
+- **Common retirement triggers**:
+  - @mockDependent tests after migrating to real dependencies
+  - @slow tests replaced with faster alternatives
+  - @contractTest tests for deprecated API versions
+  - Duplicate coverage or deprecated features
+
+#### Quality Gates
+
+- **MUST** block phase completion if:
+  - Test validation fails (`test-registry.sh validate`)
+  - Pyramid status is CRITICAL
+  - Test pass rate <100%
+  - New tests missing @spec tags
+- **SHOULD** block if pyramid status degrades from HEALTHY to WARN
+
+**Rationale**: Tests are the safety net that enables confident refactoring and prevents regressions. The test pyramid ensures fast, reliable test suites. Test retirement prevents bloat and maintenance burden.
 
 ### V. Security First
 
@@ -196,7 +253,7 @@ Architectural layers **MUST** never be mixed.
 
 ### During Implementation
 
-1. Write tests first (TDD) when possible
+1. Write tests first (TDD)
 2. Implement feature following spec exactly
 3. Run tests frequently
 4. Commit after each task
@@ -234,4 +291,4 @@ Architectural layers **MUST** never be mixed.
 4. Document migration path for existing code
 5. Ratify with user approval
 
-**Version**: 1.0.0 | **Ratified**: 2025-11-14 | **Last Amended**: 2025-11-14
+**Version**: 1.2.0 | **Ratified**: 2025-11-19 | **Last Amended**: 2025-11-19

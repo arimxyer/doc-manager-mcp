@@ -169,6 +169,16 @@ Every task MUST strictly follow this format:
 - Example retirement filters: `@slow` (e2e tests), `@mockDependent` (integration tests)
 
 **Test Task Placement**:
-- Unit tests: Early in story phase (enable TDD)
+- Unit tests: Early in story phase (enable TDD red-green-refactor cycle)
 - Integration tests: After unit tests, before full integration
 - E2E tests: Near end of story phase (validate complete flow)
+
+**Quality Gate Tasks** (per Constitution Principle IV):
+- After test tasks in each phase: Add validation checkpoint task
+  - Example: `- [ ] T050 [US1] Run test-registry.sh validate to verify @spec tags`
+  - Example: `- [ ] T051 [US1] Run test-registry.sh scan and verify pyramid health (HEALTHY status)`
+- Block phase completion if:
+  - Pyramid status is CRITICAL (e2e >20%)
+  - Test pass rate <100%
+  - New tests missing @spec tags
+  - Pyramid degrades from HEALTHY to WARN (SHOULD block)
