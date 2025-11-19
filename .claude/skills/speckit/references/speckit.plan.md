@@ -29,7 +29,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Run `scripts/test-registry.sh export-for-plan --json` from repo root
    - Parse JSON output for existingTests totals and pyramid status
    - Check orphanedTests count:
-     - If > 0: Note "Found [N] untagged tests. Consider running: test-registry.sh bootstrap --spec <number>"
+     - If > 0: Note "Found [N] untagged tests. Consider running: test-registry.sh bootstrap --spec <identifier>"
      - Brownfield projects benefit from bootstrap before planning
 
 5. **Document testing strategy**: Fill the "Testing Strategy" section in plan.md:
@@ -43,7 +43,7 @@ You **MUST** consider the user input before proceeding (if not empty).
      - MUST run `test-registry.sh scan` after adding/retiring tests
      - MUST block phase completion if pyramid status is CRITICAL or test pass rate <100%
      - SHOULD block if pyramid degrades from HEALTHY to WARN
-     - For brownfield: MUST bootstrap before planning (`test-registry.sh bootstrap --spec <number>`)
+     - For brownfield: MUST bootstrap before planning (`test-registry.sh bootstrap --spec <identifier>`)
    - **TDD Workflow**: Remind that tests must be written first (red-green-refactor cycle) per Constitution Principle IV
 
 6. **Execute plan workflow**: Follow the structure in IMPL_PLAN template to:
