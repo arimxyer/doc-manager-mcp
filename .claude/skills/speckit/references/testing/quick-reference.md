@@ -21,7 +21,7 @@ Quick reference for test registry commands and metadata tags. For comprehensive 
 
 ```bash
 # Auto-tag existing untagged tests
-.claude/skills/speckit/scripts/test-registry.sh bootstrap --spec 001
+.claude/skills/speckit/scripts/test-registry.sh bootstrap --spec 001-production-readiness
 ```
 
 ### Daily Workflow
@@ -34,7 +34,7 @@ Quick reference for test registry commands and metadata tags. For comprehensive 
 .claude/skills/speckit/scripts/test-registry.sh report
 
 # Query tests for spec
-.claude/skills/speckit/scripts/test-registry.sh spec 001
+.claude/skills/speckit/scripts/test-registry.sh spec 001-production-readiness
 
 # Validate all tests have @spec tags
 .claude/skills/speckit/scripts/test-registry.sh validate
@@ -55,9 +55,9 @@ Quick reference for test registry commands and metadata tags. For comprehensive 
 ### Required
 
 ```python
-# Python (zero-padded 001-999)
+# Python (kebab-case format: 001-spec-name)
 """
-@spec 001
+@spec 001-production-readiness
 """
 def test_feature():
     pass
@@ -66,20 +66,20 @@ def test_feature():
 ```javascript
 // JavaScript/TypeScript
 /**
- * @spec 001
+ * @spec 001-production-readiness
  */
 it('tests feature', () => {});
 ```
 
 ```go
 // Go
-// @spec 001
+// @spec 001-production-readiness
 func TestFeature(t *testing.T) {}
 ```
 
 ```rust
 // Rust
-/// @spec 001
+/// @spec 001-production-readiness
 #[test]
 fn test_feature() {}
 ```
@@ -88,7 +88,7 @@ fn test_feature() {}
 
 ```python
 """
-@spec 001
+@spec 001-production-readiness
 @testType integration          # Override path-based inference
 @userStory US1                 # Link to user story
 @functionalReq FR-031          # Link to functional requirement
@@ -117,7 +117,7 @@ Tests are auto-classified by path if no `@testType` tag:
 
 | Issue | Solution |
 |-------|----------|
-| "Found N untagged tests" | Run `test-registry.sh bootstrap --spec 001` |
+| "Found N untagged tests" | Run `test-registry.sh bootstrap --spec 001-production-readiness` |
 | "Pyramid Status: WARN" | Add unit tests OR retire excessive integration/e2e |
 | "OrphanedTests: N" | Run `test-registry.sh bootstrap` or add @spec tags manually |
 | "Validate failed" | Add @spec tags to failing tests, then `scan` |

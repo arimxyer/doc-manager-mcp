@@ -62,12 +62,12 @@ All tests must be tagged with metadata for registry tracking. See `testing/metad
 
 ### Required Tags
 
-**@spec <number>**: Links test to specification (zero-padded 001-999)
+**@spec <number-name>**: Links test to specification (kebab-case format: 001-production-readiness)
 
 ```python
 # Python
 """
-@spec 001
+@spec 001-production-readiness
 """
 def test_user_authentication():
     assert authenticate("user", "password") == True
@@ -76,7 +76,7 @@ def test_user_authentication():
 ```javascript
 // JavaScript/TypeScript
 /**
- * @spec 001
+ * @spec 001-production-readiness
  */
 it('authenticates users', () => {
   expect(authenticate('user', 'password')).toBe(true);
@@ -85,7 +85,7 @@ it('authenticates users', () => {
 
 ```go
 // Go
-// @spec 001
+// @spec 001-production-readiness
 func TestUserAuthentication(t *testing.T) {
     result := Authenticate("user", "password")
     assert.True(t, result)
@@ -94,7 +94,7 @@ func TestUserAuthentication(t *testing.T) {
 
 ```rust
 // Rust
-/// @spec 001
+/// @spec 001-production-readiness
 #[test]
 fn test_user_authentication() {
     assert_eq!(authenticate("user", "password"), true);
@@ -107,7 +107,7 @@ fn test_user_authentication() {
 
 ```python
 """
-@spec 001
+@spec 001-production-readiness
 @testType integration
 """
 def test_database_connection():
@@ -119,7 +119,7 @@ def test_database_connection():
 
 ```python
 """
-@spec 001
+@spec 001-production-readiness
 @userStory US1
 @functionalReq FR-031
 """
@@ -132,7 +132,7 @@ def test_user_registration():
 
 ```python
 """
-@spec 001
+@spec 001-production-readiness
 @mockDependent
 """
 def test_api_call_with_mock():
@@ -146,7 +146,7 @@ def test_api_call_with_mock():
 
 ```python
 """
-@spec 001
+@spec 001-production-readiness
 @slow
 """
 async def test_large_dataset_processing():
@@ -173,7 +173,7 @@ test-registry.sh init
 
 ```bash
 # Detect and tag existing untagged tests
-test-registry.sh bootstrap --spec 001
+test-registry.sh bootstrap --spec 001-production-readiness
 
 # Workflow:
 # 1. Scans for untagged tests (specNumber: null)
@@ -210,10 +210,10 @@ test-registry.sh report --json
 
 ```bash
 # Show all tests for specific spec
-test-registry.sh spec 001
+test-registry.sh spec 001-production-readiness
 
 # JSON output
-test-registry.sh spec 001 --json
+test-registry.sh spec 001-production-readiness --json
 ```
 
 ### Find Retirement Candidates
@@ -380,7 +380,7 @@ def test_user_repository_save():
 ```python
 # Always include @spec when creating test
 """
-@spec 001
+@spec 001-production-readiness
 @testType unit
 """
 def test_new_feature():
@@ -390,7 +390,7 @@ def test_new_feature():
 **Pattern 3: Bootstrap before planning**
 ```bash
 # Brownfield project - tag existing tests first
-test-registry.sh bootstrap --spec 001
+test-registry.sh bootstrap --spec 001-production-readiness
 test-registry.sh scan
 # Now plan with accurate baseline
 ```
@@ -460,7 +460,7 @@ def test_something():
 
 ```bash
 # Solution: Bootstrap
-test-registry.sh bootstrap --spec 001
+test-registry.sh bootstrap --spec 001-production-readiness
 ```
 
 ### "Pyramid Status: WARN"
@@ -480,7 +480,7 @@ test-registry.sh retire --filter slow
 ```bash
 # Tests missing @spec tags
 # Solution: Run bootstrap or manually add tags
-test-registry.sh bootstrap --spec 001
+test-registry.sh bootstrap --spec 001-production-readiness
 ```
 
 ### "Validate failed: 10 tests missing @spec"

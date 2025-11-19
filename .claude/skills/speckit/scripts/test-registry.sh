@@ -45,7 +45,7 @@ COMMANDS:
     bootstrap [--spec NUM] [--yes] Auto-tag existing tests (brownfield projects)
     scan                           Scan codebase and update test registry
     report                         Show pyramid metrics, health, and issues
-    spec <number>                  Show tests for specific spec (e.g., spec 001)
+    spec <identifier>              Show tests for specific spec (e.g., spec 001-production-readiness)
     retire [--filter TAG]          List retirement candidate tests
     validate                       Validate all tests have required metadata tags
     export-for-plan                Export test data for speckit workflow
@@ -62,7 +62,7 @@ EXAMPLES:
     test-registry.sh init
 
     # Auto-tag existing tests (brownfield setup)
-    test-registry.sh bootstrap --spec 001
+    test-registry.sh bootstrap --spec 001-production-readiness
 
     # Scan codebase and update registry
     test-registry.sh scan
@@ -70,8 +70,8 @@ EXAMPLES:
     # Show full report
     test-registry.sh report
 
-    # Show tests for spec 001
-    test-registry.sh spec 001
+    # Show tests for spec 001-production-readiness
+    test-registry.sh spec 001-production-readiness
 
     # List retirement candidates (default: @retirementCandidate)
     test-registry.sh retire
@@ -233,6 +233,27 @@ check_dependencies() {
     fi
 }
 
+get_current_spec() {
+    # Extract spec identifier from current git branch
+    # Example: branch "001-production-readiness" → "001-production-readiness"
+    local branch
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+    if [[ -z "$branch" ]]; then
+        echo "Error: Unable to determine current git branch" >&2
+        return 1
+    fi
+
+    # Validate branch matches spec format: 001-spec-name (kebab-case)
+    if [[ "$branch" =~ ^[0-9]{3}-[a-z0-9-]+$ ]]; then
+        echo "$branch"
+        return 0
+    fi
+
+    echo "Error: Current branch '$branch' does not match spec format (001-spec-name)" >&2
+    return 1
+}
+
 # ==============================================================================
 # Commands
 # ==============================================================================
@@ -325,13 +346,19 @@ cmd_bootstrap() {
 
     echo "Found $untagged_count untagged tests"
 
-    # Determine spec number
+    # Determine spec identifier
     local spec_arg=""
     if [[ -n "$SPEC_NUMBER" ]]; then
+        # Validate format: 001-spec-name (kebab-case)
+        if ! [[ "$SPEC_NUMBER" =~ ^[0-9]{3}-[a-z0-9-]+$ ]]; then
+            echo "Error: Invalid spec format. Expected: 001-spec-name, got: $SPEC_NUMBER" >&2
+            echo "Example: test-registry.sh bootstrap --spec 001-production-readiness" >&2
+            exit 1
+        fi
         spec_arg="--spec $SPEC_NUMBER"
         echo "Tagging tests with @spec $SPEC_NUMBER..."
     else
-        echo "Inferring spec numbers from file paths..."
+        echo "Inferring spec identifiers from file paths..."
     fi
 
     # Run auto-tagger (dry-run first)
@@ -645,7 +672,16 @@ EOF
 
 cmd_spec() {
     if [[ -z "$SPEC_NUMBER" ]]; then
-        echo "Error: Spec number required" >&2
+        echo "Error: Spec identifier required (format: 001-spec-name)" >&2
+        echo "Example: test-registry.sh spec 001-production-readiness" >&2
+        exit 1
+    fi
+
+    # Validate spec format: 001-spec-name (kebab-case)
+    local spec_id="$SPEC_NUMBER"
+    if ! [[ "$spec_id" =~ ^[0-9]{3}-[a-z0-9-]+$ ]]; then
+        echo "Error: Invalid spec format. Expected: 001-spec-name, got: $spec_id" >&2
+        echo "Example: test-registry.sh spec 001-production-readiness" >&2
         exit 1
     fi
 
@@ -661,13 +697,9 @@ cmd_spec() {
         exit 1
     fi
 
-    # Format spec number with leading zeros
-    local formatted_spec
-    formatted_spec=$(printf "%03d" "$SPEC_NUMBER")
-
-    # Filter tests by spec number
+    # Filter tests by spec identifier
     local spec_tests
-    spec_tests=$(jq --arg spec "$formatted_spec" '[.tests[] | select(.specNumber == $spec)]' "$registry_path")
+    spec_tests=$(jq --arg spec "$spec_id" '[.tests[] | select(.specNumber == $spec)]' "$registry_path")
 
     local count
     count=$(echo "$spec_tests" | jq 'length')
@@ -676,11 +708,14 @@ cmd_spec() {
         echo "$spec_tests"
     else
         if [[ $count -eq 0 ]]; then
-            echo "No tests found for spec $formatted_spec"
+            echo "No tests found for spec $spec_id"
+            echo ""
+            echo "Available specs:"
+            jq -r '.tests[].specNumber' "$registry_path" | sort -u | sed 's/^/  /'
             exit 0
         fi
 
-        echo "Spec $formatted_spec Tests:"
+        echo "Spec $spec_id Tests:"
         echo ""
         echo "$spec_tests" | jq -r '.[] | "  [\(.type)] \(.file):\(.lineNumber)\n    \(.describePath | join(" > ")) > \(.testName)"'
         echo ""

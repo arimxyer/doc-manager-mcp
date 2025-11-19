@@ -233,7 +233,9 @@ export abstract class BaseLanguageAdapter implements LanguageAdapter {
    * Looks for specs/NNN-name/ pattern
    */
   inferSpecNumber(filePath: string): string | null {
-    const match = filePath.match(/specs[/\\](\d{3})-[^/\\]+[/\\]/);
+    // Match pattern: specs/001-spec-name/ or specs\001-spec-name\
+    // Returns full spec identifier (e.g., "001-production-readiness")
+    const match = filePath.match(/specs[/\\](\d{3}-[\w-]+)[/\\]/);
     if (match) {
       return match[1];
     }

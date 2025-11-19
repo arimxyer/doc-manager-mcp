@@ -128,7 +128,8 @@ All new code **MUST** have tests before being merged.
 
 #### Test Metadata and Registry
 
-- **MUST** tag all tests with @spec number (required for test registry tracking)
+- **MUST** tag all tests with @spec identifier (required for test registry tracking)
+  - Format: kebab-case `001-production-readiness` (number + hyphen + spec name)
 - **SHOULD** use optional tags when applicable:
   - @testType (unit|integration|e2e) - only if path inference incorrect
   - @mockDependent - flags tests using mocks (retirement candidates)
@@ -140,7 +141,7 @@ All new code **MUST** have tests before being merged.
 - **MUST** run `test-registry.sh scan` after adding/retiring tests to update registry
 - **MUST** bootstrap existing tests before planning in brownfield projects:
   ```bash
-  test-registry.sh bootstrap --spec <number>
+  test-registry.sh bootstrap --spec 001-production-readiness
   ```
 
 #### Test Retirement

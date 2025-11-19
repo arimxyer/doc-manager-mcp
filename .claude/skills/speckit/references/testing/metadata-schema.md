@@ -40,7 +40,7 @@ All tests must include standardized metadata tags for spec ownership tracking an
 
 | Tag | Format | Required | Description |
 |-----|--------|----------|-------------|
-| `@spec` | `@spec <number>` | Yes | Spec number that owns this test (001, 002, 003...) |
+| `@spec` | `@spec <number-name>` | Yes | Spec identifier that owns this test (001-production-readiness, 002-add-feature...) - kebab-case format |
 
 ### Optional Tags
 
@@ -85,7 +85,7 @@ If `@testType` not specified, inferred from file path:
 
 ```python
 """
-@spec 001
+@spec 001-production-readiness
 @userStory US1
 @functionalReq FR-031
 @testType unit
@@ -101,7 +101,7 @@ def test_authentication():
 ```python
 class TestWorkspaceList:
     """
-    @spec 001
+    @spec 001-production-readiness
     @userStory US1
     @testType unit
     """
@@ -129,7 +129,7 @@ class TestWorkspaceList:
 ### Alternative: Hash Comments
 
 ```python
-# @spec 001
+# @spec 001-production-readiness
 # @userStory US5
 # @testType integration
 # @mockDependent
@@ -148,7 +148,7 @@ import pytest
 @pytest.mark.asyncio
 async def test_async_with_markers():
     """
-    @spec 001
+    @spec 001-production-readiness
     @userStory US1
     @slow
     """
@@ -162,7 +162,7 @@ async def test_async_with_markers():
 @pytest.fixture(scope="session")
 async def database():
     """
-    @spec 001
+    @spec 001-production-readiness
     Fixture providing async database connection
     """
     async with create_engine() as engine:
@@ -181,7 +181,7 @@ import pytest
 ])
 def test_string_length(input, expected):
     """
-    @spec 001
+    @spec 001-production-readiness
     @userStory US2
     @testType unit
     """
@@ -198,7 +198,7 @@ Tags go in the docstring AFTER decorators (including `@pytest.mark.parametrize`)
 
 ```typescript
 /**
- * @spec 001
+ * @spec 001-production-readiness
  * @userStory US1
  * @userStory US5
  * @functionalReq FR-031
@@ -206,7 +206,7 @@ Tags go in the docstring AFTER decorators (including `@pytest.mark.parametrize`)
  */
 describe('WorkspaceList Component', () => {
   /**
-   * @spec 001
+   * @spec 001-production-readiness
    * @userStory US1
    * @functionalReq FR-031
    */
@@ -223,7 +223,7 @@ describe('WorkspaceList Component', () => {
   });
 
   /**
-   * @spec 001
+   * @spec 001-production-readiness
    * @userStory US5
    * @functionalReq FR-034
    */
@@ -239,7 +239,7 @@ describe('WorkspaceList Component', () => {
 ```typescript
 describe('Async Operations', () => {
   /**
-   * @spec 001
+   * @spec 001-production-readiness
    * @testType integration
    */
   test('fetches data successfully', async () => {
@@ -247,7 +247,7 @@ describe('Async Operations', () => {
   });
 
   /**
-   * @spec 001
+   * @spec 001-production-readiness
    * @testType integration
    */
   test('handles errors gracefully', async () => {
@@ -265,7 +265,7 @@ describe('Feature Suite', () => {
   });
 
   /**
-   * @spec 001
+   * @spec 001-production-readiness
    * @userStory US1
    */
   test('test using setup', () => {
@@ -282,7 +282,7 @@ describe('Feature Suite', () => {
   describe('Subsystem A', () => {
     describe('Component X', () => {
       /**
-       * @spec 001
+       * @spec 001-production-readiness
        * @userStory US3
        * @testType integration
        */
@@ -305,7 +305,7 @@ Parser tracks the full `describePath` array for nested describe blocks.
 ### Basic Test with Tags
 
 ```go
-// @spec 001
+// @spec 001-production-readiness
 // @userStory US1
 // @functionalReq FR-031
 // @testType unit
@@ -320,7 +320,7 @@ func TestAuthentication(t *testing.T) {
 ### Test with Mock Dependency
 
 ```go
-// @spec 001
+// @spec 001-production-readiness
 // @userStory US5
 // @testType integration
 // @mockDependent
@@ -341,7 +341,7 @@ func TestAPIIntegration(t *testing.T) {
 ### Table-Driven Test
 
 ```go
-// @spec 001
+// @spec 001-production-readiness
 // @userStory US2
 // @testType unit
 func TestSum(t *testing.T) {
@@ -371,7 +371,7 @@ func TestSum(t *testing.T) {
 **⚠️ PARSER LIMITATION**: Subtests created with `t.Run()` are NOT individually detected by the test registry parser. Only the parent test function is tracked.
 
 ```go
-// @spec 001
+// @spec 001-production-readiness
 // @userStory US4
 // @testType integration
 func TestFeature(t *testing.T) {
@@ -391,7 +391,7 @@ func TestFeature(t *testing.T) {
 ### Benchmark Test
 
 ```go
-// @spec 001
+// @spec 001-production-readiness
 // @userStory US3
 // @testType unit
 // @slow
@@ -411,7 +411,7 @@ func BenchmarkWorkspaceRendering(b *testing.B) {
 ### Basic Test with Tags
 
 ```rust
-/// @spec 001
+/// @spec 001-production-readiness
 /// @userStory US1
 /// @functionalReq FR-031
 /// @testType unit
@@ -425,7 +425,7 @@ fn test_authentication() {
 ### Test with Mock Dependency
 
 ```rust
-/// @spec 001
+/// @spec 001-production-readiness
 /// @userStory US5
 /// @testType integration
 /// @mockDependent
@@ -443,7 +443,7 @@ fn test_api_integration() {
 ### Async Test
 
 ```rust
-/// @spec 001
+/// @spec 001-production-readiness
 /// @userStory US2
 /// @functionalReq FR-034
 /// @testType integration
@@ -461,12 +461,12 @@ async fn test_async_workspace_creation() {
 
 ```rust
 /// Module for workspace tests
-/// @spec 001  ← This does NOT apply to tests inside
+/// @spec 001-production-readiness  ← This does NOT apply to tests inside
 #[cfg(test)]
 mod workspace_tests {
     use super::*;
 
-    /// @spec 001  ← MUST tag each test individually
+    /// @spec 001-production-readiness  ← MUST tag each test individually
     /// @userStory US1
     /// @testType unit
     #[test]
@@ -475,7 +475,7 @@ mod workspace_tests {
         assert_eq!(ws.name, "Test");
     }
 
-    /// @spec 001  ← MUST tag each test individually
+    /// @spec 001-production-readiness  ← MUST tag each test individually
     /// @userStory US1
     /// @testType unit
     #[test]
@@ -497,7 +497,7 @@ mod workspace_tests {
 ```python
 # Parser handles this correctly, but avoid for clarity
 """
-@spec 001
+@spec 001-production-readiness
 @userStory US1
 """
 
@@ -509,7 +509,7 @@ def test_authentication():  # ← Blank line: parser skips it
 
 ```python
 """
-@spec 001
+@spec 001-production-readiness
 @userStory US1
 """
 def test_authentication():
@@ -521,7 +521,7 @@ def test_authentication():
 ```python
 def test_authentication():
     """
-    @spec 001  # ← Too late, parser won't find this
+    @spec 001-production-readiness  # ← Too late, parser won't find this
     """
     pass
 ```
@@ -532,7 +532,7 @@ def test_authentication():
 
 ```javascript
 /**
- * @spec 001  ← Parser won't apply this to individual tests
+ * @spec 001-production-readiness  ← Parser won't apply this to individual tests
  */
 describe('Suite', () => {
   it('test without tags', () => {  // ← Orphaned test
@@ -546,7 +546,7 @@ describe('Suite', () => {
 ```javascript
 describe('Suite', () => {
   /**
-   * @spec 001
+   * @spec 001-production-readiness
    */
   it('test with tags', () => {
     expect(true).toBe(true);
@@ -558,7 +558,7 @@ describe('Suite', () => {
 
 ```go
 /*
- * @spec 001
+ * @spec 001-production-readiness
  * @userStory US1
  */
 func TestFeature(t *testing.T) {  // ← Parser won't find block comments
@@ -569,7 +569,7 @@ func TestFeature(t *testing.T) {  // ← Parser won't find block comments
 **✅ CORRECT**: Use line comments `//`
 
 ```go
-// @spec 001
+// @spec 001-production-readiness
 // @userStory US1
 func TestFeature(t *testing.T) {
     // ...
@@ -579,7 +579,7 @@ func TestFeature(t *testing.T) {
 ### ❌ WRONG: Regular Comments in Rust (Not Doc Comments)
 
 ```rust
-// @spec 001  ← Wrong comment type
+// @spec 001-production-readiness  ← Wrong comment type
 // @userStory US1
 #[test]
 fn test_feature() {
@@ -590,7 +590,7 @@ fn test_feature() {
 **✅ CORRECT**: Use doc comments `///`
 
 ```rust
-/// @spec 001
+/// @spec 001-production-readiness
 /// @userStory US1
 #[test]
 fn test_feature() {
@@ -654,7 +654,7 @@ def test_authentication():
 **Symptom**: `test-registry.sh validate` reports errors
 
 **Common causes**:
-- Malformed spec number (must be 3-digit zero-padded: `001`, not `1`)
+- Malformed spec identifier (must be kebab-case format: `001-production-readiness`, not `001` or `001_production`)
 - Tags in wrong comment type (e.g., `//` instead of `///` in Rust)
 - Tags on wrong element (e.g., `describe()` instead of `it()`)
 - File-level tags expecting inheritance (NOT supported)
@@ -688,7 +688,7 @@ def test_authentication():
 **Validation rules:**
 - All test functions/methods must have metadata comment
 - Comment must include `@spec` tag
-- `@spec` must be 3-digit zero-padded number (001-999)
+- `@spec` must be kebab-case format: 3-digit number + hyphen + name (e.g., `001-production-readiness`)
 - No orphaned tests (missing spec ownership)
 
 **Run validation:**
