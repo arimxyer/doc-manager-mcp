@@ -30,6 +30,21 @@ import { GoAdapter } from './language-adapters/go.js';
 import { RustAdapter } from './language-adapters/rust.js';
 import type { LanguageAdapter } from './language-adapters/base.js';
 
+/**
+ * Standard metadata tags recognized by the test registry
+ * If new tags are added to metadata-schema.md, update this list
+ */
+export const STANDARD_METADATA_TAGS = [
+  'spec',
+  'userStory',
+  'functionalReq',
+  'testType',
+  'mockDependent',
+  'retirementCandidate',
+  'contractTest',
+  'slow'
+] as const;
+
 interface TestMetadata {
   id: string;                      // SHA-256 hash of file+path+name
   file: string;                    // Absolute file path
@@ -52,11 +67,19 @@ interface TestMetadata {
   createdDate: string;             // ISO 8601
   lastModified: string;            // ISO 8601
   tags: string[];                  // Additional custom tags
+
+  // Test execution results (optional - manually updated after test runs)
+  execution?: {
+    status: 'passed' | 'failed' | 'skipped' | 'unknown';
+    duration: number;              // Seconds
+    lastRun: string;               // ISO 8601
+    errorMessage: string | null;
+  };
 }
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-const FILE_PATH = args.find(arg => !arg.startsWith('--'));
+const FILE_PATH = args.find(arg => !arg.startsWith('--')) as string;
 const JSON_MODE = args.includes('--json');
 
 if (!FILE_PATH) {
@@ -157,9 +180,7 @@ async function parseTestFile(filePath: string): Promise<TestMetadata[]> {
     const mockDependent = tags.mockDependent || adapter.isMockDependent(content);
 
     // Extract custom tags (any tag that's not a standard one)
-    const standardTags = ['spec', 'userStory', 'functionalReq', 'testType',
-                          'mockDependent', 'retirementCandidate', 'contractTest', 'slow'];
-    const customTags = Object.keys(tags).filter(key => !standardTags.includes(key));
+    const customTags = Object.keys(tags).filter(key => !STANDARD_METADATA_TAGS.includes(key as any));
 
     // Create metadata object
     const metadata: TestMetadata = {
@@ -197,7 +218,7 @@ async function main() {
   try {
     const results = await parseTestFile(FILE_PATH);
 
-    if (JSON_MODE || true) {  // Always output JSON for consistency
+    if (JSON_MODE) {
       console.log(JSON.stringify(results, null, 2));
     } else {
       console.log(`Found ${results.length} tests in ${FILE_PATH}`);

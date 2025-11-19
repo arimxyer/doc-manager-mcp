@@ -224,6 +224,8 @@ Success criteria must be:
 - "95% of searches return results in under 1 second"
 - "Task completion rate improves by 40%"
 - "Feature achieves test pyramid targets: 70% unit, 20% integration, 10% e2e"
+- "All tests pass validation (test-registry.sh validate) with @spec tags"
+- "Test suite maintains HEALTHY pyramid status throughout implementation"
 
 **Bad examples** (implementation-focused):
 

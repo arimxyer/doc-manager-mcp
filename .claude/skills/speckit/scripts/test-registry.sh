@@ -25,6 +25,7 @@ REGISTRY_FILE="test-registry.json"
 PARSER_SCRIPT="$SCRIPT_DIR/parse-test-file-universal.ts"
 TAGGER_SCRIPT="$SCRIPT_DIR/add-test-tags-universal.ts"
 JSON_MODE=false
+YES_FLAG=false
 COMMAND=""
 SPEC_NUMBER=""
 FILTER_TAG=""
@@ -40,18 +41,19 @@ USAGE:
     test-registry.sh <command> [options]
 
 COMMANDS:
-    init                    Initialize new test registry file
-    bootstrap [--spec NUM]  Auto-tag existing tests (brownfield projects)
-    scan                    Scan codebase and update test registry
-    report                  Show pyramid metrics, health, and issues
-    spec <number>           Show tests for specific spec (e.g., spec 001)
-    retire [--filter TAG]   List retirement candidate tests
-    validate                Validate all tests have required metadata tags
-    export-for-plan         Export test data for speckit workflow
-    self-check              Run self-diagnostic tests
+    init                           Initialize new test registry file
+    bootstrap [--spec NUM] [--yes] Auto-tag existing tests (brownfield projects)
+    scan                           Scan codebase and update test registry
+    report                         Show pyramid metrics, health, and issues
+    spec <identifier>              Show tests for specific spec (e.g., spec 001-production-readiness)
+    retire [--filter TAG]          List retirement candidate tests
+    validate                       Validate all tests have required metadata tags
+    export-for-plan                Export test data for speckit workflow
+    self-check                     Run self-diagnostic tests
 
 OPTIONS:
     --json                  Output in JSON format
+    --yes, -y               Auto-confirm prompts (non-interactive mode)
     --filter <tag>          Filter tests by metadata tag (retire command only)
     --help, -h              Show this help message
 
@@ -60,7 +62,7 @@ EXAMPLES:
     test-registry.sh init
 
     # Auto-tag existing tests (brownfield setup)
-    test-registry.sh bootstrap --spec 001
+    test-registry.sh bootstrap --spec 001-production-readiness
 
     # Scan codebase and update registry
     test-registry.sh scan
@@ -68,8 +70,8 @@ EXAMPLES:
     # Show full report
     test-registry.sh report
 
-    # Show tests for spec 001
-    test-registry.sh spec 001
+    # Show tests for spec 001-production-readiness
+    test-registry.sh spec 001-production-readiness
 
     # List retirement candidates (default: @retirementCandidate)
     test-registry.sh retire
@@ -133,17 +135,29 @@ parse_args() {
             bootstrap)
                 COMMAND="bootstrap"
                 shift
-                # Capture optional --spec argument
-                if [[ $# -gt 0 && "$1" == "--spec" ]]; then
-                    shift
-                    if [[ $# -gt 0 ]]; then
-                        SPEC_NUMBER="$1"
-                        shift
-                    else
-                        echo "Error: --spec requires a spec number" >&2
-                        exit 1
-                    fi
-                fi
+                # Capture optional --spec and --yes arguments
+                while [[ $# -gt 0 ]]; do
+                    case "$1" in
+                        --spec)
+                            shift
+                            if [[ $# -gt 0 ]]; then
+                                SPEC_NUMBER="$1"
+                                shift
+                            else
+                                echo "Error: --spec requires a spec number" >&2
+                                exit 1
+                            fi
+                            ;;
+                        --yes|-y)
+                            YES_FLAG=true
+                            shift
+                            ;;
+                        *)
+                            # Not a bootstrap argument, stop parsing
+                            break
+                            ;;
+                    esac
+                done
                 ;;
             spec)
                 COMMAND="spec"
@@ -217,6 +231,27 @@ check_dependencies() {
         echo "Error: Parser script not found: $PARSER_SCRIPT" >&2
         exit 1
     fi
+}
+
+get_current_spec() {
+    # Extract spec identifier from current git branch
+    # Example: branch "001-production-readiness" → "001-production-readiness"
+    local branch
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+    if [[ -z "$branch" ]]; then
+        echo "Error: Unable to determine current git branch" >&2
+        return 1
+    fi
+
+    # Validate branch matches spec format: 001-spec-name (kebab-case)
+    if [[ "$branch" =~ ^[0-9]{3}-[a-z0-9-]+$ ]]; then
+        echo "$branch"
+        return 0
+    fi
+
+    echo "Error: Current branch '$branch' does not match spec format (001-spec-name)" >&2
+    return 1
 }
 
 # ==============================================================================
@@ -311,13 +346,19 @@ cmd_bootstrap() {
 
     echo "Found $untagged_count untagged tests"
 
-    # Determine spec number
+    # Determine spec identifier
     local spec_arg=""
     if [[ -n "$SPEC_NUMBER" ]]; then
+        # Validate format: 001-spec-name (kebab-case)
+        if ! [[ "$SPEC_NUMBER" =~ ^[0-9]{3}-[a-z0-9-]+$ ]]; then
+            echo "Error: Invalid spec format. Expected: 001-spec-name, got: $SPEC_NUMBER" >&2
+            echo "Example: test-registry.sh bootstrap --spec 001-production-readiness" >&2
+            exit 1
+        fi
         spec_arg="--spec $SPEC_NUMBER"
         echo "Tagging tests with @spec $SPEC_NUMBER..."
     else
-        echo "Inferring spec numbers from file paths..."
+        echo "Inferring spec identifiers from file paths..."
     fi
 
     # Run auto-tagger (dry-run first)
@@ -328,12 +369,16 @@ cmd_bootstrap() {
     echo "========================================"
     echo ""
 
-    # Confirm with user
-    read -p "Apply these changes? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Bootstrap cancelled."
-        exit 0
+    # Confirm with user (skip if --yes flag provided)
+    if [[ "$YES_FLAG" == "true" ]]; then
+        echo "Auto-confirming (--yes flag provided)"
+    else
+        read -p "Apply these changes? (y/N) " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Bootstrap cancelled."
+            exit 0
+        fi
     fi
 
     # Run auto-tagger with --write
@@ -440,14 +485,16 @@ cmd_scan() {
     fi
 
     # Check pyramid health using awk for float comparison
-    local pyramid_status="PASS"
-    if (( $(awk "BEGIN {print ($unit_ratio < 0.60)}") )); then
+    # Constitution v1.2.0 Principle IV: HEALTHY (±10% of 70/20/10), WARN (outside range), CRITICAL (e2e >20%)
+    local pyramid_status="HEALTHY"
+
+    # CRITICAL: e2e exceeds 20% (hard limit per Constitution Principle IV line 126)
+    if (( $(awk "BEGIN {print ($e2e_ratio > 0.20)}") )); then
+        pyramid_status="CRITICAL"
+    # WARN: Unit or integration ratios outside ±10% of targets (60-80% unit, 10-30% integration)
+    elif (( $(awk "BEGIN {print ($unit_ratio < 0.60 || $unit_ratio > 0.80)}") )); then
         pyramid_status="WARN"
-    fi
-    if (( $(awk "BEGIN {print ($integration_ratio > 0.30)}") )); then
-        pyramid_status="WARN"
-    fi
-    if (( $(awk "BEGIN {print ($e2e_ratio > 0.15)}") )); then
+    elif (( $(awk "BEGIN {print ($integration_ratio < 0.10 || $integration_ratio > 0.30)}") )); then
         pyramid_status="WARN"
     fi
 
@@ -501,7 +548,14 @@ cmd_scan() {
                     integration: 0.20,
                     e2e: 0.10
                 },
-                status: $status
+                status: $status,
+                statusDescription: (
+                    if $status == "HEALTHY" then "Ratios within ±10% of targets (70/20/10)"
+                    elif $status == "WARN" then "Ratios outside target ranges - address before phase completion"
+                    elif $status == "CRITICAL" then "E2E tests exceed 20% - BLOCK phase completion"
+                    else $status
+                    end
+                )
             },
             health: {
                 orphanedTests: $orphaned,
@@ -598,10 +652,12 @@ Health Metrics:
 
 EOF
 
-        if [[ "$status" == "WARN" ]]; then
-            echo "⚠ Pyramid ratios outside target ranges"
-        elif [[ "$status" == "PASS" ]]; then
-            echo "✓ Pyramid ratios within target ranges"
+        if [[ "$status" == "CRITICAL" ]]; then
+            echo "🔴 CRITICAL: E2E tests exceed 20% - BLOCK phase completion"
+        elif [[ "$status" == "WARN" ]]; then
+            echo "⚠ WARN: Pyramid ratios outside ±10% of targets - address before phase completion"
+        elif [[ "$status" == "HEALTHY" ]]; then
+            echo "✓ HEALTHY: Pyramid ratios within ±10% of targets (70/20/10)"
         fi
 
         if [[ $orphaned -gt 0 ]]; then
@@ -616,7 +672,16 @@ EOF
 
 cmd_spec() {
     if [[ -z "$SPEC_NUMBER" ]]; then
-        echo "Error: Spec number required" >&2
+        echo "Error: Spec identifier required (format: 001-spec-name)" >&2
+        echo "Example: test-registry.sh spec 001-production-readiness" >&2
+        exit 1
+    fi
+
+    # Validate spec format: 001-spec-name (kebab-case)
+    local spec_id="$SPEC_NUMBER"
+    if ! [[ "$spec_id" =~ ^[0-9]{3}-[a-z0-9-]+$ ]]; then
+        echo "Error: Invalid spec format. Expected: 001-spec-name, got: $spec_id" >&2
+        echo "Example: test-registry.sh spec 001-production-readiness" >&2
         exit 1
     fi
 
@@ -632,13 +697,9 @@ cmd_spec() {
         exit 1
     fi
 
-    # Format spec number with leading zeros
-    local formatted_spec
-    formatted_spec=$(printf "%03d" "$SPEC_NUMBER")
-
-    # Filter tests by spec number
+    # Filter tests by spec identifier
     local spec_tests
-    spec_tests=$(jq --arg spec "$formatted_spec" '[.tests[] | select(.specNumber == $spec)]' "$registry_path")
+    spec_tests=$(jq --arg spec "$spec_id" '[.tests[] | select(.specNumber == $spec)]' "$registry_path")
 
     local count
     count=$(echo "$spec_tests" | jq 'length')
@@ -647,11 +708,14 @@ cmd_spec() {
         echo "$spec_tests"
     else
         if [[ $count -eq 0 ]]; then
-            echo "No tests found for spec $formatted_spec"
+            echo "No tests found for spec $spec_id"
+            echo ""
+            echo "Available specs:"
+            jq -r '.tests[].specNumber' "$registry_path" | sort -u | sed 's/^/  /'
             exit 0
         fi
 
-        echo "Spec $formatted_spec Tests:"
+        echo "Spec $spec_id Tests:"
         echo ""
         echo "$spec_tests" | jq -r '.[] | "  [\(.type)] \(.file):\(.lineNumber)\n    \(.describePath | join(" > ")) > \(.testName)"'
         echo ""
