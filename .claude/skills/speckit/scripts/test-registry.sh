@@ -458,14 +458,16 @@ cmd_scan() {
     fi
 
     # Check pyramid health using awk for float comparison
-    local pyramid_status="PASS"
-    if (( $(awk "BEGIN {print ($unit_ratio < 0.60)}") )); then
+    # Constitution v1.2.0 Principle IV: HEALTHY (±10% of 70/20/10), WARN (outside range), CRITICAL (e2e >20%)
+    local pyramid_status="HEALTHY"
+
+    # CRITICAL: e2e exceeds 20% (hard limit per Constitution Principle IV line 117)
+    if (( $(awk "BEGIN {print ($e2e_ratio > 0.20)}") )); then
+        pyramid_status="CRITICAL"
+    # WARN: Unit or integration ratios outside ±10% of targets (60-80% unit, 10-30% integration)
+    elif (( $(awk "BEGIN {print ($unit_ratio < 0.60 || $unit_ratio > 0.80)}") )); then
         pyramid_status="WARN"
-    fi
-    if (( $(awk "BEGIN {print ($integration_ratio > 0.30)}") )); then
-        pyramid_status="WARN"
-    fi
-    if (( $(awk "BEGIN {print ($e2e_ratio > 0.15)}") )); then
+    elif (( $(awk "BEGIN {print ($integration_ratio < 0.10 || $integration_ratio > 0.30)}") )); then
         pyramid_status="WARN"
     fi
 
@@ -519,7 +521,14 @@ cmd_scan() {
                     integration: 0.20,
                     e2e: 0.10
                 },
-                status: $status
+                status: $status,
+                statusDescription: (
+                    if $status == "HEALTHY" then "Ratios within ±10% of targets (70/20/10)"
+                    elif $status == "WARN" then "Ratios outside target ranges - address before phase completion"
+                    elif $status == "CRITICAL" then "E2E tests exceed 20% - BLOCK phase completion"
+                    else $status
+                    end
+                )
             },
             health: {
                 orphanedTests: $orphaned,
@@ -616,10 +625,12 @@ Health Metrics:
 
 EOF
 
-        if [[ "$status" == "WARN" ]]; then
-            echo "⚠ Pyramid ratios outside target ranges"
-        elif [[ "$status" == "PASS" ]]; then
-            echo "✓ Pyramid ratios within target ranges"
+        if [[ "$status" == "CRITICAL" ]]; then
+            echo "🔴 CRITICAL: E2E tests exceed 20% - BLOCK phase completion"
+        elif [[ "$status" == "WARN" ]]; then
+            echo "⚠ WARN: Pyramid ratios outside ±10% of targets - address before phase completion"
+        elif [[ "$status" == "HEALTHY" ]]; then
+            echo "✓ HEALTHY: Pyramid ratios within ±10% of targets (70/20/10)"
         fi
 
         if [[ $orphaned -gt 0 ]]; then

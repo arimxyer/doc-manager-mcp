@@ -52,6 +52,14 @@ interface TestMetadata {
   createdDate: string;             // ISO 8601
   lastModified: string;            // ISO 8601
   tags: string[];                  // Additional custom tags
+
+  // Test execution results (optional - manually updated after test runs)
+  execution?: {
+    status: 'passed' | 'failed' | 'skipped' | 'unknown';
+    duration: number;              // Seconds
+    lastRun: string;               // ISO 8601
+    errorMessage: string | null;
+  };
 }
 
 // Parse command line arguments
