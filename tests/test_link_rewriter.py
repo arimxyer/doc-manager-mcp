@@ -542,6 +542,179 @@ class TestTOC:
 
         assert toc == ""
 
+    def test_generate_toc_structure_validation(self):
+        """Test TOC structure by parsing as markdown and validating entries.
+
+        Validates:
+        - Total entry count matches header count
+        - Each line starts with correct indentation
+        - Each line contains markdown link format
+        """
+        content = """# Main Title
+## Section 1
+### Subsection 1.1
+### Subsection 1.2
+## Section 2
+### Subsection 2.1
+"""
+        toc = generate_toc(content, max_depth=3)
+
+        # Split TOC into lines
+        lines = toc.strip().split('\n')
+
+        # Count entries - should match 6 headers
+        assert len(lines) == 6, f"Expected 6 TOC entries, got {len(lines)}"
+
+        # Validate each line structure
+        for line in lines:
+            # Each line should contain "- [" and "](" and ")"
+            assert "- [" in line, f"Line missing list marker: {line}"
+            assert "](" in line, f"Line missing link start: {line}"
+            assert ")" in line, f"Line missing link end: {line}"
+
+        # Verify indentation levels
+        assert lines[0].startswith("- ["), "Level 1 should have no indent"
+        assert lines[1].startswith("  - ["), "Level 2 should have 2 spaces"
+        assert lines[2].startswith("    - ["), "Level 3 should have 4 spaces"
+        assert lines[3].startswith("    - ["), "Level 3 should have 4 spaces"
+        assert lines[4].startswith("  - ["), "Level 2 should have 2 spaces"
+        assert lines[5].startswith("    - ["), "Level 3 should have 4 spaces"
+
+    def test_generate_toc_indentation_formula(self):
+        """Test that indentation follows the formula: 2 * (level - 1) spaces.
+
+        Formula:
+        - Level 1: 2 * (1-1) = 0 spaces
+        - Level 2: 2 * (2-1) = 2 spaces
+        - Level 3: 2 * (3-1) = 4 spaces
+        - Level 4: 2 * (4-1) = 6 spaces
+        """
+        content = """# H1
+## H2
+### H3
+#### H4
+##### H5
+###### H6
+"""
+        toc = generate_toc(content, max_depth=6)
+        lines = toc.strip().split('\n')
+
+        # Extract indentation for each line
+        indentations = []
+        for line in lines:
+            # Count leading spaces before "- ["
+            indent_count = len(line) - len(line.lstrip(' '))
+            indentations.append(indent_count)
+
+        # Verify indentation formula: 2 * (level - 1)
+        expected = [0, 2, 4, 6, 8, 10]  # Levels 1-6
+        assert indentations == expected, f"Indentation mismatch. Got {indentations}, expected {expected}"
+
+    def test_generate_toc_markdown_parsing(self):
+        """Test that generated TOC can be parsed as valid markdown.
+
+        Uses MarkdownParser to extract links from TOC, validating:
+        - Links are parseable
+        - Anchor format is correct
+        - All headers generate valid links
+        """
+        from doc_manager_mcp.indexing.markdown_parser import MarkdownParser
+
+        content = """# Getting Started
+## Installation
+## Configuration
+# Advanced Topics
+## Performance
+"""
+        toc = generate_toc(content, max_depth=2)
+
+        # Parse TOC as markdown
+        parser = MarkdownParser()
+        links = parser.extract_links(toc)
+
+        # Should have 5 links (all headers)
+        assert len(links) == 5, f"Expected 5 links in TOC, got {len(links)}"
+
+        # Verify all links are anchor links (start with #)
+        for link in links:
+            url = link['url']
+            assert url.startswith('#'), f"TOC link should be anchor: {url}"
+
+        # Verify specific anchor formats
+        urls = [link['url'] for link in links]
+        assert '#getting-started' in urls
+        assert '#installation' in urls
+        assert '#configuration' in urls
+        assert '#advanced-topics' in urls
+        assert '#performance' in urls
+
+    def test_generate_toc_entry_count_with_depth_filter(self):
+        """Test that entry count respects max_depth filter.
+
+        Creates content with 10 total headers but only 6 within max_depth=2.
+        """
+        content = """# Title
+## Section 1
+### Subsection 1.1
+#### Deep 1
+## Section 2
+### Subsection 2.1
+#### Deep 2
+##### Deeper
+## Section 3
+### Subsection 3.1
+"""
+        # Total headers: 10
+        # Headers at depth <= 2: 4 (Title, Section 1, Section 2, Section 3)
+        toc = generate_toc(content, max_depth=2)
+        lines = toc.strip().split('\n')
+
+        assert len(lines) == 4, f"Expected 4 entries with max_depth=2, got {len(lines)}"
+
+        # Verify no level 3+ entries
+        for line in lines:
+            indent = len(line) - len(line.lstrip(' '))
+            # Max indent should be 2 (level 2)
+            assert indent <= 2, f"Found indent {indent} > 2 (level 3+): {line}"
+
+    def test_generate_toc_line_format_regex(self):
+        r"""Test each TOC line matches expected regex pattern.
+
+        Pattern: ^(\s*)- \[([^\]]+)\]\((#[a-z0-9-]+)\)$
+        - Group 1: indentation (0-N spaces, multiples of 2)
+        - Group 2: link text
+        - Group 3: anchor URL (starts with #)
+        """
+        import re
+
+        content = """# Main
+## Sub 1
+### Deep
+## Sub 2
+"""
+        toc = generate_toc(content, max_depth=3)
+        lines = toc.strip().split('\n')
+
+        # Regex pattern for TOC line
+        pattern = re.compile(r'^(\s*)- \[([^\]]+)\]\((#[a-z0-9-]+)\)$')
+
+        for line in lines:
+            match = pattern.match(line)
+            assert match is not None, f"Line doesn't match TOC format: {line}"
+
+            indent = match.group(1)
+            text = match.group(2)
+            anchor = match.group(3)
+
+            # Verify indent is multiple of 2
+            assert len(indent) % 2 == 0, f"Indent not multiple of 2: {len(indent)}"
+
+            # Verify anchor starts with #
+            assert anchor.startswith('#'), f"Anchor should start with #: {anchor}"
+
+            # Verify text is non-empty
+            assert len(text) > 0, "Link text should not be empty"
+
     def test_update_existing_toc(self):
         """Test updating existing TOC between <!-- TOC --> markers."""
         content = """# Document
