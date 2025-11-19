@@ -774,31 +774,33 @@ class TestBaselinePersistence:
 class TestIntegration:
     """Integration tests for semantic change detection with map_changes."""
 
-    @patch("doc_manager_mcp.tools.changes.SymbolIndexer")
-    def test_get_semantic_changes_first_run(self, mock_indexer_class, tmp_path):
-        """Test that first run creates baseline and returns empty list."""
+    def test_get_semantic_changes_first_run(self, tmp_path):
+        """Test that first run creates baseline and returns empty list.
+
+        Uses real Python file and TreeSitter indexing (no mocks).
+        """
         from doc_manager_mcp.tools.changes import _get_semantic_changes
 
-        # Setup mock indexer
-        mock_indexer = MagicMock()
-        mock_indexer.index_symbols.return_value = {
-            "file.py": [
-                Symbol(
-                    name="func",
-                    type=SymbolType.FUNCTION,
-                    file="file.py",
-                    line=10,
-                    column=0,
-                )
-            ]
-        }
-        mock_indexer_class.return_value = mock_indexer
+        # Create real Python file
+        src_dir = tmp_path / "src"
+        src_dir.mkdir()
+        python_file = src_dir / "module.py"
+        python_file.write_text("""
+def public_function():
+    \"\"\"A public function.\"\"\"
+    pass
+
+class PublicClass:
+    \"\"\"A public class.\"\"\"
+    def method(self):
+        pass
+""")
 
         # Create project directory structure
         memory_dir = tmp_path / ".doc-manager" / "memory"
         memory_dir.mkdir(parents=True)
 
-        # First run (no baseline exists)
+        # First run (no baseline exists) - TreeSitter will index real file
         changes = _get_semantic_changes(tmp_path)
 
         # Should return empty list on first run
@@ -808,53 +810,64 @@ class TestIntegration:
         baseline_path = memory_dir / "symbol-baseline.json"
         assert baseline_path.exists()
 
-    @patch("doc_manager_mcp.tools.changes.SymbolIndexer")
-    def test_get_semantic_changes_subsequent_run(self, mock_indexer_class, tmp_path):
-        """Test that subsequent runs detect changes."""
+        # Verify baseline contains indexed symbols from real file
+        baseline = load_symbol_baseline(baseline_path)
+        assert baseline is not None
+        # Baseline is keyed by symbol name
+        assert "public_function" in baseline, f"Expected public_function in baseline keys: {list(baseline.keys())}"
+        assert "PublicClass" in baseline, f"Expected PublicClass in baseline keys: {list(baseline.keys())}"
+        # Verify symbols reference correct file
+        for symbol_list in baseline.values():
+            for symbol in symbol_list:
+                assert "src" in symbol.file and "module.py" in symbol.file
+
+    def test_get_semantic_changes_subsequent_run(self, tmp_path):
+        """Test that subsequent runs detect changes.
+
+        Uses real Python files and TreeSitter indexing (no mocks).
+        Creates v1 file, runs indexing, then modifies file and re-indexes.
+        """
         from doc_manager_mcp.tools.changes import _get_semantic_changes
 
-        # Create baseline first
-        baseline_path = tmp_path / ".doc-manager" / "memory" / "symbol-baseline.json"
-        baseline_path.parent.mkdir(parents=True, exist_ok=True)
+        # Create project structure
+        src_dir = tmp_path / "src"
+        src_dir.mkdir()
+        python_file = src_dir / "module.py"
+        memory_dir = tmp_path / ".doc-manager" / "memory"
+        memory_dir.mkdir(parents=True)
 
-        old_symbols = {
-            "file.py": [
-                Symbol(
-                    name="old_func",
-                    type=SymbolType.FUNCTION,
-                    file="file.py",
-                    line=10,
-                    column=0,
-                    signature="def old_func():",
-                )
-            ]
-        }
-        save_symbol_baseline(baseline_path, old_symbols)
+        # V1: Create file with old_func
+        python_file.write_text("""
+def old_func():
+    \"\"\"Old function.\"\"\"
+    pass
+""")
 
-        # Setup mock indexer to return new symbols
-        mock_indexer = MagicMock()
-        mock_indexer.index_symbols.return_value = {
-            "file.py": [
-                Symbol(
-                    name="new_func",
-                    type=SymbolType.FUNCTION,
-                    file="file.py",
-                    line=20,
-                    column=0,
-                    signature="def new_func():",
-                )
-            ]
-        }
-        mock_indexer_class.return_value = mock_indexer
+        # First run - creates baseline with old_func
+        changes = _get_semantic_changes(tmp_path)
+        assert changes == []  # First run returns empty
 
-        # Run semantic diff
+        # V2: Modify file - remove old_func, add new_func
+        python_file.write_text("""
+def new_func():
+    \"\"\"New function.\"\"\"
+    pass
+""")
+
+        # Second run - should detect changes
         changes = _get_semantic_changes(tmp_path)
 
-        # Should detect removed and added functions
-        assert len(changes) == 2
+        # Should detect removed old_func and added new_func
+        assert len(changes) == 2, f"Expected 2 changes, got {len(changes)}: {changes}"
         change_types = {c.change_type for c in changes}
-        assert "removed" in change_types
-        assert "added" in change_types
+        assert "removed" in change_types, "Should detect removed function"
+        assert "added" in change_types, "Should detect added function"
+
+        # Verify specific changes
+        removed_changes = [c for c in changes if c.change_type == "removed"]
+        added_changes = [c for c in changes if c.change_type == "added"]
+        assert any("old_func" in c.name for c in removed_changes), f"old_func not in removed: {[c.name for c in removed_changes]}"
+        assert any("new_func" in c.name for c in added_changes), f"new_func not in added: {[c.name for c in added_changes]}"
 
     @patch("doc_manager_mcp.tools.changes.SymbolIndexer")
     def test_get_semantic_changes_error_handling(self, mock_indexer_class, tmp_path):
@@ -960,61 +973,54 @@ class TestIntegration:
         assert "semantic_changes" in result
         assert result["semantic_changes"] == []
 
-    @patch("doc_manager_mcp.tools.changes.SymbolIndexer")
-    def test_semantic_changes_baseline_updates_after_run(
-        self, mock_indexer_class, tmp_path
-    ):
-        """Test that baseline is updated after each run."""
+    def test_semantic_changes_baseline_updates_after_run(self, tmp_path):
+        """Test that baseline is updated after each run.
+
+        Uses real Python files and TreeSitter indexing (no mocks).
+        Verifies baseline updates correctly when code changes.
+        """
         from doc_manager_mcp.tools.changes import _get_semantic_changes
 
+        # Create project structure
+        src_dir = tmp_path / "src"
+        src_dir.mkdir()
+        python_file = src_dir / "module.py"
         baseline_path = tmp_path / ".doc-manager" / "memory" / "symbol-baseline.json"
         baseline_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # First run
-        mock_indexer_v1 = MagicMock()
-        symbols_v1 = {
-            "file.py": [
-                Symbol(
-                    name="func_v1",
-                    type=SymbolType.FUNCTION,
-                    file="file.py",
-                    line=10,
-                    column=0,
-                )
-            ]
-        }
-        mock_indexer_v1.index_symbols.return_value = symbols_v1
-        mock_indexer_class.return_value = mock_indexer_v1
+        # V1: Create file with func_v1
+        python_file.write_text("""
+def func_v1():
+    \"\"\"Version 1 function.\"\"\"
+    pass
+""")
 
+        # First run - creates baseline
         _get_semantic_changes(tmp_path)
 
         # Load baseline and verify it has v1 symbols
         baseline = load_symbol_baseline(baseline_path)
         assert baseline is not None
-        assert baseline["file.py"][0].name == "func_v1"
+        # Baseline is keyed by symbol name
+        assert "func_v1" in baseline, f"Expected func_v1 in baseline: {list(baseline.keys())}"
+        assert baseline["func_v1"][0].name == "func_v1"
 
-        # Second run with different symbols
-        mock_indexer_v2 = MagicMock()
-        symbols_v2 = {
-            "file.py": [
-                Symbol(
-                    name="func_v2",
-                    type=SymbolType.FUNCTION,
-                    file="file.py",
-                    line=20,
-                    column=0,
-                )
-            ]
-        }
-        mock_indexer_v2.index_symbols.return_value = symbols_v2
-        mock_indexer_class.return_value = mock_indexer_v2
+        # V2: Modify file to have func_v2 instead
+        python_file.write_text("""
+def func_v2():
+    \"\"\"Version 2 function.\"\"\"
+    pass
+""")
 
+        # Second run - updates baseline
         _get_semantic_changes(tmp_path)
 
         # Baseline should now have v2 symbols
         baseline = load_symbol_baseline(baseline_path)
         assert baseline is not None
-        assert baseline["file.py"][0].name == "func_v2"
+        assert "func_v2" in baseline, f"Expected func_v2 in updated baseline: {list(baseline.keys())}"
+        assert "func_v1" not in baseline, "func_v1 should be removed from baseline"
+        assert baseline["func_v2"][0].name == "func_v2", "Baseline should update to new symbols"
 
 
 class TestIsPublicApi:
