@@ -106,9 +106,7 @@ def preserve_frontmatter(
     if format == "yaml":
         handler = frontmatter.YAMLHandler()
     elif format == "toml":
-        # TOML handler may not be available
-        toml_handler = getattr(frontmatter, 'TOMLHandler', None)
-        handler = toml_handler() if toml_handler else frontmatter.YAMLHandler()
+        handler = frontmatter.TOMLHandler()
     elif format == "json":
         handler = frontmatter.JSONHandler()
     else:
