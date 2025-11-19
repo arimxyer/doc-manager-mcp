@@ -179,15 +179,22 @@ class TestLinkRewriting:
     """Tests for link computation and rewriting."""
 
     def test_compute_relative_link_sibling(self):
-        """Test computing link between sibling files."""
+        """Test computing link between sibling files.
+
+        Algorithm:
+        - from_rel = guide/setup.md
+        - to_rel = guide/config.md
+        - from_dir = guide (parent of setup.md)
+        - up_levels = 1 (from_dir.parts = ('guide',))
+        - relative = '../' * 1 + 'guide/config.md' = '../guide/config.md'
+        """
         from_file = Path("/docs/guide/setup.md")
         to_file = Path("/docs/guide/config.md")
         root = Path("/docs")
 
         link = compute_relative_link(from_file, to_file, root)
 
-        # Links are computed from file directory, so sibling in same dir needs ../
-        assert link == "../guide/config.md" or link == "guide/config.md"
+        assert link == "../guide/config.md"
 
     def test_compute_relative_link_parent(self):
         """Test computing link from child to parent directory."""
@@ -210,7 +217,15 @@ class TestLinkRewriting:
         assert link == "readme.md"
 
     def test_compute_relative_link_deeply_nested(self):
-        """Test computing link across deeply nested directories."""
+        """Test computing link across deeply nested directories.
+
+        Algorithm:
+        - from_rel = a/b/c/d.md
+        - to_rel = x/y/z.md
+        - from_dir = a/b/c
+        - up_levels = 3
+        - relative = '../../../x/y/z.md'
+        """
         from_file = Path("/docs/a/b/c/d.md")
         to_file = Path("/docs/x/y/z.md")
         root = Path("/docs")
@@ -218,6 +233,106 @@ class TestLinkRewriting:
         link = compute_relative_link(from_file, to_file, root)
 
         assert link == "../../../x/y/z.md"
+
+    def test_compute_relative_link_child_to_sibling(self):
+        """Test link from nested file to sibling of parent.
+
+        Algorithm:
+        - from_file = /docs/guide/advanced/topics.md
+        - to_file = /docs/api.md
+        - from_rel = guide/advanced/topics.md
+        - to_rel = api.md
+        - from_dir = guide/advanced
+        - up_levels = 2
+        - relative = '../../api.md'
+        """
+        from_file = Path("/docs/guide/advanced/topics.md")
+        to_file = Path("/docs/api.md")
+        root = Path("/docs")
+
+        link = compute_relative_link(from_file, to_file, root)
+
+        assert link == "../../api.md"
+
+    def test_compute_relative_link_descending(self):
+        """Test link from parent to deeply nested child.
+
+        Algorithm:
+        - from_file = /docs/index.md
+        - to_file = /docs/guide/advanced/topics/intro.md
+        - from_rel = index.md
+        - to_rel = guide/advanced/topics/intro.md
+        - from_dir = . (empty)
+        - up_levels = 0
+        - relative = guide/advanced/topics/intro.md
+        """
+        from_file = Path("/docs/index.md")
+        to_file = Path("/docs/guide/advanced/topics/intro.md")
+        root = Path("/docs")
+
+        link = compute_relative_link(from_file, to_file, root)
+
+        assert link == "guide/advanced/topics/intro.md"
+
+    def test_compute_relative_link_cousin_directories(self):
+        """Test link between cousin directories (shared grandparent).
+
+        Algorithm:
+        - from_file = /docs/section1/sub/page.md
+        - to_file = /docs/section2/sub/other.md
+        - from_rel = section1/sub/page.md
+        - to_rel = section2/sub/other.md
+        - from_dir = section1/sub
+        - up_levels = 2
+        - relative = '../../section2/sub/other.md'
+        """
+        from_file = Path("/docs/section1/sub/page.md")
+        to_file = Path("/docs/section2/sub/other.md")
+        root = Path("/docs")
+
+        link = compute_relative_link(from_file, to_file, root)
+
+        assert link == "../../section2/sub/other.md"
+
+    def test_compute_relative_link_three_levels_up(self):
+        """Test link requiring three directory traversals.
+
+        Algorithm:
+        - from_file = /docs/a/b/c/file.md
+        - to_file = /docs/root.md
+        - from_rel = a/b/c/file.md
+        - to_rel = root.md
+        - from_dir = a/b/c
+        - up_levels = 3
+        - relative = '../../../root.md'
+        """
+        from_file = Path("/docs/a/b/c/file.md")
+        to_file = Path("/docs/root.md")
+        root = Path("/docs")
+
+        link = compute_relative_link(from_file, to_file, root)
+
+        assert link == "../../../root.md"
+
+    def test_compute_relative_link_complex_path(self):
+        """Test link with complex directory names.
+
+        Algorithm:
+        - from_file = /docs/user-guide/getting-started/quick-start.md
+        - to_file = /docs/api-reference/core/functions.md
+        - from_rel = user-guide/getting-started/quick-start.md
+        - to_rel = api-reference/core/functions.md
+        - from_dir = user-guide/getting-started
+        - up_levels = 2
+        - relative = '../../api-reference/core/functions.md'
+        """
+        from_file = Path("/docs/user-guide/getting-started/quick-start.md")
+        to_file = Path("/docs/api-reference/core/functions.md")
+        root = Path("/docs")
+
+        link = compute_relative_link(from_file, to_file, root)
+
+        assert link == "../../api-reference/core/functions.md"
 
     def test_rewrite_inline_links(self):
         """Test rewriting inline [text](url) links."""
@@ -792,7 +907,11 @@ def example():
         assert "configuration" in toc.lower()
 
     def test_compute_relative_link_outside_root(self):
-        """Test computing link when files are outside root."""
+        """Test computing link when files are outside root.
+
+        When from_file is not under root, from_file.relative_to(from_root)
+        raises ValueError, which is caught and returns str(to_file).
+        """
         from_file = Path("/other/guide.md")
         to_file = Path("/docs/reference.md")
         root = Path("/docs")
@@ -800,8 +919,8 @@ def example():
         # from_file is not under root
         link = compute_relative_link(from_file, to_file, root)
 
-        # Should return absolute path or handle gracefully
-        assert link  # Non-empty result
+        # Should return absolute path of to_file
+        assert link == str(to_file)
 
     def test_preserve_reference_link_indentation(self):
         """Test that reference link definitions preserve indentation."""
