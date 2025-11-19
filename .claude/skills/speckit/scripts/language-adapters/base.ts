@@ -237,8 +237,9 @@ export abstract class BaseLanguageAdapter implements LanguageAdapter {
     if (match) {
       return match[1];
     }
-    // Default to 001 for tests not in a spec directory
-    return '001';
+    // Return null for tests not in a spec directory (orphaned tests)
+    // Tests without @spec tag will require manual tagging or bootstrap command
+    return null;
   }
 
   /**

@@ -62,7 +62,7 @@ All tests must be tagged with metadata for registry tracking. See `testing/metad
 
 ### Required Tags
 
-**@spec <number>**: Links test to specification
+**@spec <number>**: Links test to specification (zero-padded 001-999)
 
 ```python
 # Python
@@ -103,7 +103,7 @@ fn test_user_authentication() {
 
 ### Optional Tags
 
-**@testType unit|integration|e2e**: Explicit test type (overrides path inference)
+**@testType unit|integration|e2e**: Explicit test type (overrides path inference). Only use when path-based inference is incorrect (e.g., test in wrong directory)
 
 ```python
 """

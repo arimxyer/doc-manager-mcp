@@ -461,7 +461,7 @@ cmd_scan() {
     # Constitution v1.2.0 Principle IV: HEALTHY (±10% of 70/20/10), WARN (outside range), CRITICAL (e2e >20%)
     local pyramid_status="HEALTHY"
 
-    # CRITICAL: e2e exceeds 20% (hard limit per Constitution Principle IV line 117)
+    # CRITICAL: e2e exceeds 20% (hard limit per Constitution Principle IV line 126)
     if (( $(awk "BEGIN {print ($e2e_ratio > 0.20)}") )); then
         pyramid_status="CRITICAL"
     # WARN: Unit or integration ratios outside ±10% of targets (60-80% unit, 10-30% integration)

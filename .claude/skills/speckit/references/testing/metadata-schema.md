@@ -24,6 +24,16 @@ All tests must include standardized metadata tags for spec ownership tracking an
 | **Go** | Line comments `//` | Above function | See Go Examples |
 | **Rust** | Doc comments `///` | Above function | See Rust Examples |
 
+## Language-Specific Behaviors
+
+| Feature | Python | JavaScript/TS | Go | Rust |
+|---------|--------|---------------|-----|------|
+| **Blank lines between tags and test** | ✅ Allowed (parser skips) | ✅ Allowed (parser skips) | ⚠️ Avoid (use `//` only) | ⚠️ Avoid (use `///` only) |
+| **Tag location** | After decorators, in docstring | Before function | Before function | Before attributes (`#[test]`) |
+| **Comment syntax** | `"""..."""` or `#` | `/** ... */` | `//` only (NOT `/* */`) | `///` only (NOT `//`) |
+| **Nested test detection** | Class methods tracked individually | Describe blocks tracked with full path | Subtests (`t.Run`) NOT individually tracked | Module tests NOT inherited |
+| **Multiple decorators/attributes** | Supported (tags after all decorators) | N/A (no decorators) | N/A (no decorators) | Tags before all attributes |
+
 ## Tag Definitions
 
 ### Required Tags
@@ -63,7 +73,7 @@ If `@testType` not specified, inferred from file path:
 
 2. ✅ **Tags MUST be on each individual test** - NO automatic inheritance from file/module/class level
 
-3. ✅ **Blank lines between tags and test are OK** - Parser skips them
+3. ✅ **Blank lines between tags and test are handled by parser** - Parser skips whitespace/newlines, but avoid blank lines for readability (language-specific: Python/JavaScript parsers skip them, Go/Rust recommended to avoid)
 
 4. ✅ **At least @spec tag is required** - Tests without @spec become orphaned
 
@@ -159,6 +169,27 @@ async def database():
         yield engine
 ```
 
+### pytest Parametrized Tests
+
+```python
+import pytest
+
+@pytest.mark.parametrize("input,expected", [
+    ("hello", 5),
+    ("world", 5),
+    ("test", 4),
+])
+def test_string_length(input, expected):
+    """
+    @spec 001
+    @userStory US2
+    @testType unit
+    """
+    assert len(input) == expected
+```
+
+Tags go in the docstring AFTER decorators (including `@pytest.mark.parametrize`).
+
 ---
 
 ## JavaScript/TypeScript Examples
@@ -243,6 +274,29 @@ describe('Feature Suite', () => {
   });
 });
 ```
+
+### Deeply Nested Describe Blocks
+
+```typescript
+describe('Feature Suite', () => {
+  describe('Subsystem A', () => {
+    describe('Component X', () => {
+      /**
+       * @spec 001
+       * @userStory US3
+       * @testType integration
+       */
+      it('handles edge case correctly', () => {
+        // Parser tracks full describePath: ['Feature Suite', 'Subsystem A', 'Component X']
+        const result = processEdgeCase();
+        expect(result).toBeTruthy();
+      });
+    });
+  });
+});
+```
+
+Parser tracks the full `describePath` array for nested describe blocks.
 
 ---
 
@@ -436,19 +490,22 @@ mod workspace_tests {
 
 ## Common Mistakes
 
-### ❌ WRONG: Blank Line Between Tags and Test (Python)
+### ⚠️ Blank Lines Between Tags and Test (Language-Specific)
+
+**Parser behavior**: Python and JavaScript parsers skip blank lines/whitespace correctly. However, avoid blank lines for readability and consistency.
 
 ```python
+# Parser handles this correctly, but avoid for clarity
 """
 @spec 001
 @userStory US1
 """
 
-def test_authentication():  # ← Blank line breaks association
+def test_authentication():  # ← Blank line: parser skips it
     pass
 ```
 
-**✅ CORRECT**: No blank lines (or parser accepts them per line 66)
+**✅ RECOMMENDED**: No blank lines
 
 ```python
 """
