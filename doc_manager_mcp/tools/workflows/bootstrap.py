@@ -26,6 +26,9 @@ from ..analysis.quality.assessment import assess_quality
 async def bootstrap(params: BootstrapInput) -> str | dict[str, Any]:
     """Bootstrap fresh documentation for a project.
 
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    It is automatically called by docmgr_init(mode="bootstrap").
+
     Orchestrates multiple tools to set up documentation from scratch:
     1. Detects/recommends documentation platform
     2. Creates configuration file

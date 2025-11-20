@@ -723,6 +723,9 @@ def _format_dependency_report(dependencies: dict[str, list[str]], code_to_doc: d
 async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
     """Track dependencies between documentation and source code.
 
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    It is automatically called by docmgr_init and docmgr_update_baseline.
+
     Analyzes documentation files to find references to source code,
     building a bidirectional dependency graph.
 
