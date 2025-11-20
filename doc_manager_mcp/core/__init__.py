@@ -50,32 +50,22 @@ from .responses import enforce_response_limit, safe_json_dumps
 from .security import file_lock
 
 __all__ = [
-    # Checksums
+    "ResourceLimits",
     "calculate_checksum",
-    # Git
-    "run_git_command",
-    # Paths
-    "safe_resolve",
-    "validate_path_boundary",
-    # Patterns
-    "matches_exclude_pattern",
-    # Project
     "detect_platform_quick",
     "detect_project_language",
+    "enforce_response_limit",
+    "file_lock",
     "find_docs_directory",
     "find_markdown_files",
-    "is_public_symbol",
-    # Config
-    "load_config",
-    "save_config",
-    # Errors
     "handle_error",
-    # Resources
-    "ResourceLimits",
+    "is_public_symbol",
+    "load_config",
+    "matches_exclude_pattern",
     "operation_timeout",
-    # Responses
-    "enforce_response_limit",
+    "run_git_command",
     "safe_json_dumps",
-    # Security
-    "file_lock",
+    "safe_resolve",
+    "save_config",
+    "validate_path_boundary",
 ]

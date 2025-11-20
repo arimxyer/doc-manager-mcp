@@ -6,10 +6,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from ....indexing.analysis.code_validator import CodeValidator
-from ....indexing.analysis.tree_sitter import SymbolIndexer
-from ....indexing.parsers.markdown import MarkdownParser
-from ....models import ValidateDocsInput
 from ....core import (
     enforce_response_limit,
     find_docs_directory,
@@ -17,6 +13,10 @@ from ....core import (
     handle_error,
     safe_resolve,
 )
+from ....indexing.analysis.code_validator import CodeValidator
+from ....indexing.analysis.tree_sitter import SymbolIndexer
+from ....indexing.parsers.markdown import MarkdownParser
+from ....models import ValidateDocsInput
 from .helpers import validate_code_examples, validate_documented_symbols
 
 

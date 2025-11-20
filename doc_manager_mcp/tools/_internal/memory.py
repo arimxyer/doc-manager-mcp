@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 from ...constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES
-from ...models import InitializeMemoryInput
 from ...core import (
     calculate_checksum,
     detect_project_language,
@@ -22,6 +21,7 @@ from ...core import (
     run_git_command,
     validate_path_boundary,
 )
+from ...models import InitializeMemoryInput
 
 
 async def scandir_async(path: Path):

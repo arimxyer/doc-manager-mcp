@@ -8,14 +8,6 @@ from pathlib import Path
 from typing import Any
 
 from ...constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES, OPERATION_TIMEOUT, ChangeDetectionMode
-from ...indexing.analysis.semantic_diff import (
-    SemanticChange,
-    compare_symbols,
-    load_symbol_baseline,
-    save_symbol_baseline,
-)
-from ...indexing.analysis.tree_sitter import SymbolIndexer
-from ...models import MapChangesInput
 from ...core import (
     calculate_checksum,
     enforce_response_limit,
@@ -25,6 +17,14 @@ from ...core import (
     run_git_command,
     validate_path_boundary,
 )
+from ...indexing.analysis.semantic_diff import (
+    SemanticChange,
+    compare_symbols,
+    load_symbol_baseline,
+    save_symbol_baseline,
+)
+from ...indexing.analysis.tree_sitter import SymbolIndexer
+from ...models import MapChangesInput
 
 
 def _load_baseline(project_path: Path) -> dict[str, Any] | None:
