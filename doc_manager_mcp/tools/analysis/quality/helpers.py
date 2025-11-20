@@ -535,6 +535,7 @@ def check_terminology_compliance(docs_path, conventions):
         Dict with avoided_terms_found and preferred_term_usage
     """
     import re
+    import sys
 
     if not conventions or not conventions.terminology:
         return {
@@ -595,7 +596,8 @@ def check_terminology_compliance(docs_path, conventions):
                             "reason": term_rule.reason
                         })
 
-            except Exception:
+            except Exception as e:
+                print(f"Warning: Failed to check terminology in {md_file}: {e}", file=sys.stderr)
                 continue
 
     # Check preferred terminology usage
@@ -624,7 +626,8 @@ def check_terminology_compliance(docs_path, conventions):
                     usage["abbreviation_count"] += abbr_count
                     usage["files"].append(str(md_file.relative_to(docs_path)))
 
-            except Exception:
+            except Exception as e:
+                print(f"Warning: Failed to check preferred terminology in {md_file}: {e}", file=sys.stderr)
                 continue
 
         if usage["full_form_count"] > 0 or usage["abbreviation_count"] > 0:
