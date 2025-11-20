@@ -1,7 +1,7 @@
 """Comprehensive baseline update tool (T009)."""
 
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from ..models import DocmgrUpdateBaselineInput
 from ..utils import enforce_response_limit, handle_error
@@ -94,8 +94,8 @@ async def docmgr_update_baseline(
             "status": "error",
             "message": error_msg
         }
-        # enforce_response_limit returns dict unchanged when given dict
-        return cast(dict[str, Any], enforce_response_limit(error_dict))
+        # enforce_response_limit returns dict unchanged when given dict (type-safe with overloads)
+        return enforce_response_limit(error_dict)
 
 
 async def _update_repo_baseline(project_path: Path) -> dict[str, Any]:

@@ -1,7 +1,7 @@
 """Unified initialization tool for doc-manager (T007)."""
 
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from ..models import (
     BootstrapInput,
@@ -62,19 +62,27 @@ async def docmgr_init(params: DocmgrInitInput, ctx=None) -> dict[str, Any]:
             if ctx:
                 await ctx.info("Step 2/3: Initializing memory system...")
 
-            _memory_result = await initialize_memory(
+            memory_result = await initialize_memory(
                 InitializeMemoryInput(project_path=str(project_path)),
                 ctx
             )
+
+            # Check for memory initialization failure
+            if isinstance(memory_result, dict) and memory_result.get("status") == "error":
+                return memory_result  # Propagate error
 
             # Step 3: Track dependencies
             if ctx:
                 await ctx.info("Step 3/3: Tracking dependencies...")
 
-            _deps_result = await track_dependencies(TrackDependenciesInput(
+            deps_result = await track_dependencies(TrackDependenciesInput(
                 project_path=str(project_path),
                 docs_path=params.docs_path
             ))
+
+            # Check for dependency tracking failure
+            if isinstance(deps_result, dict) and deps_result.get("status") == "error":
+                return deps_result  # Propagate error
 
             return {
                 "status": "success",
@@ -82,8 +90,8 @@ async def docmgr_init(params: DocmgrInitInput, ctx=None) -> dict[str, Any]:
                 "mode": "existing",
                 "steps_completed": {
                     "config": "created" if isinstance(config_result, dict) and config_result.get("status") == "success" else "completed",
-                    "memory": "completed",
-                    "dependencies": "completed"
+                    "memory": "created" if isinstance(memory_result, dict) and memory_result.get("status") == "success" else "completed",
+                    "dependencies": "created" if isinstance(deps_result, dict) and deps_result.get("status") == "success" else "completed"
                 },
                 "config_path": f"{project_path}/.doc-manager.yml",
                 "memory_path": f"{project_path}/.doc-manager/memory/",
@@ -108,17 +116,21 @@ async def docmgr_init(params: DocmgrInitInput, ctx=None) -> dict[str, Any]:
             if ctx:
                 await ctx.info("Tracking dependencies...")
 
-            _deps_result = await track_dependencies(TrackDependenciesInput(
+            deps_result = await track_dependencies(TrackDependenciesInput(
                 project_path=str(project_path),
                 docs_path=params.docs_path or "docs"
             ))
+
+            # Check for dependency tracking failure
+            if isinstance(deps_result, dict) and deps_result.get("status") == "error":
+                return deps_result  # Propagate error
 
             return {
                 "status": "success",
                 "message": "Bootstrapped fresh documentation structure",
                 "mode": "bootstrap",
                 "bootstrap_result": bootstrap_result if isinstance(bootstrap_result, dict) else {"completed": True},
-                "dependencies_tracked": True,
+                "dependencies_tracked": isinstance(deps_result, dict) and deps_result.get("status") == "success",
                 "docs_path": params.docs_path or "docs"
             }
 
@@ -134,5 +146,5 @@ async def docmgr_init(params: DocmgrInitInput, ctx=None) -> dict[str, Any]:
             "status": "error",
             "message": error_msg
         }
-        # enforce_response_limit returns dict unchanged when given dict
-        return cast(dict[str, Any], enforce_response_limit(error_dict))
+        # enforce_response_limit returns dict unchanged when given dict (type-safe with overloads)
+        return enforce_response_limit(error_dict)
