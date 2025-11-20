@@ -4,7 +4,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ...constants import DocumentationPlatform
 from ...models import InitializeConfigInput
 from ...utils import (
     detect_platform_quick,

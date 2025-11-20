@@ -16,6 +16,12 @@ This package contains focused modules for different utility categories:
 # Checksums
 from .checksums import calculate_checksum
 
+# Configuration
+from .config import load_config, save_config
+
+# Error handling
+from .errors import handle_error
+
 # Git operations
 from .git import run_git_command
 
@@ -33,12 +39,6 @@ from .project import (
     find_markdown_files,
     is_public_symbol,
 )
-
-# Configuration
-from .config import load_config, save_config
-
-# Error handling
-from .errors import handle_error
 
 # Resource management
 from .resources import ResourceLimits, operation_timeout

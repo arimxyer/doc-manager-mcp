@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from ....constants import MAX_FILES
 from ....indexing.code_validator import CodeValidator
 from ....indexing.markdown_parser import MarkdownParser
 from ....indexing.tree_sitter import SymbolIndexer
@@ -19,8 +18,6 @@ from ....utils import (
     safe_resolve,
 )
 from .helpers import validate_code_examples, validate_documented_symbols
-
-
 
 
 def _extract_links(content: str, file_path: Path) -> list[dict[str, Any]]:

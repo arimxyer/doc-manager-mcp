@@ -42,12 +42,12 @@ from .models import (
 )
 
 # Import tool implementations
-from .tools.detect_changes import docmgr_detect_changes
-from .tools.init import docmgr_init
-from .tools.platform import detect_platform
-from .tools.quality import assess_quality
-from .tools.update_baseline import docmgr_update_baseline
-from .tools.validation import validate_docs
+from .tools.analysis.detect_changes import docmgr_detect_changes
+from .tools.analysis.platform import detect_platform
+from .tools.analysis.quality.assessment import assess_quality
+from .tools.analysis.validation.validator import validate_docs
+from .tools.state.init import docmgr_init
+from .tools.state.update_baseline import docmgr_update_baseline
 from .tools.workflows import migrate, sync
 
 if platform.system() == 'Windows':
