@@ -15,12 +15,12 @@ from ..indexing.link_rewriter import (
 )
 from ..models import BootstrapInput, MigrateInput, SyncInput
 from ..utils import detect_project_language, enforce_response_limit, handle_error
-from .config import initialize_config
 from .analysis.detect_changes import docmgr_detect_changes
-from .memory import initialize_memory
 from .analysis.platform import detect_platform
 from .analysis.quality.assessment import assess_quality
 from .analysis.validation.validator import validate_docs
+from .config import initialize_config
+from .memory import initialize_memory
 
 
 async def bootstrap(params: BootstrapInput) -> str | dict[str, Any]:

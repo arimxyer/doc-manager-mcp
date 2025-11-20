@@ -24,8 +24,6 @@ from .helpers import (
 )
 
 
-
-
 def _assess_relevance(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if documentation addresses current user needs and use cases."""
     issues = []
