@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from ...models import DocmgrDetectChangesInput
-from ...utils import enforce_response_limit, handle_error
+from ...core import enforce_response_limit, handle_error
 from .._legacy.changes import (
     _categorize_change,
     _get_changed_files_from_checksums,

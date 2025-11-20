@@ -10,7 +10,7 @@ from ....indexing.analysis.code_validator import CodeValidator
 from ....indexing.analysis.tree_sitter import SymbolIndexer
 from ....indexing.parsers.markdown import MarkdownParser
 from ....models import ValidateDocsInput
-from ....utils import (
+from ....core import (
     enforce_response_limit,
     find_docs_directory,
     find_markdown_files,
