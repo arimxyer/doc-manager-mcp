@@ -1,0 +1,81 @@
+"""Core utilities for doc-manager MCP server.
+
+This package contains focused modules for different utility categories:
+- checksums: File checksum calculations
+- git: Git command execution
+- paths: Path resolution and validation
+- patterns: Pattern matching utilities
+- project: Project detection and analysis
+- config: Configuration file management
+- errors: Error handling and formatting
+- resources: Resource limits and timeouts
+- responses: Response formatting and limits
+- security: Security utilities (file locking)
+"""
+
+# Checksums
+from .checksums import calculate_checksum
+
+# Git operations
+from .git import run_git_command
+
+# Path utilities
+from .paths import safe_resolve, validate_path_boundary
+
+# Pattern matching
+from .patterns import matches_exclude_pattern
+
+# Project detection
+from .project import (
+    detect_platform_quick,
+    detect_project_language,
+    find_docs_directory,
+    find_markdown_files,
+    is_public_symbol,
+)
+
+# Configuration
+from .config import load_config, save_config
+
+# Error handling
+from .errors import handle_error
+
+# Resource management
+from .resources import ResourceLimits, operation_timeout
+
+# Response utilities
+from .responses import enforce_response_limit, safe_json_dumps
+
+# Security
+from .security import file_lock
+
+__all__ = [
+    # Checksums
+    "calculate_checksum",
+    # Git
+    "run_git_command",
+    # Paths
+    "safe_resolve",
+    "validate_path_boundary",
+    # Patterns
+    "matches_exclude_pattern",
+    # Project
+    "detect_platform_quick",
+    "detect_project_language",
+    "find_docs_directory",
+    "find_markdown_files",
+    "is_public_symbol",
+    # Config
+    "load_config",
+    "save_config",
+    # Errors
+    "handle_error",
+    # Resources
+    "ResourceLimits",
+    "operation_timeout",
+    # Responses
+    "enforce_response_limit",
+    "safe_json_dumps",
+    # Security
+    "file_lock",
+]
