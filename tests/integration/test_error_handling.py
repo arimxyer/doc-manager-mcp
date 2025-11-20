@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from doc_manager_mcp.models import DocmgrInitInput
-from doc_manager_mcp.tools.init import docmgr_init
+from doc_manager_mcp.tools.state.init import docmgr_init
 
 
 @pytest.fixture
@@ -66,7 +66,7 @@ async def test_init_fails_when_memory_init_fails(temp_project):
         "message": "Baseline creation failed: Permission denied"
     })
 
-    with patch("doc_manager_mcp.tools.init.initialize_memory", mock_memory_fail):
+    with patch("doc_manager_mcp.tools.state.init.initialize_memory", mock_memory_fail):
         result = await docmgr_init(DocmgrInitInput(
             project_path=str(temp_project),
             mode="existing",
@@ -93,7 +93,7 @@ async def test_init_fails_when_deps_tracking_fails(temp_project):
         "message": "Dependency tracking failed: Invalid docs path"
     })
 
-    with patch("doc_manager_mcp.tools.init.track_dependencies", mock_deps_fail):
+    with patch("doc_manager_mcp.tools.state.init.track_dependencies", mock_deps_fail):
         result = await docmgr_init(DocmgrInitInput(
             project_path=str(temp_project),
             mode="existing",
@@ -115,7 +115,7 @@ async def test_bootstrap_fails_when_deps_tracking_fails(temp_project):
         "message": "Dependency tracking failed: No markdown files found"
     })
 
-    with patch("doc_manager_mcp.tools.init.track_dependencies", mock_deps_fail):
+    with patch("doc_manager_mcp.tools.state.init.track_dependencies", mock_deps_fail):
         result = await docmgr_init(DocmgrInitInput(
             project_path=str(temp_project),
             mode="bootstrap",
