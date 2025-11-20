@@ -63,6 +63,9 @@ def with_timeout(timeout_seconds):
 async def initialize_memory(params: InitializeMemoryInput, ctx=None) -> str | dict[str, Any]:
     """Initialize the documentation memory system for tracking project state.
 
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    Use docmgr_init(mode="existing") instead, which calls this internally.
+
     This tool creates the `.doc-manager/` directory structure with memory files
     that track repository baseline, documentation conventions, and file checksums.
 

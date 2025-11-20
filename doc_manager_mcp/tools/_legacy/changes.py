@@ -419,6 +419,9 @@ async def _map_changes_impl(params: MapChangesInput) -> str | dict[str, Any]:
 async def map_changes(params: MapChangesInput) -> str | dict[str, Any]:
     """Map code changes to affected documentation.
 
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    Use docmgr_detect_changes or docmgr_sync instead, which provide the same functionality.
+
     Compares current codebase state against baseline (from memory or git commit)
     and identifies which documentation files need updates based on code changes.
 

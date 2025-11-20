@@ -18,6 +18,9 @@ from ...utils import (
 async def initialize_config(params: InitializeConfigInput) -> str | dict[str, Any]:
     """Initialize .doc-manager.yml configuration file for the project.
 
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    Use docmgr_init(mode="existing") instead, which calls this internally.
+
     This tool creates a new configuration file that defines how the documentation
     manager should operate for this project. It detects project characteristics
     and creates sensible defaults.
