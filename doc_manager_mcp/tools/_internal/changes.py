@@ -7,16 +7,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES, OPERATION_TIMEOUT, ChangeDetectionMode
-from ..indexing.semantic_diff import (
-    SemanticChange,
-    compare_symbols,
-    load_symbol_baseline,
-    save_symbol_baseline,
+from doc_manager_mcp.constants import (
+    DEFAULT_EXCLUDE_PATTERNS,
+    MAX_FILES,
+    OPERATION_TIMEOUT,
+    ChangeDetectionMode,
 )
-from ..indexing.tree_sitter import SymbolIndexer
-from ..models import MapChangesInput
-from ..utils import (
+from doc_manager_mcp.core import (
     calculate_checksum,
     enforce_response_limit,
     handle_error,
@@ -25,6 +22,14 @@ from ..utils import (
     run_git_command,
     validate_path_boundary,
 )
+from doc_manager_mcp.indexing.analysis.semantic_diff import (
+    SemanticChange,
+    compare_symbols,
+    load_symbol_baseline,
+    save_symbol_baseline,
+)
+from doc_manager_mcp.indexing.analysis.tree_sitter import SymbolIndexer
+from doc_manager_mcp.models import MapChangesInput
 
 
 def _load_baseline(project_path: Path) -> dict[str, Any] | None:
@@ -418,6 +423,9 @@ async def _map_changes_impl(params: MapChangesInput) -> str | dict[str, Any]:
 
 async def map_changes(params: MapChangesInput) -> str | dict[str, Any]:
     """Map code changes to affected documentation.
+
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    Use docmgr_detect_changes or docmgr_sync instead, which provide the same functionality.
 
     Compares current codebase state against baseline (from memory or git commit)
     and identifies which documentation files need updates based on code changes.
