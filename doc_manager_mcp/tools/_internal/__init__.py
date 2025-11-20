@@ -11,10 +11,10 @@ the public MCP tools but are not directly exposed to users:
 """
 
 from .bootstrap import bootstrap
-from .config import initialize_config
-from .memory import initialize_memory
 from .changes import map_changes
+from .config import initialize_config
 from .dependencies import track_dependencies
+from .memory import initialize_memory
 
 __all__ = [
     "bootstrap",

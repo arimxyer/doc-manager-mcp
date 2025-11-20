@@ -7,14 +7,14 @@ from pathlib import Path
 from typing import Any
 
 from ....constants import QualityCriterion
-from ....indexing.parsers.markdown import MarkdownParser
-from ....models import AssessQualityInput
 from ....core import (
     enforce_response_limit,
     find_docs_directory,
     find_markdown_files,
     handle_error,
 )
+from ....indexing.parsers.markdown import MarkdownParser
+from ....models import AssessQualityInput
 from .helpers import (
     calculate_documentation_coverage,
     check_heading_case_consistency,

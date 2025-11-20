@@ -4,7 +4,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ...models import InitializeConfigInput
 from ...core import (
     detect_platform_quick,
     detect_project_language,
@@ -13,6 +12,7 @@ from ...core import (
     handle_error,
     save_config,
 )
+from ...models import InitializeConfigInput
 
 
 async def initialize_config(params: InitializeConfigInput) -> str | dict[str, Any]:

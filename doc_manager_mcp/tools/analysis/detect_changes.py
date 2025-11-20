@@ -6,8 +6,8 @@ Key difference from map_changes: NEVER writes to symbol-baseline.json
 from pathlib import Path
 from typing import Any
 
-from ...models import DocmgrDetectChangesInput
 from ...core import enforce_response_limit, handle_error
+from ...models import DocmgrDetectChangesInput
 from .._internal.changes import (
     _categorize_change,
     _get_changed_files_from_checksums,

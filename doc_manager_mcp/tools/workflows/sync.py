@@ -18,8 +18,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ...models import SyncInput
 from ...core import enforce_response_limit, handle_error
+from ...models import SyncInput
 from ..analysis.detect_changes import docmgr_detect_changes
 from ..analysis.quality.assessment import assess_quality
 from ..analysis.validation.validator import validate_docs
@@ -141,8 +141,8 @@ async def sync(params: SyncInput) -> dict[str, Any] | str:
         lines.append(f"## Step {3 + step_offset}: Current Documentation Status")
         lines.append("")
 
-        from ...models import ValidateDocsInput
         from ...core import find_docs_directory
+        from ...models import ValidateDocsInput
 
         # Use provided docs_path or auto-detect
         if params.docs_path:

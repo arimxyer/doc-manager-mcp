@@ -25,25 +25,22 @@ from .transforms import (
 )
 
 __all__ = [
-    # Analysis exports
     "CodeValidator",
+    "MarkdownParser",
     "SemanticChange",
     "Symbol",
     "SymbolIndexer",
     "SymbolType",
     "compare_symbols",
-    "load_symbol_baseline",
-    "save_symbol_baseline",
-    # Parser exports
-    "MarkdownParser",
-    # Transform exports
     "compute_link_mappings",
     "compute_relative_link",
     "extract_frontmatter",
     "extract_hugo_shortcodes",
     "generate_toc",
+    "load_symbol_baseline",
     "preserve_frontmatter",
     "rewrite_links_in_content",
+    "save_symbol_baseline",
     "slugify",
     "update_or_insert_toc",
 ]

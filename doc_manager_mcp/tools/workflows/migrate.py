@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from ...core import enforce_response_limit, handle_error
 from ...indexing.transforms.links import (
     extract_frontmatter,
     generate_toc,
@@ -22,7 +23,6 @@ from ...indexing.transforms.links import (
     update_or_insert_toc,
 )
 from ...models import MigrateInput
-from ...core import enforce_response_limit, handle_error
 from ..analysis.platform import detect_platform
 from ..analysis.quality.assessment import assess_quality
 from ..analysis.validation.validator import validate_docs

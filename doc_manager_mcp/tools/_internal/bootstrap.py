@@ -15,12 +15,12 @@ from pathlib import Path
 from typing import Any
 
 from ...constants import DocumentationPlatform
-from ...models import BootstrapInput
 from ...core import detect_project_language, enforce_response_limit, handle_error
-from .config import initialize_config
-from .memory import initialize_memory
+from ...models import BootstrapInput
 from ..analysis.platform import detect_platform
 from ..analysis.quality.assessment import assess_quality
+from .config import initialize_config
+from .memory import initialize_memory
 
 
 async def bootstrap(params: BootstrapInput) -> str | dict[str, Any]:
