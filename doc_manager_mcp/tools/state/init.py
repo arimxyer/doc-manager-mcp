@@ -3,18 +3,18 @@
 from pathlib import Path
 from typing import Any
 
-from ..models import (
+from ...models import (
     BootstrapInput,
     DocmgrInitInput,
     InitializeConfigInput,
     InitializeMemoryInput,
     TrackDependenciesInput,
 )
-from ..utils import enforce_response_limit, handle_error
-from .config import initialize_config
-from .dependencies import track_dependencies
-from .memory import initialize_memory
-from .workflows import bootstrap
+from ...utils import enforce_response_limit, handle_error
+from ..config import initialize_config
+from .._internal.dependencies import track_dependencies
+from ..memory import initialize_memory
+from ..workflows import bootstrap
 
 
 async def docmgr_init(params: DocmgrInitInput, ctx=None) -> dict[str, Any]:

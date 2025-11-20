@@ -6,19 +6,19 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from ..constants import MAX_FILES
-from ..indexing.code_validator import CodeValidator
-from ..indexing.markdown_parser import MarkdownParser
-from ..indexing.tree_sitter import SymbolIndexer
-from ..models import ValidateDocsInput
-from ..utils import (
+from ....constants import MAX_FILES
+from ....indexing.code_validator import CodeValidator
+from ....indexing.markdown_parser import MarkdownParser
+from ....indexing.tree_sitter import SymbolIndexer
+from ....models import ValidateDocsInput
+from ....utils import (
     enforce_response_limit,
     find_docs_directory,
     find_markdown_files,
     handle_error,
     safe_resolve,
 )
-from .validation_helpers import validate_code_examples, validate_documented_symbols
+from .helpers import validate_code_examples, validate_documented_symbols
 
 
 

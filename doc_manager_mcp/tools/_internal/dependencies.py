@@ -7,11 +7,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..constants import CLASS_PATTERN, FUNCTION_PATTERN, MAX_FILES
-from ..indexing import SymbolIndexer
-from ..indexing.markdown_parser import MarkdownParser
-from ..models import TrackDependenciesInput
-from ..utils import (
+from ...constants import CLASS_PATTERN, FUNCTION_PATTERN, MAX_FILES
+from ...indexing import SymbolIndexer
+from ...indexing.markdown_parser import MarkdownParser
+from ...models import TrackDependenciesInput
+from ...utils import (
     file_lock,
     find_docs_directory,
     find_markdown_files,

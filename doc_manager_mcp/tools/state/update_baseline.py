@@ -3,8 +3,8 @@
 from pathlib import Path
 from typing import Any
 
-from ..models import DocmgrUpdateBaselineInput
-from ..utils import enforce_response_limit, handle_error
+from ...models import DocmgrUpdateBaselineInput
+from ...utils import enforce_response_limit, handle_error
 
 
 async def docmgr_update_baseline(
@@ -111,8 +111,8 @@ async def _update_repo_baseline(project_path: Path) -> dict[str, Any]:
         import json
         from datetime import datetime
 
-        from ..constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES
-        from ..utils import (
+        from ...constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES
+        from ...utils import (
             calculate_checksum,
             detect_project_language,
             find_docs_directory,
@@ -200,8 +200,8 @@ async def _update_symbol_baseline(project_path: Path) -> dict[str, Any]:
         dict with status and symbol information
     """
     try:
-        from ..indexing.semantic_diff import save_symbol_baseline
-        from ..indexing.tree_sitter import SymbolIndexer
+        from ...indexing.semantic_diff import save_symbol_baseline
+        from ...indexing.tree_sitter import SymbolIndexer
 
         baseline_path = project_path / ".doc-manager" / "memory" / "symbol-baseline.json"
 
@@ -242,8 +242,8 @@ async def _update_dependencies(
         dict with status and dependency information
     """
     try:
-        from ..models import TrackDependenciesInput
-        from .dependencies import track_dependencies
+        from ...models import TrackDependenciesInput
+        from .._internal.dependencies import track_dependencies
 
         # Reuse existing track_dependencies function
         result = await track_dependencies(TrackDependenciesInput(

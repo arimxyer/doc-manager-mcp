@@ -6,9 +6,9 @@ Key difference from map_changes: NEVER writes to symbol-baseline.json
 from pathlib import Path
 from typing import Any
 
-from ..models import DocmgrDetectChangesInput
-from ..utils import enforce_response_limit, handle_error
-from .changes import (
+from ...models import DocmgrDetectChangesInput
+from ...utils import enforce_response_limit, handle_error
+from ..changes import (
     _categorize_change,
     _get_changed_files_from_checksums,
     _get_changed_files_from_git,
@@ -158,8 +158,8 @@ async def _get_semantic_changes_readonly(
         truly read-only.
     """
     try:
-        from ..indexing.semantic_diff import compare_symbols, load_symbol_baseline
-        from ..indexing.tree_sitter import SymbolIndexer
+        from ...indexing.semantic_diff import compare_symbols, load_symbol_baseline
+        from ...indexing.tree_sitter import SymbolIndexer
 
         baseline_path = project_path / ".doc-manager" / "memory" / "symbol-baseline.json"
 

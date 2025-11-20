@@ -6,16 +6,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..constants import QualityCriterion
-from ..indexing.markdown_parser import MarkdownParser
-from ..models import AssessQualityInput
-from ..utils import (
+from ....constants import QualityCriterion
+from ....indexing.markdown_parser import MarkdownParser
+from ....models import AssessQualityInput
+from ....utils import (
     enforce_response_limit,
     find_docs_directory,
     find_markdown_files,
     handle_error,
 )
-from .quality_helpers import (
+from .helpers import (
     calculate_documentation_coverage,
     check_heading_case_consistency,
     check_list_formatting_consistency,

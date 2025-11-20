@@ -11,9 +11,9 @@ from doc_manager_mcp.models import (
     DocmgrInitInput,
     DocmgrUpdateBaselineInput,
 )
-from doc_manager_mcp.tools.detect_changes import docmgr_detect_changes
-from doc_manager_mcp.tools.init import docmgr_init
-from doc_manager_mcp.tools.update_baseline import docmgr_update_baseline
+from doc_manager_mcp.tools.analysis.detect_changes import docmgr_detect_changes
+from doc_manager_mcp.tools.state.init import docmgr_init
+from doc_manager_mcp.tools.state.update_baseline import docmgr_update_baseline
 
 
 @pytest.fixture

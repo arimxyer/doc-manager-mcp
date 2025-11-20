@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Any
 
-from ..utils import is_public_symbol
+from ....utils import is_public_symbol
 
 
 def check_list_formatting_consistency(
@@ -112,7 +112,7 @@ def check_heading_case_consistency(
     Returns:
         Dict with majority_style, inconsistent_files, consistency_score
     """
-    from ..indexing.markdown_parser import MarkdownParser
+    from ....indexing.markdown_parser import MarkdownParser
 
     parser = MarkdownParser()
     markdown_files = []
@@ -271,7 +271,7 @@ def detect_multiple_h1s(
     Returns:
         List of files with multiple H1s (file, h1_count, h1_texts)
     """
-    from ..indexing.markdown_parser import MarkdownParser
+    from ....indexing.markdown_parser import MarkdownParser
 
     parser = MarkdownParser()
     issues = []
@@ -324,8 +324,8 @@ def detect_undocumented_apis(
     """
     import re
 
-    from ..indexing import SymbolIndexer
-    from ..indexing.markdown_parser import MarkdownParser
+    from ....indexing import SymbolIndexer
+    from ....indexing.markdown_parser import MarkdownParser
 
     # Step 1: Get all public symbols from codebase
     try:
@@ -413,8 +413,8 @@ def calculate_documentation_coverage(
     import re
     import sys
 
-    from ..indexing import SymbolIndexer
-    from ..indexing.markdown_parser import MarkdownParser
+    from ....indexing import SymbolIndexer
+    from ....indexing.markdown_parser import MarkdownParser
 
     # Index all symbols in the project
     try:
