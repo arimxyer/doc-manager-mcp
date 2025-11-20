@@ -7,7 +7,7 @@ import platform
 import time
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, overload
 
 import yaml
 
@@ -471,6 +471,12 @@ def operation_timeout(seconds: int = 60):
 # ============================================================================
 # T008: Response Size Enforcement (FR-010)
 # ============================================================================
+
+@overload
+def enforce_response_limit(response: dict[str, Any], limit: int = 25000) -> dict[str, Any]: ...
+
+@overload
+def enforce_response_limit(response: str, limit: int = 25000) -> str: ...
 
 def enforce_response_limit(response: str | dict, limit: int = 25000) -> str | dict[str, Any]:
     """Truncate response if exceeds CHARACTER_LIMIT.

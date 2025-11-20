@@ -4,7 +4,7 @@ Key difference from map_changes: NEVER writes to symbol-baseline.json
 """
 
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from ..models import DocmgrDetectChangesInput
 from ..utils import enforce_response_limit, handle_error
@@ -135,8 +135,8 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
             "status": "error",
             "message": error_msg
         }
-        # enforce_response_limit returns dict unchanged when given dict
-        return cast(dict[str, Any], enforce_response_limit(error_dict))
+        # enforce_response_limit returns dict unchanged when given dict (type-safe with overloads)
+        return enforce_response_limit(error_dict)
 
 
 async def _get_semantic_changes_readonly(
