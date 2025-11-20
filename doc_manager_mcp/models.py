@@ -7,7 +7,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from .constants import ChangeDetectionMode, DocumentationPlatform, QualityCriterion
-from .indexing.semantic_diff import SemanticChange
+from .indexing.analysis.semantic_diff import SemanticChange
 
 
 def _validate_project_path(v: str) -> str:
@@ -581,12 +581,155 @@ class SyncInput(BaseModel):
         min_length=1
     )
     mode: str = Field(
-        default="reactive",
-        description="Sync mode: 'reactive' (manual trigger) or 'proactive' (auto-detect changes)",
-        pattern="^(reactive|proactive)$"
+        default="check",
+        description="Sync mode: 'check' (read-only analysis) or 'resync' (update baselines + analysis)",
+        pattern="^(check|resync)$"
     )
     docs_path: str | None = Field(
         default=None,
         description="Path to documentation directory (relative to project root). If not specified, will be auto-detected",
         min_length=1
     )
+
+
+# ============================================================================
+# New Input Models for Refactored Tools (002-tool-architecture-refactor)
+# ============================================================================
+
+class DocmgrInitInput(BaseModel):
+    """Input for unified initialization tool (docmgr_init).
+
+    Replaces: initialize_config, initialize_memory, bootstrap
+
+    Modes:
+    - mode="existing": Initialize config + baselines + dependencies for existing project
+    - mode="bootstrap": Same as existing + create doc templates
+    """
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        extra='forbid'
+    )
+
+    project_path: str = Field(
+        ...,
+        description="Absolute path to project root directory",
+        min_length=1
+    )
+    mode: str = Field(
+        default="existing",
+        description="Init mode: 'existing' (config+baselines+deps) or 'bootstrap' (+ doc templates)",
+        pattern="^(existing|bootstrap)$"
+    )
+    platform: DocumentationPlatform | None = Field(
+        default=None,
+        description="Documentation platform (mkdocs, docusaurus, etc.)"
+    )
+    exclude_patterns: list[str] | None = Field(
+        default_factory=list,
+        description="Glob patterns for files to exclude from documentation tracking",
+        max_length=50
+    )
+    docs_path: str | None = Field(
+        default=None,
+        description="Path to documentation directory (relative to project root)",
+        min_length=1
+    )
+    sources: list[str] | None = Field(
+        default=None,
+        description="Source file patterns to track (e.g., ['src/**/*.py'])",
+        max_length=50
+    )
+
+    @field_validator('project_path')
+    @classmethod
+    def validate_project_path(cls, v: str) -> str:
+        return _validate_project_path(v)
+
+    @field_validator('docs_path')
+    @classmethod
+    def validate_docs_path(cls, v: str | None) -> str | None:
+        return _validate_relative_path(v, field_name="docs_path")
+
+    @field_validator('exclude_patterns')
+    @classmethod
+    def validate_exclude_patterns(cls, v: list[str] | None) -> list[str] | None:
+        return _validate_pattern_list(v, field_name="exclude_patterns")
+
+    @field_validator('sources')
+    @classmethod
+    def validate_sources(cls, v: list[str] | None) -> list[str] | None:
+        return _validate_pattern_list(v, field_name="sources")
+
+
+class DocmgrDetectChangesInput(BaseModel):
+    """Input for pure read-only change detection (docmgr_detect_changes).
+
+    Replaces: map_changes (in read-only mode)
+
+    Key difference: NEVER writes to symbol-baseline.json
+    """
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        extra='forbid'
+    )
+
+    project_path: str = Field(
+        ...,
+        description="Absolute path to project root directory",
+        min_length=1
+    )
+    since_commit: str | None = Field(
+        default=None,
+        description="Git commit SHA to compare from (only for git_diff mode)"
+    )
+    mode: ChangeDetectionMode = Field(
+        default=ChangeDetectionMode.CHECKSUM,
+        description="Detection mode: 'checksum' (file checksums) or 'git_diff' (git changes)"
+    )
+    include_semantic: bool = Field(
+        default=False,
+        description="Include semantic diff analysis (TreeSitter AST comparison)"
+    )
+
+    @field_validator('project_path')
+    @classmethod
+    def validate_project_path(cls, v: str) -> str:
+        return _validate_project_path(v)
+
+
+class DocmgrUpdateBaselineInput(BaseModel):
+    """Input for updating all baseline files atomically (docmgr_update_baseline).
+
+    Updates:
+    - repo-baseline.json (file checksums)
+    - symbol-baseline.json (TreeSitter code symbols)
+    - dependencies.json (code-to-doc mappings)
+    """
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        extra='forbid'
+    )
+
+    project_path: str = Field(
+        ...,
+        description="Absolute path to project root directory",
+        min_length=1
+    )
+    docs_path: str | None = Field(
+        default=None,
+        description="Path to documentation directory (relative to project root)",
+        min_length=1
+    )
+
+    @field_validator('project_path')
+    @classmethod
+    def validate_project_path(cls, v: str) -> str:
+        return _validate_project_path(v)
+
+    @field_validator('docs_path')
+    @classmethod
+    def validate_docs_path(cls, v: str | None) -> str | None:
+        return _validate_relative_path(v, field_name="docs_path")

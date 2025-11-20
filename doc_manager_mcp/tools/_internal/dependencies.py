@@ -7,32 +7,28 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..constants import MAX_FILES
-from ..indexing import SymbolIndexer
-from ..indexing.markdown_parser import MarkdownParser
-from ..models import TrackDependenciesInput
-from ..utils import (
+from doc_manager_mcp.constants import CLASS_PATTERN, FUNCTION_PATTERN, MAX_FILES
+from doc_manager_mcp.core import (
     file_lock,
     find_docs_directory,
+    find_markdown_files,
     validate_path_boundary,
 )
+from doc_manager_mcp.indexing import SymbolIndexer
+from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
+from doc_manager_mcp.models import TrackDependenciesInput
 
 # ============================================================================
 # T082: Compiled regex patterns for performance (FR-023)
 # REFACTORED: Patterns now match content WITHOUT backticks (for use with MarkdownParser)
+# NOTE: FUNCTION_PATTERN and CLASS_PATTERN imported from constants.py
 # ============================================================================
 
 # Extract file path references - matches content only (no backticks)
 FILE_PATH_PATTERN = re.compile(r'^([a-zA-Z0-9_\-/.]+\.(go|py|js|ts|tsx|jsx|java|rs|rb|php|c|cpp|h|hpp|cs|swift|kt|yaml|yml|json|cfg))$')
 
-# Extract function/method references - matches content only
-FUNCTION_PATTERN = re.compile(r'^(([A-Z][a-zA-Z0-9]*\.)?([a-z_][a-zA-Z0-9_]*)\(\))$')
-
 # Match markdown headings with function signatures (unchanged - doesn't use inline code)
 HEADING_FUNCTION_PATTERN = re.compile(r'^#+\s+([a-z_][a-zA-Z0-9_]*)\s*\([^)]*\)', re.MULTILINE)
-
-# Extract class/type references - matches content only
-CLASS_PATTERN = re.compile(r'^([A-Z][a-zA-Z0-9]+)$')
 
 # Extract command references - matches content only (no backticks)
 # NOTE: Inline code commands will be extracted via MarkdownParser, this pattern validates them
@@ -164,34 +160,6 @@ def _extract_subcommand(reference: str) -> str | None:
     return '_'.join(subcommands)
 
 
-def _find_markdown_files(docs_path: Path, project_path: Path) -> list[Path]:
-    """Find all markdown files in documentation directory.
-
-    Args:
-        docs_path: Documentation directory path
-        project_path: Project root path (for boundary validation)
-
-    Returns:
-        List of validated markdown file paths
-    """
-    markdown_files = []
-    file_count = 0
-    for pattern in ["**/*.md", "**/*.markdown"]:
-        for file_path in docs_path.glob(pattern):
-            if file_count >= MAX_FILES:
-                raise ValueError(
-                    f"File count limit exceeded (maximum: {MAX_FILES:,} files)\n"
-                    f"→ Consider processing a smaller directory or increasing the limit."
-                )
-            # Validate path boundary and check for malicious symlinks (T030 - FR-028)
-            try:
-                _ = validate_path_boundary(file_path, project_path)
-                markdown_files.append(file_path)
-                file_count += 1
-            except ValueError:
-                # Skip files that escape project boundary or malicious symlinks
-                continue
-    return sorted(markdown_files)
 
 
 def _extract_code_references(content: str, doc_file: Path) -> list[dict[str, Any]]:
@@ -755,6 +723,9 @@ def _format_dependency_report(dependencies: dict[str, list[str]], code_to_doc: d
 async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
     """Track dependencies between documentation and source code.
 
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    It is automatically called by docmgr_init and docmgr_update_baseline.
+
     Analyzes documentation files to find references to source code,
     building a bidirectional dependency graph.
 
@@ -821,7 +792,7 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
             print(f"Warning: TreeSitter indexing failed: {e}. Falling back to file-based matching.", file=sys.stderr)
 
         # Find all markdown files
-        markdown_files = _find_markdown_files(docs_path, project_path)
+        markdown_files = find_markdown_files(docs_path, project_path, validate_boundaries=True)
         all_references = []
 
         if markdown_files:

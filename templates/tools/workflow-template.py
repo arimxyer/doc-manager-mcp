@@ -10,7 +10,7 @@ import json
 
 from ..models import WorkflowInput  # Replace with actual model name
 from ..constants import ResponseFormat, DocumentationPlatform
-from ..utils import (
+from ..core import (
     handle_error,
     detect_project_language,
     find_docs_directory,

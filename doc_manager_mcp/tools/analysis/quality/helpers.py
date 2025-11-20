@@ -3,6 +3,8 @@
 from pathlib import Path
 from typing import Any
 
+from doc_manager_mcp.core import is_public_symbol
+
 
 def check_list_formatting_consistency(
     docs_path: Path
@@ -110,7 +112,7 @@ def check_heading_case_consistency(
     Returns:
         Dict with majority_style, inconsistent_files, consistency_score
     """
-    from ..indexing.markdown_parser import MarkdownParser
+    from ....indexing.parsers.markdown import MarkdownParser
 
     parser = MarkdownParser()
     markdown_files = []
@@ -269,7 +271,7 @@ def detect_multiple_h1s(
     Returns:
         List of files with multiple H1s (file, h1_count, h1_texts)
     """
-    from ..indexing.markdown_parser import MarkdownParser
+    from ....indexing.parsers.markdown import MarkdownParser
 
     parser = MarkdownParser()
     issues = []
@@ -322,8 +324,8 @@ def detect_undocumented_apis(
     """
     import re
 
-    from ..indexing import SymbolIndexer
-    from ..indexing.markdown_parser import MarkdownParser
+    from ....indexing import SymbolIndexer
+    from ....indexing.parsers.markdown import MarkdownParser
 
     # Step 1: Get all public symbols from codebase
     try:
@@ -336,23 +338,7 @@ def detect_undocumented_apis(
         return []
 
     # Filter to only public symbols based on language conventions
-    public_symbols = []
-    for symbol in all_symbols:
-        is_public = False
-
-        # Language-specific public conventions
-        if symbol.file.endswith('.go'):
-            # Go: exported names start with uppercase
-            is_public = symbol.name[0].isupper() if symbol.name else False
-        elif symbol.file.endswith('.py'):
-            # Python: public if no leading underscore
-            is_public = not symbol.name.startswith('_') if symbol.name else False
-        elif symbol.file.endswith(('.js', '.ts', '.jsx', '.tsx')):
-            # JavaScript/TypeScript: public if no leading underscore
-            is_public = not symbol.name.startswith('_') if symbol.name else False
-
-        if is_public:
-            public_symbols.append(symbol)
+    public_symbols = [symbol for symbol in all_symbols if is_public_symbol(symbol)]
 
     # Step 2: Scan documentation for symbol references
     documented_symbols = set()
@@ -427,8 +413,8 @@ def calculate_documentation_coverage(
     import re
     import sys
 
-    from ..indexing import SymbolIndexer
-    from ..indexing.markdown_parser import MarkdownParser
+    from ....indexing import SymbolIndexer
+    from ....indexing.parsers.markdown import MarkdownParser
 
     # Index all symbols in the project
     try:
@@ -446,23 +432,7 @@ def calculate_documentation_coverage(
         }
 
     # Filter to only public symbols based on language conventions
-    public_symbols = []
-    for symbol in all_symbols:
-        is_public = False
-
-        # Language-specific public conventions
-        if symbol.file.endswith('.go'):
-            # Go: exported names start with uppercase
-            is_public = symbol.name[0].isupper() if symbol.name else False
-        elif symbol.file.endswith('.py'):
-            # Python: public if no leading underscore
-            is_public = not symbol.name.startswith('_') if symbol.name else False
-        elif symbol.file.endswith(('.js', '.ts', '.jsx', '.tsx')):
-            # JavaScript/TypeScript: public if no leading underscore
-            is_public = not symbol.name.startswith('_') if symbol.name else False
-
-        if is_public:
-            public_symbols.append(symbol)
+    public_symbols = [symbol for symbol in all_symbols if is_public_symbol(symbol)]
 
     if not public_symbols:
         return {

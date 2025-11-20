@@ -8,9 +8,8 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 
-from ..constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES
-from ..models import InitializeMemoryInput
-from ..utils import (
+from doc_manager_mcp.constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES
+from doc_manager_mcp.core import (
     calculate_checksum,
     detect_project_language,
     enforce_response_limit,
@@ -22,6 +21,7 @@ from ..utils import (
     run_git_command,
     validate_path_boundary,
 )
+from doc_manager_mcp.models import InitializeMemoryInput
 
 
 async def scandir_async(path: Path):
@@ -62,6 +62,9 @@ def with_timeout(timeout_seconds):
 
 async def initialize_memory(params: InitializeMemoryInput, ctx=None) -> str | dict[str, Any]:
     """Initialize the documentation memory system for tracking project state.
+
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    Use docmgr_init(mode="existing") instead, which calls this internally.
 
     This tool creates the `.doc-manager/` directory structure with memory files
     that track repository baseline, documentation conventions, and file checksums.

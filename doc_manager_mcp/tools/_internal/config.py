@@ -4,19 +4,22 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..constants import DocumentationPlatform
-from ..models import InitializeConfigInput
-from ..utils import (
+from doc_manager_mcp.core import (
+    detect_platform_quick,
     detect_project_language,
     enforce_response_limit,
     find_docs_directory,
     handle_error,
     save_config,
 )
+from doc_manager_mcp.models import InitializeConfigInput
 
 
 async def initialize_config(params: InitializeConfigInput) -> str | dict[str, Any]:
     """Initialize .doc-manager.yml configuration file for the project.
+
+    INTERNAL USE ONLY: This function is not exposed as an MCP tool in v2.0.0.
+    Use docmgr_init(mode="existing") instead, which calls this internally.
 
     This tool creates a new configuration file that defines how the documentation
     manager should operate for this project. It detects project characteristics
@@ -62,17 +65,7 @@ async def initialize_config(params: InitializeConfigInput) -> str | dict[str, An
         # Detect platform if not specified
         platform = params.platform
         if not platform:
-            # Try to detect platform
-            if (project_path / "docsite" / "hugo.yaml").exists() or (project_path / "hugo.toml").exists():
-                platform = DocumentationPlatform.HUGO
-            elif (project_path / "docusaurus.config.js").exists():
-                platform = DocumentationPlatform.DOCUSAURUS
-            elif (project_path / "mkdocs.yml").exists():
-                platform = DocumentationPlatform.MKDOCS
-            elif (project_path / "conf.py").exists():
-                platform = DocumentationPlatform.SPHINX
-            else:
-                platform = DocumentationPlatform.UNKNOWN
+            platform = detect_platform_quick(project_path)
 
         # Detect project language
         language = detect_project_language(project_path)
