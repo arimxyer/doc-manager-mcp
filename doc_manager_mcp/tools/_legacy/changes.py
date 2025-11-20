@@ -16,7 +16,7 @@ from ...indexing.analysis.semantic_diff import (
 )
 from ...indexing.analysis.tree_sitter import SymbolIndexer
 from ...models import MapChangesInput
-from ...utils import (
+from ...core import (
     calculate_checksum,
     enforce_response_limit,
     handle_error,

@@ -16,7 +16,7 @@ from typing import Any
 
 from ...constants import DocumentationPlatform
 from ...models import BootstrapInput
-from ...utils import detect_project_language, enforce_response_limit, handle_error
+from ...core import detect_project_language, enforce_response_limit, handle_error
 from .._legacy.config import initialize_config
 from .._legacy.memory import initialize_memory
 from ..analysis.platform import detect_platform

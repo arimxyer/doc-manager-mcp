@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from ...models import DocmgrUpdateBaselineInput
-from ...utils import enforce_response_limit, handle_error
+from ...core import enforce_response_limit, handle_error
 
 
 async def docmgr_update_baseline(
@@ -112,7 +112,7 @@ async def _update_repo_baseline(project_path: Path) -> dict[str, Any]:
         from datetime import datetime
 
         from ...constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES
-        from ...utils import (
+        from ...core import (
             calculate_checksum,
             detect_project_language,
             find_docs_directory,

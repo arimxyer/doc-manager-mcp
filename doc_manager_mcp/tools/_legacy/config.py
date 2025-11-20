@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from ...models import InitializeConfigInput
-from ...utils import (
+from ...core import (
     detect_platform_quick,
     detect_project_language,
     enforce_response_limit,

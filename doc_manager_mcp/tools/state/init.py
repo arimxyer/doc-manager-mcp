@@ -10,7 +10,7 @@ from ...models import (
     InitializeMemoryInput,
     TrackDependenciesInput,
 )
-from ...utils import enforce_response_limit, handle_error
+from ...core import enforce_response_limit, handle_error
 from .._internal.dependencies import track_dependencies
 from .._legacy.config import initialize_config
 from .._legacy.memory import initialize_memory

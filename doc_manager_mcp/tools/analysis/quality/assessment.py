@@ -9,7 +9,7 @@ from typing import Any
 from ....constants import QualityCriterion
 from ....indexing.parsers.markdown import MarkdownParser
 from ....models import AssessQualityInput
-from ....utils import (
+from ....core import (
     enforce_response_limit,
     find_docs_directory,
     find_markdown_files,

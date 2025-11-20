@@ -11,7 +11,7 @@ from ...constants import CLASS_PATTERN, FUNCTION_PATTERN, MAX_FILES
 from ...indexing import SymbolIndexer
 from ...indexing.parsers.markdown import MarkdownParser
 from ...models import TrackDependenciesInput
-from ...utils import (
+from ...core import (
     file_lock,
     find_docs_directory,
     find_markdown_files,

@@ -10,7 +10,7 @@ from typing import Any
 
 from ...constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES
 from ...models import InitializeMemoryInput
-from ...utils import (
+from ...core import (
     calculate_checksum,
     detect_project_language,
     enforce_response_limit,

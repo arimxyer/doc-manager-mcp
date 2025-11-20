@@ -9,7 +9,7 @@ import json
 
 from ..models import YourToolInput  # Replace with actual model name
 from ..constants import ResponseFormat
-from ..utils import handle_error
+from ..core import handle_error
 
 async def your_tool_name(params: YourToolInput) -> str:
     """Brief one-line description of what this tool does.

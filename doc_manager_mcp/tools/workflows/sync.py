@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from ...models import SyncInput
-from ...utils import enforce_response_limit, handle_error
+from ...core import enforce_response_limit, handle_error
 from ..analysis.detect_changes import docmgr_detect_changes
 from ..analysis.quality.assessment import assess_quality
 from ..analysis.validation.validator import validate_docs
@@ -142,7 +142,7 @@ async def sync(params: SyncInput) -> dict[str, Any] | str:
         lines.append("")
 
         from ...models import ValidateDocsInput
-        from ...utils import find_docs_directory
+        from ...core import find_docs_directory
 
         # Use provided docs_path or auto-detect
         if params.docs_path:

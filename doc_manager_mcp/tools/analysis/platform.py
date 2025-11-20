@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from ...models import DetectPlatformInput
-from ...utils import detect_project_language, enforce_response_limit, handle_error
+from ...core import detect_project_language, enforce_response_limit, handle_error
 
 
 def _check_root_configs(project_path: Path) -> list[dict[str, Any]]:
