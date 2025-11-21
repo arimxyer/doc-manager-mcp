@@ -197,6 +197,10 @@ class InitializeConfigInput(BaseModel):
         description="Source file patterns to track for documentation (e.g., 'src/**/*.py')",
         max_length=50
     )
+    include_root_readme: bool = Field(
+        default=False,
+        description="Include root README.md in documentation operations (validation, quality assessment, change detection)"
+    )
 
     @field_validator('project_path')
     @classmethod
@@ -277,6 +281,10 @@ class AssessQualityInput(BaseModel):
         default=None,
         description="Specific criteria to assess. If not specified, all 7 criteria will be assessed"
     )
+    include_root_readme: bool = Field(
+        default=False,
+        description="Include root README.md in quality assessment (Bug #4 fix: sync discrepancy)"
+    )
 
 class ValidateDocsInput(BaseModel):
     """Input for documentation validation."""
@@ -314,6 +322,10 @@ class ValidateDocsInput(BaseModel):
     validate_symbols: bool = Field(
         default=False,
         description="Validate that documented symbols (functions/classes) exist in codebase"
+    )
+    include_root_readme: bool = Field(
+        default=False,
+        description="Include root README.md in validation (Bug #4 fix: sync discrepancy)"
     )
 
 class MapChangesInput(BaseModel):
@@ -639,6 +651,10 @@ class DocmgrInitInput(BaseModel):
         default=None,
         description="Source file patterns to track (e.g., ['src/**/*.py'])",
         max_length=50
+    )
+    include_root_readme: bool = Field(
+        default=False,
+        description="Include root README.md in documentation operations (validation, quality assessment, change detection)"
     )
 
     @field_validator('project_path')

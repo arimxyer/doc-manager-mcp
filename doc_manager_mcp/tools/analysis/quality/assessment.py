@@ -11,7 +11,9 @@ from doc_manager_mcp.core import (
     enforce_response_limit,
     find_docs_directory,
     find_markdown_files,
+    get_doc_relative_path,
     handle_error,
+    load_config,
     load_conventions,
 )
 from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
@@ -27,7 +29,7 @@ from .helpers import (
 )
 
 
-def _assess_relevance(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
+def _assess_relevance(project_path: Path, docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if documentation addresses current user needs and use cases."""
     issues = []
     findings = []
@@ -75,13 +77,14 @@ def _assess_relevance(docs_path: Path, markdown_files: list[Path]) -> dict[str, 
                         deprecated_count += len(matches)
 
                     if str(md_file) not in files_with_deprecated:
-                        files_with_deprecated.append(str(md_file.relative_to(docs_path)))
+                        files_with_deprecated.append(get_doc_relative_path(md_file, docs_path, project_path))
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
 
     if deprecated_count > 0:
-        findings.append(f"Found {deprecated_count} references to deprecated/outdated content across {len(files_with_deprecated)} files")
+        # Round at display to avoid floating point precision issues (Bug #2 fix)
+        findings.append(f"Found {round(deprecated_count)} references to deprecated/outdated content across {len(files_with_deprecated)} files")
 
     # Check if README exists (relevance to getting started)
     has_readme = (docs_path / "README.md").exists() or (docs_path.parent / "README.md").exists()
@@ -97,7 +100,8 @@ def _assess_relevance(docs_path: Path, markdown_files: list[Path]) -> dict[str, 
         score = "fair"
         issues.append({
             "severity": "warning",
-            "message": f"High number of deprecated references ({deprecated_count}) - consider removing or updating outdated content"
+            # Round at display to avoid floating point precision issues (Bug #2 fix)
+            "message": f"High number of deprecated references ({round(deprecated_count)}) - consider removing or updating outdated content"
         })
     elif deprecated_count > 5:
         findings.append("Some deprecated content found - ensure it's clearly marked with migration guidance")
@@ -108,7 +112,8 @@ def _assess_relevance(docs_path: Path, markdown_files: list[Path]) -> dict[str, 
         "findings": findings,
         "issues": issues,
         "metrics": {
-            "deprecated_references": deprecated_count,
+            # Round at display to avoid floating point precision issues (Bug #2 fix)
+            "deprecated_references": round(deprecated_count),
             "files_with_deprecated": len(files_with_deprecated),
             "has_readme": has_readme
         }
@@ -191,7 +196,7 @@ def _assess_accuracy(project_path: Path, docs_path: Path, markdown_files: list[P
     }
 
 
-def _assess_purposefulness(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
+def _assess_purposefulness(project_path: Path, docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if documents have clear goals and target audiences."""
     issues = []
     findings = []
@@ -263,7 +268,7 @@ def _remove_code_blocks(content: str) -> str:
     return re.sub(code_block_pattern, '', content, flags=re.MULTILINE | re.DOTALL)
 
 
-def _assess_uniqueness(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
+def _assess_uniqueness(project_path: Path, docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess if there's redundant or duplicate information."""
     issues = []
     findings = []
@@ -286,7 +291,7 @@ def _assess_uniqueness(docs_path: Path, markdown_files: list[Path]) -> dict[str,
                     header_text = header["text"].strip().lower()
                     if header_text not in headers:
                         headers[header_text] = []
-                    headers[header_text].append(str(md_file.relative_to(docs_path)))
+                    headers[header_text].append(get_doc_relative_path(md_file, docs_path, project_path))
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)
@@ -318,10 +323,11 @@ def _assess_uniqueness(docs_path: Path, markdown_files: list[Path]) -> dict[str,
     }
 
 
-def _assess_consistency(docs_path: Path, markdown_files: list[Path], conventions=None) -> dict[str, Any]:
+def _assess_consistency(project_path: Path, docs_path: Path, markdown_files: list[Path], conventions=None) -> dict[str, Any]:
     """Assess terminology, formatting, and style consistency."""
     issues = []
     findings = []
+    parser = MarkdownParser()
 
     # Check code block language consistency
     code_langs_with_backticks = set()
@@ -336,12 +342,13 @@ def _assess_consistency(docs_path: Path, markdown_files: list[Path], conventions
             with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
-            # Check code block language tags (only opening fences)
-            # Pattern matches opening fence at line start, not closing fences
-            code_block_pattern = r'^```(\w+)?(?:\n|$)'
-            for match in re.finditer(code_block_pattern, content, re.MULTILINE):
-                lang = match.group(1)
-                if lang:
+            # Check code block language tags using MarkdownParser
+            # This correctly counts only actual code blocks (not closing fences)
+            code_blocks = parser.extract_code_blocks(content)
+            for block in code_blocks:
+                lang = block['language']
+                # Filter out "plaintext" from language count (Bug #3 fix)
+                if lang and lang != "plaintext":
                     code_langs_with_backticks.add(lang)
                 else:
                     code_langs_without_lang += 1
@@ -384,7 +391,7 @@ def _assess_consistency(docs_path: Path, markdown_files: list[Path], conventions
     }
 
 
-def _assess_clarity(docs_path: Path, markdown_files: list[Path], conventions=None) -> dict[str, Any]:
+def _assess_clarity(project_path: Path, docs_path: Path, markdown_files: list[Path], conventions=None) -> dict[str, Any]:
     """Assess language precision, examples, and navigation."""
     issues = []
     findings = []
@@ -487,7 +494,7 @@ def _assess_clarity(docs_path: Path, markdown_files: list[Path], conventions=Non
     }
 
 
-def _assess_structure(docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
+def _assess_structure(project_path: Path, docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
     """Assess logical organization and hierarchy."""
     issues = []
     findings = []
@@ -695,8 +702,17 @@ async def assess_quality(params: AssessQualityInput) -> str | dict[str, Any]:
         if not docs_path.is_dir():
             return enforce_response_limit(f"Error: Documentation path is not a directory: {docs_path}")
 
+        # Load config and get include_root_readme setting
+        config = load_config(project_path)
+        include_root_readme = config.get('include_root_readme', False) if config else False
+
         # Find all markdown files
-        markdown_files = find_markdown_files(docs_path, validate_boundaries=False)
+        markdown_files = find_markdown_files(
+            docs_path,
+            project_path=project_path,
+            validate_boundaries=False,
+            include_root_readme=include_root_readme
+        )
         if not markdown_files:
             return enforce_response_limit(f"Error: No markdown files found in {docs_path}")
 
@@ -719,19 +735,19 @@ async def assess_quality(params: AssessQualityInput) -> str | dict[str, Any]:
 
         for criterion in criteria_to_assess:
             if criterion == QualityCriterion.RELEVANCE:
-                results.append(_assess_relevance(docs_path, markdown_files))
+                results.append(_assess_relevance(project_path, docs_path, markdown_files))
             elif criterion == QualityCriterion.ACCURACY:
                 results.append(_assess_accuracy(project_path, docs_path, markdown_files))
             elif criterion == QualityCriterion.PURPOSEFULNESS:
-                results.append(_assess_purposefulness(docs_path, markdown_files))
+                results.append(_assess_purposefulness(project_path, docs_path, markdown_files))
             elif criterion == QualityCriterion.UNIQUENESS:
-                results.append(_assess_uniqueness(docs_path, markdown_files))
+                results.append(_assess_uniqueness(project_path, docs_path, markdown_files))
             elif criterion == QualityCriterion.CONSISTENCY:
-                results.append(_assess_consistency(docs_path, markdown_files, conventions))
+                results.append(_assess_consistency(project_path, docs_path, markdown_files, conventions))
             elif criterion == QualityCriterion.CLARITY:
-                results.append(_assess_clarity(docs_path, markdown_files, conventions))
+                results.append(_assess_clarity(project_path, docs_path, markdown_files, conventions))
             elif criterion == QualityCriterion.STRUCTURE:
-                results.append(_assess_structure(docs_path, markdown_files))
+                results.append(_assess_structure(project_path, docs_path, markdown_files))
 
         # Calculate documentation coverage
         coverage_data = calculate_documentation_coverage(project_path, docs_path)
