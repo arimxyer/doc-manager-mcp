@@ -11,22 +11,22 @@ An MCP (Model Context Protocol) server for comprehensive documentation lifecycle
 
 The server provides **7 core tools** organized into 4 tiers:
 
-#### Tier 1: Setup & Initialization
+### Tier 1: Setup & Initialization
 - **`docmgr_init`** - Unified initialization (replaces: `initialize_config`, `initialize_memory`, `bootstrap`)
   - Mode `existing`: Initialize for projects with existing docs
   - Mode `bootstrap`: Create fresh documentation structure
 
-#### Tier 2: Analysis & Read-Only Operations
+### Tier 2: Analysis & Read-Only Operations
 - **`docmgr_detect_changes`** - Pure read-only change detection (never writes baselines)
 - **`docmgr_detect_platform`** - Identify/recommend documentation platforms
 - **`docmgr_validate_docs`** - Check for broken links, missing assets, invalid code snippets
 - **`docmgr_assess_quality`** - Evaluate docs against 7 quality criteria
 
-#### Tier 3: State Management
+### Tier 3: State Management
 - **`docmgr_update_baseline`** - Atomically update all 3 baselines (repo, symbols, dependencies)
 - **`docmgr_sync`** - Orchestrate change detection + validation + quality + baseline updates
 
-#### Tier 4: Workflows & Orchestration
+### Tier 4: Workflows & Orchestration
 - **`docmgr_migrate`** - Restructure/migrate documentation
 
 ### Key Improvements (v1.1.0)
