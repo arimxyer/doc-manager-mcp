@@ -324,6 +324,7 @@ def _assess_consistency(project_path: Path, docs_path: Path, markdown_files: lis
     """Assess terminology, formatting, and style consistency."""
     issues = []
     findings = []
+    parser = MarkdownParser()
 
     # Check code block language consistency
     code_langs_with_backticks = set()
@@ -338,11 +339,11 @@ def _assess_consistency(project_path: Path, docs_path: Path, markdown_files: lis
             with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
-            # Check code block language tags (only opening fences)
-            # Pattern matches opening fence at line start, not closing fences
-            code_block_pattern = r'^```(\w+)?(?:\n|$)'
-            for match in re.finditer(code_block_pattern, content, re.MULTILINE):
-                lang = match.group(1)
+            # Check code block language tags using MarkdownParser
+            # This correctly counts only actual code blocks (not closing fences)
+            code_blocks = parser.extract_code_blocks(content)
+            for block in code_blocks:
+                lang = block['language']
                 if lang:
                     code_langs_with_backticks.add(lang)
                 else:
