@@ -391,29 +391,58 @@ def _extract_commands_from_code_blocks(content: str, doc_file: str | Path, index
     return references
 
 
-def _find_source_files(project_path: Path, docs_path: Path) -> list[Path]:
-    """Find all source code and configuration files in the project."""
+def _find_source_files(
+    project_path: Path,
+    docs_path: Path,
+    source_patterns: list[str] | None = None,
+    exclude_patterns: list[str] | None = None,
+    use_gitignore: bool = False
+) -> list[Path]:
+    """Find all source code and configuration files in the project.
+
+    Args:
+        project_path: Root directory of the project
+        docs_path: Documentation directory path (files here are excluded)
+        source_patterns: Glob patterns for source files (from config). If None, uses defaults.
+        exclude_patterns: Exclude patterns (already merged: user > defaults)
+        use_gitignore: Whether to respect .gitignore patterns
+    """
+    from doc_manager_mcp.core import matches_exclude_pattern
+
     source_files = []
     file_count = 0
 
-    # Common source file extensions (code + config files)
-    extensions = [
-        # Source code
-        '.go', '.py', '.js', '.ts', '.jsx', '.tsx',
-        '.java', '.rs', '.rb', '.php', '.c', '.cpp',
-        '.h', '.hpp', '.cs', '.swift', '.kt',
-        # Configuration files
-        '.yaml', '.yml', '.json', '.toml', '.cfg', '.ini'
-    ]
+    # Default source patterns if not provided by config
+    if not source_patterns:
+        # Default: Common source file extensions (code + config files)
+        source_patterns = [
+            # Source code
+            '**/*.go', '**/*.py', '**/*.js', '**/*.ts', '**/*.jsx', '**/*.tsx',
+            '**/*.java', '**/*.rs', '**/*.rb', '**/*.php', '**/*.c', '**/*.cpp',
+            '**/*.h', '**/*.hpp', '**/*.cs', '**/*.swift', '**/*.kt',
+            # Configuration files
+            '**/*.yaml', '**/*.yml', '**/*.json', '**/*.toml', '**/*.cfg', '**/*.ini'
+        ]
 
-    for ext in extensions:
-        pattern = f"**/*{ext}"
+    # Use provided exclude patterns or empty list
+    if exclude_patterns is None:
+        exclude_patterns = []
+
+    # Parse .gitignore if enabled
+    gitignore_spec = None
+    if use_gitignore:
+        from doc_manager_mcp.core import parse_gitignore
+        gitignore_spec = parse_gitignore(project_path)
+
+    # Scan for source files using patterns
+    for pattern in source_patterns:
         for file_path in project_path.glob(pattern):
             if file_count >= MAX_FILES:
                 raise ValueError(
                     f"File count limit exceeded (maximum: {MAX_FILES:,} files)\n"
                     f"→ Consider processing a smaller directory or increasing the limit."
                 )
+
             # Validate path boundary and check for malicious symlinks (T030 - FR-028)
             try:
                 _ = validate_path_boundary(file_path, project_path)
@@ -421,12 +450,24 @@ def _find_source_files(project_path: Path, docs_path: Path) -> list[Path]:
                 # Skip files that escape project boundary or malicious symlinks
                 continue
 
-            # Exclude docs, tests, vendor, node_modules, etc.
-            path_str = str(file_path)
-            if any(x in path_str for x in ['node_modules', 'vendor', 'venv', '.git', 'dist', 'build']):
+            # Get relative path for pattern matching
+            try:
+                relative_path_str = str(file_path.relative_to(project_path)).replace('\\', '/')
+            except ValueError:
                 continue
+
+            # Exclude docs directory
             if file_path.is_relative_to(docs_path):
                 continue
+
+            # Check exclude patterns (user + defaults, correct priority)
+            if matches_exclude_pattern(relative_path_str, exclude_patterns):
+                continue
+
+            # Check gitignore patterns (if enabled)
+            if gitignore_spec and gitignore_spec.match_file(relative_path_str):
+                continue
+
             source_files.append(file_path)
             file_count += 1
 
@@ -789,12 +830,29 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
         config = load_config(project_path)
         include_root_readme = config.get('include_root_readme', False) if config else False
 
+        # Get source scanning settings from config (FR-027)
+        from doc_manager_mcp.constants import DEFAULT_EXCLUDE_PATTERNS
+        sources = config.get("sources") if config else None
+        user_excludes = config.get("exclude", []) if config else []
+        use_gitignore = config.get("use_gitignore", False) if config else False
+
+        # Build exclude patterns with correct priority: user > gitignore > defaults
+        exclude_patterns = []
+        exclude_patterns.extend(user_excludes)  # User patterns first (highest priority)
+        exclude_patterns.extend(DEFAULT_EXCLUDE_PATTERNS)  # Defaults last (lowest priority)
+
         # Detect project name for smart command filtering
         project_name = _detect_project_name(project_path)
         print(f"Detected project name: {project_name}", file=sys.stderr)
 
         # Find source files and build TreeSitter index FIRST (needed for markdown extraction)
-        source_files = _find_source_files(project_path, docs_path)
+        source_files = _find_source_files(
+            project_path,
+            docs_path,
+            source_patterns=sources,
+            exclude_patterns=exclude_patterns,
+            use_gitignore=use_gitignore
+        )
 
         # Build symbol index with TreeSitter for accurate validation
         symbol_index = None

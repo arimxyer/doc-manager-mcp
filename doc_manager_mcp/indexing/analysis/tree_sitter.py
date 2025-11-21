@@ -148,7 +148,7 @@ class SymbolIndexer:
                 "**/*.tsx",
             ]
 
-        # Merge user excludes with hardcoded defaults
+        # Merge user excludes with hardcoded defaults (correct priority: user > gitignore > defaults)
         default_excludes = [
             "node_modules/**",
             "vendor/**",
@@ -161,7 +161,18 @@ class SymbolIndexer:
             ".pytest_cache/**",
         ]
         user_excludes = config.get("exclude", []) if config else []
-        exclude_patterns = default_excludes + user_excludes
+        use_gitignore = config.get("use_gitignore", False) if config else False
+
+        # Build exclude patterns with correct priority: user > defaults
+        exclude_patterns = []
+        exclude_patterns.extend(user_excludes)  # User patterns first (highest priority)
+        exclude_patterns.extend(default_excludes)  # Defaults last (lowest priority)
+
+        # Parse .gitignore if enabled (middle priority, checked separately)
+        gitignore_spec = None
+        if use_gitignore:
+            from doc_manager_mcp.core import parse_gitignore
+            gitignore_spec = parse_gitignore(project_path)
 
         source_files = []
         for pattern in file_patterns:
@@ -171,12 +182,16 @@ class SymbolIndexer:
 
                 # Get relative path for pattern matching
                 try:
-                    relative_path = str(file_path.relative_to(project_path))
+                    relative_path = str(file_path.relative_to(project_path)).replace('\\', '/')
                 except ValueError:
                     continue
 
-                # Check if excluded using proper pattern matching
+                # Check if excluded using proper pattern matching (user + defaults)
                 if matches_exclude_pattern(relative_path, exclude_patterns):
+                    continue
+
+                # Check gitignore patterns (if enabled)
+                if gitignore_spec and gitignore_spec.match_file(relative_path):
                     continue
 
                 source_files.append(file_path)

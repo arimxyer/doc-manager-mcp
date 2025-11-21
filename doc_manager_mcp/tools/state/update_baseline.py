@@ -127,19 +127,19 @@ async def _update_repo_baseline(project_path: Path) -> dict[str, Any]:
         use_gitignore = config.get("use_gitignore", False) if config else False
 
         # Build exclude patterns with correct priority:
-        # 1. Built-in defaults (lowest priority)
-        # 2. Gitignore patterns (if enabled)
-        # 3. User excludes (highest priority)
-        exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS)
+        # Priority order: user > gitignore > defaults
+        # User patterns are checked first (highest priority)
+        exclude_patterns = []
+        exclude_patterns.extend(user_excludes)
 
-        # Parse .gitignore if enabled
+        # Parse .gitignore if enabled (middle priority)
         gitignore_spec = None
         if use_gitignore:
             from doc_manager_mcp.core import parse_gitignore
             gitignore_spec = parse_gitignore(project_path)
 
-        # User patterns always take highest priority
-        exclude_patterns.extend(user_excludes)
+        # Built-in defaults added last (lowest priority)
+        exclude_patterns.extend(DEFAULT_EXCLUDE_PATTERNS)
 
         # Scan files and calculate checksums
         checksums = {}
