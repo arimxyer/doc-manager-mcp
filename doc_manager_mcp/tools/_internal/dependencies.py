@@ -164,7 +164,7 @@ def _extract_subcommand(reference: str) -> str | None:
 
 
 
-def _extract_code_references(content: str, doc_file: Path) -> list[dict[str, Any]]:
+def _extract_code_references(content: str, doc_file: str | Path) -> list[dict[str, Any]]:
     """Extract code references from documentation content (REFACTORED - uses MarkdownParser)."""
     parser = MarkdownParser()
     references = []
@@ -302,7 +302,7 @@ def _extract_code_references(content: str, doc_file: Path) -> list[dict[str, Any
     return references
 
 
-def _extract_commands_from_code_blocks(content: str, doc_file: Path, indexer: SymbolIndexer | None = None, project_name: str | None = None) -> list[dict[str, Any]]:
+def _extract_commands_from_code_blocks(content: str, doc_file: str | Path, indexer: SymbolIndexer | None = None, project_name: str | None = None) -> list[dict[str, Any]]:
     """Extract command references from fenced code blocks using TreeSitter.
 
     Only extracts commands matching the project name to reduce noise.
