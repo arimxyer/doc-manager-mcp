@@ -57,7 +57,8 @@ async def docmgr_init(params: DocmgrInitInput, ctx=None) -> dict[str, Any]:
                 platform=params.platform,
                 exclude_patterns=params.exclude_patterns,
                 docs_path=params.docs_path,
-                sources=params.sources
+                sources=params.sources,
+                use_gitignore=params.use_gitignore
             ))
 
             # Step 2: Initialize memory system (baselines)

@@ -11,14 +11,28 @@ import yaml
 
 
 def load_config(project_path: Path) -> dict[str, Any] | None:
-    """Load .doc-manager.yml configuration."""
+    """Load .doc-manager.yml configuration.
+
+    Normalizes None values to empty lists for fields that consumers expect to be lists.
+    This handles configs where empty lists were saved as 'null' for YAML aesthetics.
+    """
     config_path = project_path / ".doc-manager.yml"
     if not config_path.exists():
         return None
 
     try:
         with open(config_path, encoding='utf-8') as f:
-            return yaml.safe_load(f)
+            config = yaml.safe_load(f)
+
+            if config:
+                # Normalize None to empty lists for expected list fields
+                # Fixes: dict.get("key", []) returns None when key exists with None value
+                if config.get('exclude') is None:
+                    config['exclude'] = []
+                if config.get('sources') is None:
+                    config['sources'] = []
+
+            return config
     except Exception:
         return None
 
