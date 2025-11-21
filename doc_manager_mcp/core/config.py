@@ -28,8 +28,15 @@ def save_config(project_path: Path, config: dict[str, Any]) -> bool:
     config_path = project_path / ".doc-manager.yml"
     try:
         with open(config_path, 'w', encoding='utf-8') as f:
-            # Write main configuration
-            yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+            # Write main configuration with custom formatting for empty lists
+            config_copy = config.copy()
+            # Replace empty lists with None so they appear as empty lines instead of []
+            if not config_copy.get('exclude'):
+                config_copy['exclude'] = None
+            if not config_copy.get('sources'):
+                config_copy['sources'] = None
+
+            yaml.dump(config_copy, f, default_flow_style=False, sort_keys=False)
 
             # Add helpful examples and documentation
             f.write("\n")
@@ -49,14 +56,16 @@ def save_config(project_path: Path, config: dict[str, Any]) -> bool:
             f.write("#     - \"**/venv/**\"             # Exclude Python virtual environments\n")
             f.write("#     - \"**/__pycache__/**\"      # Exclude Python cache\n")
             f.write("\n")
-            f.write("# Source Directories\n")
-            f.write("# ------------------\n")
-            f.write("# Additional source directories to track (relative to project root).\n")
+            f.write("# Source Files (Glob Patterns)\n")
+            f.write("# -----------------------------\n")
+            f.write("# Glob patterns to specify which source files to track.\n")
+            f.write("# IMPORTANT: Use glob patterns (e.g., 'src/**/*.py'), not just directory names.\n")
             f.write("# Examples:\n")
             f.write("#   sources:\n")
-            f.write("#     - \"src\"                    # Track src directory\n")
-            f.write("#     - \"lib\"                    # Track lib directory\n")
-            f.write("#     - \"packages/core\"          # Track monorepo package\n")
+            f.write("#     - \"src/**/*.py\"            # All Python files in src/\n")
+            f.write("#     - \"lib/**/*.js\"            # All JavaScript files in lib/\n")
+            f.write("#     - \"packages/core/**/*.ts\"  # TypeScript files in packages/core/\n")
+            f.write("#     - \"**/*.go\"                # All Go files in project\n")
             f.write("\n")
             f.write("# Documentation Path\n")
             f.write("# -------------------\n")
