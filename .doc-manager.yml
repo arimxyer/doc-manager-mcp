@@ -13,6 +13,7 @@ exclude:
 sources:
   - "doc_manager_mcp/**/*.py"
 docs_path: docs
+include_root_readme: true
 metadata:
   language: Python
   created: '2025-11-20T20:22:51.007874'
