@@ -86,6 +86,7 @@ async def initialize_config(params: InitializeConfigInput) -> str | dict[str, An
             "exclude": params.exclude_patterns or [],  # Ensure list, not None
             "sources": sources,
             "docs_path": docs_path,
+            "use_gitignore": params.use_gitignore,
             "metadata": {
                 "language": language,
                 "created": datetime.now().isoformat(),
