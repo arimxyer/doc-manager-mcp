@@ -11,22 +11,22 @@ An MCP (Model Context Protocol) server for comprehensive documentation lifecycle
 
 The server provides **7 core tools** organized into 4 tiers:
 
-#### Tier 1: Setup & Initialization
+### Tier 1: Setup & Initialization
 - **`docmgr_init`** - Unified initialization (replaces: `initialize_config`, `initialize_memory`, `bootstrap`)
   - Mode `existing`: Initialize for projects with existing docs
   - Mode `bootstrap`: Create fresh documentation structure
 
-#### Tier 2: Analysis & Read-Only Operations
+### Tier 2: Analysis & Read-Only Operations
 - **`docmgr_detect_changes`** - Pure read-only change detection (never writes baselines)
 - **`docmgr_detect_platform`** - Identify/recommend documentation platforms
 - **`docmgr_validate_docs`** - Check for broken links, missing assets, invalid code snippets
 - **`docmgr_assess_quality`** - Evaluate docs against 7 quality criteria
 
-#### Tier 3: State Management
+### Tier 3: State Management
 - **`docmgr_update_baseline`** - Atomically update all 3 baselines (repo, symbols, dependencies)
 - **`docmgr_sync`** - Orchestrate change detection + validation + quality + baseline updates
 
-#### Tier 4: Workflows & Orchestration
+### Tier 4: Workflows & Orchestration
 - **`docmgr_migrate`** - Restructure/migrate documentation
 
 ### Key Improvements (v1.1.0)
@@ -144,7 +144,7 @@ Updates 3 files atomically:
 - `symbol-baseline.json` (code symbols via TreeSitter)
 - `dependencies.json` (code-to-docs mappings)
 
-## Tool Reference
+## Tool reference
 
 ### docmgr_init
 
@@ -249,7 +249,7 @@ Updates 3 files atomically:
 - **`docmgr_assess_quality`** - Evaluate against 7 quality criteria
 - **`docmgr_migrate`** - Restructure documentation
 
-See [API Reference](docs/api-reference.md) for complete documentation.
+See [Tools Reference](docs/reference/tools.md) for complete documentation.
 
 ## Migration from v1.0.x
 
@@ -306,7 +306,7 @@ See [MIGRATION.md](MIGRATION.md) for detailed migration guide.
 
 ## Project Structure
 
-```
+```text
 doc-manager/
 ├── doc_manager_mcp/
 │   ├── server.py              # Main MCP server
@@ -368,7 +368,7 @@ metadata:
 
 ### Baseline Workflow
 
-```
+```text
 1. docmgr_init              → Create initial baselines
 2. (make code changes)
 3. docmgr_detect_changes    → Detect changes (read-only)
@@ -430,4 +430,4 @@ Contributions welcome! Please:
 
 - **Issues:** [GitHub Issues](https://github.com/yourusername/doc-manager/issues)
 - **Spec Docs:** See `specs/` directory for technical specifications
-- **API Reference:** See [docs/api-reference.md](docs/api-reference.md)
+- **Tools Reference:** See [docs/reference/tools.md](docs/reference/tools.md)

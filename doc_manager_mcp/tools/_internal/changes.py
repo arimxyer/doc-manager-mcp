@@ -185,6 +185,10 @@ def _categorize_change(file_path: str) -> str:
     if file_lower.endswith((".md", ".rst", ".txt")) or "/docs/" in normalized_path or "/documentation/" in normalized_path:
         return "documentation"
 
+    # Asset changes (images, media files commonly referenced in docs)
+    if any(file_lower.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico", ".pdf", ".mp4", ".webm", ".mov"]):
+        return "asset"
+
     # Build/Dependency changes
     if any(x in file_lower for x in ["package.json", "go.mod", "requirements.txt", "cargo.toml", "pom.xml", "build.gradle"]):
         return "dependency"

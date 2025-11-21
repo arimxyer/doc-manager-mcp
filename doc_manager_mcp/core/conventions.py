@@ -1,6 +1,5 @@
 """Convention loading and validation utilities."""
 
-import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -69,93 +68,80 @@ def validate_against_conventions(
         >>> violations[0]['rule']
         'require_code_language'
     """
+    # Import locally to avoid circular dependency
+    from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
+
     violations = []
-    lines = content.split('\n')
+    parser = MarkdownParser()
+
+    # Extract all markdown structures ONCE using proper parser
+    # This automatically excludes content inside code blocks from headers/images
+    code_blocks = parser.extract_code_blocks(content)
+    images = parser.extract_images(content)
+    headers = parser.extract_headers(content)
 
     # Check code block language requirement
     if conventions.style.code.block_language_required:
-        in_code_block = False
-
-        for i, line in enumerate(lines, 1):
-            if line.strip().startswith('```'):
-                if not in_code_block:
-                    # Starting a code block
-                    in_code_block = True
-
-                    # Check if language is specified
-                    language = line.strip()[3:].strip()
-                    if not language:
-                        violations.append({
-                            'rule': 'block_language_required',
-                            'line': i,
-                            'message': 'Code block missing language specification',
-                            'severity': 'error',
-                            'file': file_path
-                        })
-                else:
-                    # Ending a code block
-                    in_code_block = False
+        for block in code_blocks:
+            if not block['language']:
+                violations.append({
+                    'rule': 'block_language_required',
+                    'line': block['line'],
+                    'message': 'Code block missing language specification',
+                    'severity': 'error',
+                    'file': file_path
+                })
 
     # Check alt text requirement
+    # Images are already filtered by parser (excludes images in code blocks)
     if conventions.quality.images.require_alt_text:
-        # Match markdown images: ![alt](url)
-        image_pattern = r'!\[([^\]]*)\]\([^\)]+\)'
-
-        for i, line in enumerate(lines, 1):
-            for match in re.finditer(image_pattern, line):
-                alt_text = match.group(1).strip()
-                if not alt_text:
-                    violations.append({
-                        'rule': 'require_alt_text',
-                        'line': i,
-                        'message': 'Image missing descriptive alt text',
-                        'severity': 'error',
-                        'file': file_path
-                    })
+        for img in images:
+            if not img['alt'].strip():
+                violations.append({
+                    'rule': 'require_alt_text',
+                    'line': img['line'],
+                    'message': 'Image missing descriptive alt text',
+                    'severity': 'error',
+                    'file': file_path
+                })
 
     # Check heading case (if specified)
+    # Headers are already filtered by parser (excludes headings in code blocks)
     if conventions.style.headings.case:
-        heading_pattern = r'^(#{1,6})\s+(.+)$'
+        for header in headers:
+            heading_text = header['text'].strip()
 
-        for i, line in enumerate(lines, 1):
-            match = re.match(heading_pattern, line)
-            if match:
-                heading_text = match.group(2).strip()
+            # Skip if heading contains code or special formatting
+            if '`' in heading_text or heading_text.startswith('['):
+                continue
 
-                # Skip if heading contains code or special formatting
-                if '`' in heading_text or heading_text.startswith('['):
-                    continue
+            is_valid = _check_heading_case(heading_text, conventions.style.headings.case)
 
-                is_valid = _check_heading_case(heading_text, conventions.style.headings.case)
-
-                if not is_valid:
-                    violations.append({
-                        'rule': 'heading_case',
-                        'line': i,
-                        'message': f'Heading does not match {conventions.style.headings.case} convention',
-                        'severity': 'warning',
-                        'file': file_path
-                    })
+            if not is_valid:
+                violations.append({
+                    'rule': 'heading_case',
+                    'line': header['line'],
+                    'message': f'Heading does not match {conventions.style.headings.case} convention',
+                    'severity': 'warning',
+                    'file': file_path
+                })
 
     # Check heading hierarchy (if strict)
     if conventions.structure.heading_hierarchy == "strict":
-        violations.extend(_check_heading_hierarchy(lines, file_path))
+        violations.extend(_check_heading_hierarchy_from_headers(headers, file_path))
 
     # Check max heading depth
     if conventions.structure.max_heading_depth:
-        heading_pattern = r'^(#{1,6})\s+'
-        for i, line in enumerate(lines, 1):
-            match = re.match(heading_pattern, line)
-            if match:
-                depth = len(match.group(1))
-                if depth > conventions.structure.max_heading_depth:
-                    violations.append({
-                        'rule': 'max_heading_depth',
-                        'line': i,
-                        'message': f'Heading depth {depth} exceeds maximum {conventions.structure.max_heading_depth}',
-                        'severity': 'warning',
-                        'file': file_path
-                    })
+        for header in headers:
+            depth = header['level']
+            if depth > conventions.structure.max_heading_depth:
+                violations.append({
+                    'rule': 'max_heading_depth',
+                    'line': header['line'],
+                    'message': f'Heading depth {depth} exceeds maximum {conventions.structure.max_heading_depth}',
+                    'severity': 'warning',
+                    'file': file_path
+                })
 
     return violations
 
@@ -207,36 +193,37 @@ def _check_heading_case(heading: str, required_case: str) -> bool:
     return True
 
 
-def _check_heading_hierarchy(lines: list[str], file_path: str | None = None) -> list[dict[str, Any]]:
+def _check_heading_hierarchy_from_headers(
+    headers: list[dict[str, Any]],
+    file_path: str | None = None
+) -> list[dict[str, Any]]:
     """Check for heading hierarchy violations (skipped levels).
 
     Args:
-        lines: Document lines
+        headers: List of header dicts from MarkdownParser with 'level', 'text', 'line' keys
         file_path: Optional file path for error reporting
 
     Returns:
         List of hierarchy violations
     """
     violations = []
-    heading_pattern = r'^(#{1,6})\s+'
     previous_depth = 0
 
-    for i, line in enumerate(lines, 1):
-        match = re.match(heading_pattern, line)
-        if match:
-            depth = len(match.group(1))
+    for header in headers:
+        depth = header['level']
+        line = header['line']
 
-            # Check if we skipped a level (e.g., H1 -> H3)
-            if previous_depth > 0 and depth > previous_depth + 1:
-                violations.append({
-                    'rule': 'heading_hierarchy',
-                    'line': i,
-                    'message': f'Heading hierarchy violation: skipped from H{previous_depth} to H{depth}',
-                    'severity': 'warning',
-                    'file': file_path
-                })
+        # Check if we skipped a level (e.g., H1 -> H3)
+        if previous_depth > 0 and depth > previous_depth + 1:
+            violations.append({
+                'rule': 'heading_hierarchy',
+                'line': line,
+                'message': f'Heading hierarchy violation: skipped from H{previous_depth} to H{depth}',
+                'severity': 'warning',
+                'file': file_path
+            })
 
-            previous_depth = depth
+        previous_depth = depth
 
     return violations
 
