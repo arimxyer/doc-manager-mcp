@@ -16,7 +16,7 @@ from doc_manager_mcp.core import (
     load_config,
     validate_path_boundary,
 )
-from doc_manager_mcp.indexing import SymbolIndexer
+from doc_manager_mcp.indexing import SymbolIndexer, SymbolType
 from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
 from doc_manager_mcp.models import TrackDependenciesInput
 
@@ -164,8 +164,14 @@ def _extract_subcommand(reference: str) -> str | None:
 
 
 
-def _extract_code_references(content: str, doc_file: str | Path) -> list[dict[str, Any]]:
-    """Extract code references from documentation content (REFACTORED - uses MarkdownParser)."""
+def _extract_code_references(content: str, doc_file: str | Path, indexer: SymbolIndexer | None = None) -> list[dict[str, Any]]:
+    """Extract code references from documentation content (REFACTORED - uses MarkdownParser).
+
+    Args:
+        content: Documentation file content
+        doc_file: Path to documentation file
+        indexer: Optional SymbolIndexer for function name validation
+    """
     parser = MarkdownParser()
     references = []
 
@@ -223,6 +229,26 @@ def _extract_code_references(content: str, doc_file: str | Path) -> list[dict[st
                     "line": line  # NEW
                 })
             continue
+
+        # Check if it's a function name (without parentheses) using symbol index
+        # This catches references like `docmgr_init` that should be functions
+        # Must happen BEFORE config_key check which would match the same pattern
+        if indexer and len(code_text) >= 3 and re.match(r'^[a-z_][a-zA-Z0-9_]+$', code_text):
+            # Look up in symbol index
+            symbols = indexer.lookup(code_text)
+            if symbols:
+                # Found in symbol index - check if it's a function/method
+                for symbol in symbols:
+                    if symbol.type in [SymbolType.FUNCTION, SymbolType.METHOD]:
+                        references.append({
+                            "type": "function",
+                            "reference": code_text + "()",  # Normalize with parentheses
+                            "doc_file": str(doc_file),
+                            "line": line
+                        })
+                        break  # Only add once per inline code span
+                # Skip other classification checks if we found it in symbol index
+                continue
 
         # Check if it's a config key (dotted path, key:value, or simple key)
         # Dotted path: server.port
@@ -897,7 +923,7 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
                     doc_relative_path = get_doc_relative_path(md_file, docs_path, project_path)
 
                     # Extract inline references (backticks, prose)
-                    references = _extract_code_references(content, doc_relative_path)
+                    references = _extract_code_references(content, doc_relative_path, indexer=symbol_index)
                     all_references.extend(references)
 
                     # Extract commands from fenced code blocks (TreeSitter markdown)
