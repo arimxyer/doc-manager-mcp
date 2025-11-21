@@ -124,7 +124,22 @@ async def _update_repo_baseline(project_path: Path) -> dict[str, Any]:
         # Load config and build exclude patterns
         config = load_config(project_path)
         user_excludes = config.get("exclude", []) if config else []
-        exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS) + user_excludes
+        use_gitignore = config.get("use_gitignore", False) if config else False
+
+        # Build exclude patterns with correct priority:
+        # 1. Built-in defaults (lowest priority)
+        # 2. Gitignore patterns (if enabled)
+        # 3. User excludes (highest priority)
+        exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS)
+
+        # Parse .gitignore if enabled
+        gitignore_spec = None
+        if use_gitignore:
+            from doc_manager_mcp.core import parse_gitignore
+            gitignore_spec = parse_gitignore(project_path)
+
+        # User patterns always take highest priority
+        exclude_patterns.extend(user_excludes)
 
         # Scan files and calculate checksums
         checksums = {}
@@ -142,6 +157,10 @@ async def _update_repo_baseline(project_path: Path) -> dict[str, Any]:
                 relative_path = str(file_path.relative_to(project_path)).replace('\\', '/')
 
                 if matches_exclude_pattern(relative_path, exclude_patterns):
+                    continue
+
+                # Skip if matches gitignore patterns
+                if gitignore_spec and gitignore_spec.match_file(relative_path):
                     continue
 
                 checksums[relative_path] = calculate_checksum(file_path)

@@ -48,6 +48,37 @@ exclude:
   - "node_modules/**"
 ```
 
+### use_gitignore
+
+- **Type**: boolean
+- **Default**: `false`
+- **Required**: No (opt-in feature)
+- **Description**: Automatically exclude files based on `.gitignore` patterns
+
+When enabled, files ignored by git will also be excluded from documentation tracking. This prevents you from having to re-enter exclusion patterns that already exist in your `.gitignore` file.
+
+**Priority order**: User excludes > `.gitignore` > built-in defaults
+
+**Example:**
+```yaml
+use_gitignore: true
+exclude:
+  - "specs/**"  # Additional patterns beyond .gitignore
+```
+
+**How it works**:
+1. Built-in default patterns are applied (like `.git/`, `__pycache__/`)
+2. If `use_gitignore: true`, patterns from `.gitignore` are applied
+3. User-defined `exclude` patterns are applied last (highest priority)
+
+This means user `exclude` patterns can override both `.gitignore` and built-in defaults.
+
+**Notes**:
+- Only the root `.gitignore` file is used (nested `.gitignore` files are ignored)
+- Uses `pathspec` library with git's native pattern matching (`gitwildmatch`)
+- Patterns are parsed from `.gitignore` as-is (comments and blank lines are ignored)
+- If `.gitignore` doesn't exist, this setting has no effect
+
 ### sources
 
 - **Type**: list[string]
@@ -104,11 +135,10 @@ metadata:
 
 ```yaml
 platform: mkdocs
+use_gitignore: true
 exclude:
   - "tests/**"
-  - "**/__pycache__/**"
-  - ".venv/**"
-  - "dist/**"
+  - "specs/**"  # Additional exclusions beyond .gitignore
 sources:
   - "src/**/*.py"
   - "lib/**/*.py"
@@ -123,10 +153,9 @@ metadata:
 
 ```yaml
 platform: docusaurus
+use_gitignore: true
 exclude:
-  - "node_modules/**"
-  - "**/dist/**"
-  - "**/*.test.{js,ts}"
+  - "**/*.test.{js,ts}"  # Exclude test files beyond .gitignore
 sources:
   - "packages/*/src/**/*.{js,ts,tsx}"
   - "apps/*/src/**/*.{js,ts,tsx}"
@@ -141,9 +170,9 @@ metadata:
 
 ```yaml
 platform: hugo
+use_gitignore: true
 exclude:
-  - "vendor/**"
-  - "**/testdata/**"
+  - "**/testdata/**"  # Additional exclusions beyond .gitignore
   - "**/*_test.go"
 sources:
   - "cmd/**/*.go"
@@ -169,6 +198,26 @@ Documentation Manager uses standard glob patterns:
 | `{a,b}` | Alternatives | `*.{js,ts}` matches `.js` and `.ts` |
 
 ## Best practices
+
+### Use .gitignore integration
+
+Enable `use_gitignore: true` to avoid duplicating exclusion patterns:
+
+```yaml
+use_gitignore: true
+exclude:
+  - "specs/**"  # Only add patterns NOT in .gitignore
+```
+
+**Benefits**:
+- No need to duplicate patterns from `.gitignore`
+- Automatically excludes `node_modules/`, `venv/`, build artifacts, etc.
+- Consistent exclusion rules between git and doc-manager
+
+**When to add explicit excludes**:
+- Project-specific patterns not in `.gitignore`
+- Documentation-specific exclusions (like `specs/`)
+- Override `.gitignore` patterns for documentation purposes
 
 ### Start specific, expand later
 

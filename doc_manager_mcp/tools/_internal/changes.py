@@ -54,8 +54,22 @@ def _get_changed_files_from_checksums(project_path: Path, baseline: dict[str, An
     # Load config to get exclude patterns (FR-027)
     config = load_config(project_path)
     user_excludes = config.get("exclude", []) if config else []
-    # Merge default excludes with user excludes (defaults always applied)
-    exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS) + user_excludes
+    use_gitignore = config.get("use_gitignore", False) if config else False
+
+    # Build exclude patterns with correct priority:
+    # 1. Built-in defaults (lowest priority)
+    # 2. Gitignore patterns (if enabled)
+    # 3. User excludes (highest priority)
+    exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS)
+
+    # Parse .gitignore if enabled
+    gitignore_spec = None
+    if use_gitignore:
+        from doc_manager_mcp.core import parse_gitignore
+        gitignore_spec = parse_gitignore(project_path)
+
+    # User patterns always take highest priority
+    exclude_patterns.extend(user_excludes)
 
     # Check existing files for changes
     file_count = 0
@@ -78,6 +92,10 @@ def _get_changed_files_from_checksums(project_path: Path, baseline: dict[str, An
 
             # Skip if matches exclude patterns (FR-027)
             if matches_exclude_pattern(relative_path, exclude_patterns):
+                continue
+
+            # Skip if matches gitignore patterns
+            if gitignore_spec and gitignore_spec.match_file(relative_path):
                 continue
 
             current_checksum = calculate_checksum(file_path)
@@ -103,6 +121,10 @@ def _get_changed_files_from_checksums(project_path: Path, baseline: dict[str, An
         if matches_exclude_pattern(baseline_file, exclude_patterns):
             continue
 
+        # Skip if matches gitignore patterns
+        if gitignore_spec and gitignore_spec.match_file(baseline_file):
+            continue
+
         file_path = project_path / baseline_file
         if not file_path.exists():
             changed_files.append({
@@ -120,8 +142,22 @@ async def _get_changed_files_from_git(project_path: Path, since_commit: str) -> 
     # Load config to get exclude patterns (FR-027)
     config = load_config(project_path)
     user_excludes = config.get("exclude", []) if config else []
-    # Merge default excludes with user excludes (defaults always applied)
-    exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS) + user_excludes
+    use_gitignore = config.get("use_gitignore", False) if config else False
+
+    # Build exclude patterns with correct priority:
+    # 1. Built-in defaults (lowest priority)
+    # 2. Gitignore patterns (if enabled)
+    # 3. User excludes (highest priority)
+    exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS)
+
+    # Parse .gitignore if enabled
+    gitignore_spec = None
+    if use_gitignore:
+        from doc_manager_mcp.core import parse_gitignore
+        gitignore_spec = parse_gitignore(project_path)
+
+    # User patterns always take highest priority
+    exclude_patterns.extend(user_excludes)
 
     # Get list of changed files
     output = await run_git_command(project_path, "diff", "--name-status", since_commit, "HEAD")
@@ -142,6 +178,10 @@ async def _get_changed_files_from_git(project_path: Path, since_commit: str) -> 
 
         # Skip if matches exclude patterns (FR-027)
         if matches_exclude_pattern(file_path, exclude_patterns):
+            continue
+
+        # Skip if matches gitignore patterns
+        if gitignore_spec and gitignore_spec.match_file(file_path):
             continue
 
         if status.startswith('M'):

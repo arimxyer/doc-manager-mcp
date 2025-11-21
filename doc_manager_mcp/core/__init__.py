@@ -32,6 +32,9 @@ from .errors import handle_error
 # Git operations
 from .git import run_git_command
 
+# Gitignore parsing
+from .gitignore import get_gitignore_patterns, parse_gitignore
+
 # Path utilities
 from .paths import safe_resolve, validate_path_boundary
 
@@ -68,12 +71,14 @@ __all__ = [
     "find_markdown_files",
     "get_convention_summary",
     "get_doc_relative_path",
+    "get_gitignore_patterns",
     "handle_error",
     "is_public_symbol",
     "load_config",
     "load_conventions",
     "matches_exclude_pattern",
     "operation_timeout",
+    "parse_gitignore",
     "run_git_command",
     "safe_json_dumps",
     "safe_resolve",

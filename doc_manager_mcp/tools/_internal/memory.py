@@ -110,7 +110,22 @@ async def initialize_memory(params: InitializeMemoryInput, ctx=None) -> str | di
 
         config = load_config(project_path)
         user_excludes = config.get("exclude", []) if config else []
-        exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS) + user_excludes
+        use_gitignore = config.get("use_gitignore", False) if config else False
+
+        # Build exclude patterns with correct priority:
+        # 1. Built-in defaults (lowest priority)
+        # 2. Gitignore patterns (if enabled)
+        # 3. User excludes (highest priority)
+        exclude_patterns = list(DEFAULT_EXCLUDE_PATTERNS)
+
+        # Parse .gitignore if enabled
+        gitignore_spec = None
+        if use_gitignore:
+            from doc_manager_mcp.core import parse_gitignore
+            gitignore_spec = parse_gitignore(project_path)
+
+        # User patterns always take highest priority
+        exclude_patterns.extend(user_excludes)
 
         if ctx:
             await ctx.report_progress(progress=20, total=100)
@@ -128,7 +143,12 @@ async def initialize_memory(params: InitializeMemoryInput, ctx=None) -> str | di
                 entry_path = Path(entry.path)
                 relative_path_str = str(entry_path.relative_to(project_path)).replace('\\', '/')
 
+                # Check exclude patterns (user + defaults)
                 if matches_exclude_pattern(relative_path_str, exclude_patterns):
+                    continue
+
+                # Check gitignore patterns (if enabled)
+                if gitignore_spec and gitignore_spec.match_file(relative_path_str):
                     continue
 
                 if entry.is_dir():

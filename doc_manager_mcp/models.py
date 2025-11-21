@@ -201,6 +201,10 @@ class InitializeConfigInput(BaseModel):
         default=False,
         description="Include root README.md in documentation operations (validation, quality assessment, change detection)"
     )
+    use_gitignore: bool = Field(
+        default=False,
+        description="Automatically exclude files based on .gitignore patterns (opt-in). Priority: user excludes > gitignore > defaults"
+    )
 
     @field_validator('project_path')
     @classmethod
@@ -655,6 +659,10 @@ class DocmgrInitInput(BaseModel):
     include_root_readme: bool = Field(
         default=False,
         description="Include root README.md in documentation operations (validation, quality assessment, change detection)"
+    )
+    use_gitignore: bool = Field(
+        default=False,
+        description="Automatically exclude files based on .gitignore patterns (opt-in). Priority: user excludes > gitignore > defaults"
     )
 
     @field_validator('project_path')
