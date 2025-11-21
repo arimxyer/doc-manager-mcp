@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from doc_manager_mcp.core import is_public_symbol
+from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
 
 
 def check_list_formatting_consistency(
@@ -33,6 +34,7 @@ def check_list_formatting_consistency(
     # Count list markers across all files
     marker_counts = {"-": 0, "*": 0, "+": 0}
     file_markers = {}  # Track which markers each file uses
+    parser = MarkdownParser()
 
     for md_file in markdown_files:
         try:
@@ -40,22 +42,36 @@ def check_list_formatting_consistency(
                 content = f.read()
 
             # Remove code blocks to avoid counting code examples
-            code_block_pattern = r'^```.*?^```'
-            content_without_code = re.sub(code_block_pattern, '', content, flags=re.MULTILINE | re.DOTALL)
+            # Use MarkdownParser for proper code block detection (handles indented blocks, nested fences, etc.)
+            lines = content.split('\n')
+            code_blocks = parser.extract_code_blocks(content)
+
+            # Build set of line ranges that are inside code blocks
+            code_block_lines = set()
+            for block in code_blocks:
+                start_line = block['line']
+                # Count newlines in code content to find end line
+                num_code_lines = block['code'].count('\n')
+                end_line = start_line + num_code_lines
+                code_block_lines.update(range(start_line, end_line + 2))  # +2 to include fence lines
 
             # Pattern for unordered list items at start of line
             # Match: "- item", "* item", "+ item" (with optional leading spaces)
             file_marker_counts = {"-": 0, "*": 0, "+": 0}
 
-            for marker in ["-", "*", "+"]:
-                # Escape marker for regex if needed
-                escaped_marker = re.escape(marker)
-                # Match marker at start of line (with optional indentation) followed by space
-                pattern = rf'^\s*{escaped_marker}\s+'
-                matches = re.findall(pattern, content_without_code, re.MULTILINE)
-                count = len(matches)
-                marker_counts[marker] += count
-                file_marker_counts[marker] = count
+            for i, line in enumerate(lines, 1):
+                # Skip lines inside code blocks
+                if i in code_block_lines:
+                    continue
+
+                for marker in ["-", "*", "+"]:
+                    # Escape marker for regex if needed
+                    escaped_marker = re.escape(marker)
+                    # Match marker at start of line (with optional indentation) followed by space
+                    pattern = rf'^\s*{escaped_marker}\s+'
+                    if re.match(pattern, line):
+                        marker_counts[marker] += 1
+                        file_marker_counts[marker] += 1
 
             # Record which markers this file uses
             if sum(file_marker_counts.values()) > 0:
