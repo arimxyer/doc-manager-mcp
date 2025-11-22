@@ -1,23 +1,22 @@
-platform: mkdocs
+platform: unknown
 exclude:
   - "tests/**"
-  - "templates/**"
-  - ".venv/**"
   - "**/__pycache__/**"
   - "**/*.pyc"
-  - ".pytest_cache/**"
-  - ".ruff_cache/**"
+  - ".venv/**"
   - "dist/**"
   - "specs/**"
   - ".claude/**"
+  - ".doc-manager/**"
 sources:
   - "doc_manager_mcp/**/*.py"
 docs_path: docs
-include_root_readme: true
+use_gitignore: true
 metadata:
   language: Python
-  created: '2025-11-20T20:22:51.007874'
+  created: '2025-11-21T17:24:01.825693'
   version: 1.0.0
+include_root_readme: true
 
 # ============================================================================
 # Configuration Guide & Examples
@@ -62,3 +61,14 @@ metadata:
 # When enabled, validation, quality assessment, and change detection
 # will include the root README.md alongside docs in the docs/ directory.
 # Default: false (backwards compatible)
+
+# Use Gitignore
+# -------------
+# Set to true to automatically exclude files based on .gitignore patterns.
+# When enabled, files ignored by git will also be excluded from doc tracking.
+# Priority: user excludes > .gitignore > built-in defaults
+# Default: false (opt-in feature)
+# Example:
+#   use_gitignore: true
+#   exclude:              # Additional patterns beyond .gitignore
+#     - "specs/**"

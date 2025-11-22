@@ -88,9 +88,9 @@ def get_doc_relative_path(file_path: Path, docs_path: Path, project_path: Path) 
     docs_path = docs_path.resolve()
     project_path = project_path.resolve()
 
-    # Check if file is root README.md
-    if file_path == project_path / "README.md":
-        return "README.md"
+    # Check if file is root README.md (case-insensitive)
+    if file_path.parent == project_path and file_path.name.lower() == "readme.md":
+        return file_path.name  # Preserve actual casing
 
     # Otherwise compute relative path from docs/
     try:
@@ -156,10 +156,16 @@ def find_markdown_files(
                 markdown_files.append(file_path)
                 file_count += 1
 
-    # Optionally include root README.md
+    # Optionally include root README.md (case-insensitive)
     if include_root_readme and project_path is not None:
-        root_readme = project_path / "README.md"
-        if root_readme.exists() and root_readme.is_file():
+        # Find README case-insensitively
+        root_readme = None
+        for file in project_path.iterdir():
+            if file.is_file() and file.name.lower() == "readme.md":
+                root_readme = file
+                break
+
+        if root_readme is not None:
             if file_count >= limit:
                 raise ValueError(
                     f"File count limit exceeded (maximum: {limit:,} files)\n"

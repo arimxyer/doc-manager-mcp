@@ -42,7 +42,6 @@ uv.lock
 Thumbs.db
 
 # Documentation Manager specific
-.doc-manager/
 *.log
 
 # Secrets and credentials (T010 - FR-004, FR-005)
