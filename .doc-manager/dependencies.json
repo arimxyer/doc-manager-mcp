@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-21T18:12:43.096442",
+  "generated_at": "2025-11-22T18:25:35.918407",
   "doc_to_code": {
     "getting-started/installation.md": [
       "doc_manager_mcp/tools/analysis/detect_changes.py",

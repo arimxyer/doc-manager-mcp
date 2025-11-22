@@ -500,6 +500,124 @@ def _find_source_files(
     return source_files
 
 
+def _build_path_index(source_files: list[Path], project_path: Path) -> tuple[dict[str, str], dict[str, list[str]]]:
+    """Build index for O(1) file path lookups.
+
+    Creates two indices:
+    1. exact_paths: Maps normalized relative paths to themselves for exact matches
+    2. suffix_paths: Maps file basenames to all matching relative paths for suffix matches
+
+    Args:
+        source_files: List of source file paths
+        project_path: Project root path
+
+    Returns:
+        Tuple of (exact_paths, suffix_paths)
+    """
+    exact_paths = {}
+    suffix_paths = {}
+
+    for source_file in source_files:
+        relative_path = str(source_file.relative_to(project_path)).replace('\\', '/')
+
+        # Add to exact paths index
+        exact_paths[relative_path] = relative_path
+
+        # Add to suffix paths index (basename -> list of full paths)
+        # This handles references like "add.go" matching "cmd/add.go"
+        basename = source_file.name
+        if basename not in suffix_paths:
+            suffix_paths[basename] = []
+        suffix_paths[basename].append(relative_path)
+
+    return exact_paths, suffix_paths
+
+
+def _search_file_for_pattern(
+    source_file: Path,
+    patterns: list[str],
+    project_path: Path,
+    file_cache: dict[Path, str | None]
+) -> str | None:
+    """Search a source file for pattern matches with caching.
+
+    Caches file contents to avoid redundant I/O when searching for multiple patterns.
+
+    Args:
+        source_file: Path to source file
+        patterns: List of regex patterns to search for
+        project_path: Project root path
+        file_cache: Cache dict mapping file paths to content (or None if unreadable)
+
+    Returns:
+        Relative file path if pattern matches, None otherwise
+    """
+    # Check cache first
+    if source_file not in file_cache:
+        try:
+            with open(source_file, encoding='utf-8') as f:
+                file_cache[source_file] = f.read()
+        except Exception as e:
+            print(f"Warning: Failed to read source file {source_file}: {e}", file=sys.stderr)
+            file_cache[source_file] = None
+
+    content = file_cache[source_file]
+    if content is None:
+        return None
+
+    # Search for any pattern match
+    for pattern in patterns:
+        if re.search(pattern, content):
+            return str(source_file.relative_to(project_path)).replace('\\', '/')
+
+    return None
+
+
+def _match_command_to_files(
+    command_name: str,
+    source_files: list[Path],
+    project_path: Path,
+    symbol_index: Any | None = None,
+    include_commands_dir: bool = False,
+    validate_symbols: bool = False
+) -> set[str]:
+    """Match a command name to potential source files.
+
+    Consolidates command and semantic_command matching logic.
+
+    Args:
+        command_name: The command name to search for (e.g., "add", "vault_backup_create")
+        source_files: List of source file paths
+        project_path: Project root path
+        symbol_index: Optional SymbolIndexer for validating non-empty files
+        include_commands_dir: Include "commands" directory pattern (for semantic commands)
+        validate_symbols: If True and symbol_index available, verify files have symbols
+
+    Returns:
+        Set of matched relative file paths
+    """
+    matches = set()
+
+    # Build pattern: include "commands?" directory for semantic commands
+    dir_pattern = r'(cmd|cli|commands?)' if include_commands_dir else r'(cmd|cli)'
+    pattern = rf'\b{dir_pattern}/{re.escape(command_name)}(/|\.)'
+
+    for source_file in source_files:
+        relative_path = str(source_file.relative_to(project_path)).replace('\\', '/')
+
+        if re.search(pattern, relative_path):
+            # If symbol validation requested and available, verify file has symbols
+            if validate_symbols and symbol_index:
+                file_symbols = symbol_index.get_symbols_in_file(relative_path)
+                if file_symbols:  # Only add if file has actual code
+                    matches.add(relative_path)
+            else:
+                # No symbol validation needed or not available
+                matches.add(relative_path)
+
+    return matches
+
+
 def _match_references_to_sources(
     references: list[dict[str, Any]],
     source_files: list[Path],
@@ -518,6 +636,10 @@ def _match_references_to_sources(
         Dictionary mapping doc files to matched source files
     """
     dependencies = {}  # doc_file -> [source_files]
+    file_cache = {}  # Cache for file contents during regex fallback searches
+
+    # Build path index for O(1) file path lookups
+    exact_paths, suffix_paths = _build_path_index(source_files, project_path)
 
     for ref in references:
         doc_file = ref["doc_file"]
@@ -527,16 +649,23 @@ def _match_references_to_sources(
         if doc_file not in dependencies:
             dependencies[doc_file] = set()
 
-        # Match file path references
+        # Match file path references using index
         if ref_type == "file_path":
-            for source_file in source_files:
-                relative_path = str(source_file.relative_to(project_path)).replace('\\', '/')
-                # Normalize reference path separators too
-                ref_normalized = reference.replace('\\', '/')
+            # Normalize reference path separators
+            ref_normalized = reference.replace('\\', '/')
+
+            # Try exact match first (O(1))
+            if ref_normalized in exact_paths:
+                dependencies[doc_file].add(ref_normalized)
+            else:
+                # Try suffix match using basename (O(1) lookup + small list check)
                 # T091: Use precise path matching with path separators to avoid false positives (FR-026)
-                # Match exact path or path ending with separator (e.g., "save.py" won't match "autosave.py")
-                if relative_path == ref_normalized or relative_path.endswith('/' + ref_normalized):
-                    dependencies[doc_file].add(relative_path)
+                # Match paths ending with separator (e.g., "save.py" won't match "autosave.py")
+                basename = ref_normalized.split('/')[-1]
+                if basename in suffix_paths:
+                    for candidate_path in suffix_paths[basename]:
+                        if candidate_path.endswith('/' + ref_normalized):
+                            dependencies[doc_file].add(candidate_path)
 
         # Match function/class references by searching in source files
         elif ref_type in ["function", "class"]:
@@ -553,63 +682,38 @@ def _match_references_to_sources(
                     continue  # Skip regex fallback if symbol index found matches
 
             # Fallback to regex-based text search if symbol index unavailable or no matches
+            # Look for function/class definitions
+            patterns = [
+                rf'\bfunc\s+{identifier}\b',  # Go
+                rf'\bdef\s+{identifier}\b',   # Python
+                rf'\bfunction\s+{identifier}\b',  # JavaScript
+                rf'\bclass\s+{identifier}\b',  # Most languages
+                rf'\b{identifier}\s*\(',      # Function call/definition
+            ]
+
             for source_file in source_files:
-                try:
-                    with open(source_file, encoding='utf-8') as f:
-                        content = f.read()
-
-                    # Look for function/class definitions
-                    patterns = [
-                        rf'\bfunc\s+{identifier}\b',  # Go
-                        rf'\bdef\s+{identifier}\b',   # Python
-                        rf'\bfunction\s+{identifier}\b',  # JavaScript
-                        rf'\bclass\s+{identifier}\b',  # Most languages
-                        rf'\b{identifier}\s*\(',      # Function call/definition
-                    ]
-
-                    for pattern in patterns:
-                        if re.search(pattern, content):
-                            relative_path = str(source_file.relative_to(project_path)).replace('\\', '/')
-                            dependencies[doc_file].add(relative_path)
-                            break
-
-                except Exception as e:
-                    print(f"Warning: Failed to read source file {source_file}: {e}", file=sys.stderr)
-                    continue
+                matched_path = _search_file_for_pattern(source_file, patterns, project_path, file_cache)
+                if matched_path:
+                    dependencies[doc_file].add(matched_path)
 
         # Match command references to CLI source files
         elif ref_type == "command":
             command_name = _extract_subcommand(reference)
-            if not command_name:
-                continue  # Skip if we couldn't extract a valid subcommand
-            for source_file in source_files:
-                relative_path = str(source_file.relative_to(project_path)).replace('\\', '/')
-                # T091: Use precise path matching with path separators to avoid false positives (FR-026)
-                # Look for command files (e.g., cmd/add.go for "add" command)
-                # Match with path separators to prevent "add" matching "add_user" or "badder"
-                if re.search(rf'\b(cmd|cli)/{re.escape(command_name)}(/|\.)', relative_path):
-                    dependencies[doc_file].add(relative_path)
+            if command_name:
+                matched_files = _match_command_to_files(
+                    command_name, source_files, project_path, symbol_index,
+                    include_commands_dir=False, validate_symbols=False
+                )
+                dependencies[doc_file].update(matched_files)
 
         # Match semantic command references (e.g., "add command" → cmd/add.go)
         elif ref_type == "semantic_command":
             command_name = reference  # Already normalized to lowercase in extraction
-            for source_file in source_files:
-                relative_path = str(source_file.relative_to(project_path)).replace('\\', '/')
-                # T091: Use precise path matching with path separators
-                # Convention-based matching:
-                # - cmd/{command}.go (Go CLI pattern)
-                # - cmd/{command}.py (Python CLI pattern)
-                # - cli/{command}.js (Node.js pattern)
-                # Use word boundaries to prevent "add" matching "add_user.go"
-                if re.search(rf'\b(cmd|cli|commands?)/{re.escape(command_name)}(/|\.)', relative_path):
-                    # If symbol index available, verify the file has symbols (not empty)
-                    if symbol_index:
-                        file_symbols = symbol_index.get_symbols_in_file(relative_path)
-                        if file_symbols:  # Only add if file has actual code
-                            dependencies[doc_file].add(relative_path)
-                    else:
-                        # No symbol index, trust the file path match
-                        dependencies[doc_file].add(relative_path)
+            matched_files = _match_command_to_files(
+                command_name, source_files, project_path, symbol_index,
+                include_commands_dir=True, validate_symbols=True
+            )
+            dependencies[doc_file].update(matched_files)
 
     # Convert sets to sorted lists
     return {k: sorted(v) for k, v in dependencies.items()}
