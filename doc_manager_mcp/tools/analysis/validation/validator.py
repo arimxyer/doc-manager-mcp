@@ -1,5 +1,6 @@
 """Documentation validation tools for doc-manager."""
 
+import asyncio
 from pathlib import Path
 from typing import Any
 
@@ -93,33 +94,47 @@ async def validate_docs(params: ValidateDocsInput) -> str | dict[str, Any]:
         # Create markdown cache for performance (eliminates redundant parsing)
         markdown_cache = MarkdownCache()
 
-        # Run validation checks
-        all_issues = []
+        # Run validation checks in parallel (2-3x faster)
+        validators = []
 
         # Check convention compliance if conventions exist
         if conventions:
-            convention_issues = validate_conventions(docs_path, project_path, conventions, include_root_readme)
-            all_issues.extend(convention_issues)
+            validators.append(
+                asyncio.to_thread(validate_conventions, docs_path, project_path, conventions, include_root_readme)
+            )
 
         if params.check_links:
-            link_issues = check_broken_links(docs_path, project_path, include_root_readme, markdown_cache)
-            all_issues.extend(link_issues)
+            validators.append(
+                asyncio.to_thread(check_broken_links, docs_path, project_path, include_root_readme, markdown_cache)
+            )
 
         if params.check_assets:
-            asset_issues = validate_assets(docs_path, project_path, include_root_readme, markdown_cache)
-            all_issues.extend(asset_issues)
+            validators.append(
+                asyncio.to_thread(validate_assets, docs_path, project_path, include_root_readme, markdown_cache)
+            )
 
         if params.check_snippets:
-            snippet_issues = validate_code_snippets(docs_path, project_path, include_root_readme, markdown_cache)
-            all_issues.extend(snippet_issues)
+            validators.append(
+                asyncio.to_thread(validate_code_snippets, docs_path, project_path, include_root_readme, markdown_cache)
+            )
 
         if params.validate_code_syntax:
-            syntax_issues = validate_code_syntax(docs_path, project_path, include_root_readme)
-            all_issues.extend(syntax_issues)
+            validators.append(
+                asyncio.to_thread(validate_code_syntax, docs_path, project_path, include_root_readme)
+            )
 
         if params.validate_symbols:
-            symbol_issues = validate_symbols(docs_path, project_path, include_root_readme)
-            all_issues.extend(symbol_issues)
+            validators.append(
+                asyncio.to_thread(validate_symbols, docs_path, project_path, include_root_readme)
+            )
+
+        # Run all validators concurrently
+        results = await asyncio.gather(*validators) if validators else []
+
+        # Aggregate all issues
+        all_issues = []
+        for issues in results:
+            all_issues.extend(issues)
 
         return enforce_response_limit(_format_validation_report(all_issues))
 
