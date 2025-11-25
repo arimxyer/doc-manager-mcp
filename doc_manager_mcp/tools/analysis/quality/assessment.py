@@ -16,6 +16,7 @@ from doc_manager_mcp.core import (
     load_config,
     load_conventions,
 )
+from doc_manager_mcp.core.markdown_cache import MarkdownCache
 from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
 from doc_manager_mcp.models import AssessQualityInput
 
@@ -120,11 +121,10 @@ def _assess_relevance(project_path: Path, docs_path: Path, markdown_files: list[
     }
 
 
-def _assess_accuracy(project_path: Path, docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
+def _assess_accuracy(project_path: Path, docs_path: Path, markdown_files: list[Path], markdown_cache: MarkdownCache | None = None) -> dict[str, Any]:
     """Assess if documentation reflects actual codebase and system behavior."""
     issues = []
     findings = []
-    parser = MarkdownParser()
 
     # Extract code blocks and check for common issues
     total_code_blocks = 0
@@ -136,8 +136,13 @@ def _assess_accuracy(project_path: Path, docs_path: Path, markdown_files: list[P
             with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
-            # Find code blocks using MarkdownParser
-            code_blocks = parser.extract_code_blocks(content)
+            # Find code blocks using cache or parser
+            if markdown_cache:
+                parsed = markdown_cache.parse(md_file, content)
+                code_blocks = parsed.code_blocks
+            else:
+                parser = MarkdownParser()
+                code_blocks = parser.extract_code_blocks(content)
 
             if code_blocks:
                 files_with_code += 1
@@ -268,11 +273,10 @@ def _remove_code_blocks(content: str) -> str:
     return re.sub(code_block_pattern, '', content, flags=re.MULTILINE | re.DOTALL)
 
 
-def _assess_uniqueness(project_path: Path, docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
+def _assess_uniqueness(project_path: Path, docs_path: Path, markdown_files: list[Path], markdown_cache: MarkdownCache | None = None) -> dict[str, Any]:
     """Assess if there's redundant or duplicate information."""
     issues = []
     findings = []
-    parser = MarkdownParser()
 
     # Extract all H1 and H2 headers to check for duplicates
     headers = {}
@@ -282,8 +286,13 @@ def _assess_uniqueness(project_path: Path, docs_path: Path, markdown_files: list
             with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
-            # Extract headers using MarkdownParser
-            all_headers = parser.extract_headers(content)
+            # Extract headers using cache or parser
+            if markdown_cache:
+                parsed = markdown_cache.parse(md_file, content)
+                all_headers = parsed.headings
+            else:
+                parser = MarkdownParser()
+                all_headers = parser.extract_headers(content)
 
             # Filter for H1 and H2 only
             for header in all_headers:
@@ -323,11 +332,10 @@ def _assess_uniqueness(project_path: Path, docs_path: Path, markdown_files: list
     }
 
 
-def _assess_consistency(project_path: Path, docs_path: Path, markdown_files: list[Path], conventions=None) -> dict[str, Any]:
+def _assess_consistency(project_path: Path, docs_path: Path, markdown_files: list[Path], conventions=None, markdown_cache: MarkdownCache | None = None) -> dict[str, Any]:
     """Assess terminology, formatting, and style consistency."""
     issues = []
     findings = []
-    parser = MarkdownParser()
 
     # Check code block language consistency
     code_langs_with_backticks = set()
@@ -342,9 +350,14 @@ def _assess_consistency(project_path: Path, docs_path: Path, markdown_files: lis
             with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
-            # Check code block language tags using MarkdownParser
+            # Check code block language tags using cache or parser
             # This correctly counts only actual code blocks (not closing fences)
-            code_blocks = parser.extract_code_blocks(content)
+            if markdown_cache:
+                parsed = markdown_cache.parse(md_file, content)
+                code_blocks = parsed.code_blocks
+            else:
+                parser = MarkdownParser()
+                code_blocks = parser.extract_code_blocks(content)
             for block in code_blocks:
                 lang = block['language']
                 # Filter out "plaintext" from language count (Bug #3 fix)
@@ -391,11 +404,10 @@ def _assess_consistency(project_path: Path, docs_path: Path, markdown_files: lis
     }
 
 
-def _assess_clarity(project_path: Path, docs_path: Path, markdown_files: list[Path], conventions=None) -> dict[str, Any]:
+def _assess_clarity(project_path: Path, docs_path: Path, markdown_files: list[Path], conventions=None, markdown_cache: MarkdownCache | None = None) -> dict[str, Any]:
     """Assess language precision, examples, and navigation."""
     issues = []
     findings = []
-    parser = MarkdownParser()
 
     # Check for navigation aids
     files_with_toc = 0
@@ -419,15 +431,23 @@ def _assess_clarity(project_path: Path, docs_path: Path, markdown_files: list[Pa
             if re.search(r'(table of contents|## contents)', content, re.IGNORECASE):
                 files_with_toc += 1
 
-            # Check for internal links using MarkdownParser
-            links = parser.extract_links(content)
+            # Extract links and code blocks using cache or parser
+            if markdown_cache:
+                parsed = markdown_cache.parse(md_file, content)
+                links = parsed.links
+                code_blocks = parsed.code_blocks
+            else:
+                parser = MarkdownParser()
+                links = parser.extract_links(content)
+                code_blocks = parser.extract_code_blocks(content)
+
+            # Check for internal links
             internal_links = [link for link in links if not link["url"].startswith(('http://', 'https://'))]
             if internal_links:
                 files_with_links += 1
                 total_internal_links += len(internal_links)
 
             # Check for examples (code blocks or "example" keyword)
-            code_blocks = parser.extract_code_blocks(content)
             has_example = len(code_blocks) > 0 or re.search(r'\bexample[s]?\b', content, re.IGNORECASE)
             if has_example:
                 files_with_examples += 1
@@ -494,11 +514,10 @@ def _assess_clarity(project_path: Path, docs_path: Path, markdown_files: list[Pa
     }
 
 
-def _assess_structure(project_path: Path, docs_path: Path, markdown_files: list[Path]) -> dict[str, Any]:
+def _assess_structure(project_path: Path, docs_path: Path, markdown_files: list[Path], markdown_cache: MarkdownCache | None = None) -> dict[str, Any]:
     """Assess logical organization and hierarchy."""
     issues = []
     findings = []
-    parser = MarkdownParser()
 
     # Check directory structure
     subdirs = [d for d in docs_path.iterdir() if d.is_dir() and not d.name.startswith('.')]
@@ -513,8 +532,13 @@ def _assess_structure(project_path: Path, docs_path: Path, markdown_files: list[
             with open(md_file, encoding='utf-8') as f:
                 content = f.read()
 
-            # Extract all headings using MarkdownParser
-            headers = parser.extract_headers(content)
+            # Extract all headings using cache or parser
+            if markdown_cache:
+                parsed = markdown_cache.parse(md_file, content)
+                headers = parsed.headings
+            else:
+                parser = MarkdownParser()
+                headers = parser.extract_headers(content)
             heading_levels = [h["level"] for h in headers]
 
             for level in heading_levels:
@@ -730,6 +754,9 @@ async def assess_quality(params: AssessQualityInput) -> str | dict[str, Any]:
             QualityCriterion.STRUCTURE
         ]
 
+        # Create markdown cache for performance (eliminates redundant parsing)
+        markdown_cache = MarkdownCache()
+
         # Run assessments
         results = []
 
@@ -737,17 +764,17 @@ async def assess_quality(params: AssessQualityInput) -> str | dict[str, Any]:
             if criterion == QualityCriterion.RELEVANCE:
                 results.append(_assess_relevance(project_path, docs_path, markdown_files))
             elif criterion == QualityCriterion.ACCURACY:
-                results.append(_assess_accuracy(project_path, docs_path, markdown_files))
+                results.append(_assess_accuracy(project_path, docs_path, markdown_files, markdown_cache))
             elif criterion == QualityCriterion.PURPOSEFULNESS:
                 results.append(_assess_purposefulness(project_path, docs_path, markdown_files))
             elif criterion == QualityCriterion.UNIQUENESS:
-                results.append(_assess_uniqueness(project_path, docs_path, markdown_files))
+                results.append(_assess_uniqueness(project_path, docs_path, markdown_files, markdown_cache))
             elif criterion == QualityCriterion.CONSISTENCY:
-                results.append(_assess_consistency(project_path, docs_path, markdown_files, conventions))
+                results.append(_assess_consistency(project_path, docs_path, markdown_files, conventions, markdown_cache))
             elif criterion == QualityCriterion.CLARITY:
-                results.append(_assess_clarity(project_path, docs_path, markdown_files, conventions))
+                results.append(_assess_clarity(project_path, docs_path, markdown_files, conventions, markdown_cache))
             elif criterion == QualityCriterion.STRUCTURE:
-                results.append(_assess_structure(project_path, docs_path, markdown_files))
+                results.append(_assess_structure(project_path, docs_path, markdown_files, markdown_cache))
 
         # Calculate documentation coverage
         coverage_data = calculate_documentation_coverage(project_path, docs_path)
