@@ -108,24 +108,9 @@ async def initialize_memory(params: InitializeMemoryInput, ctx=None) -> str | di
             await ctx.report_progress(progress=10, total=100)
             await ctx.info("Initializing memory system...")
 
-        config = load_config(project_path)
-        user_excludes = config.get("exclude", []) if config else []
-        use_gitignore = config.get("use_gitignore", False) if config else False
-
-        # Build exclude patterns with correct priority:
-        # Priority order: user > gitignore > defaults
-        # User patterns are checked first (highest priority)
-        exclude_patterns = []
-        exclude_patterns.extend(user_excludes)
-
-        # Parse .gitignore if enabled (middle priority)
-        gitignore_spec = None
-        if use_gitignore:
-            from doc_manager_mcp.core import parse_gitignore
-            gitignore_spec = parse_gitignore(project_path)
-
-        # Built-in defaults added last (lowest priority)
-        exclude_patterns.extend(DEFAULT_EXCLUDE_PATTERNS)
+        # Build exclude patterns using shared logic
+        from doc_manager_mcp.core.file_scanner import build_exclude_patterns
+        exclude_patterns, gitignore_spec = build_exclude_patterns(project_path)
 
         if ctx:
             await ctx.report_progress(progress=20, total=100)

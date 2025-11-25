@@ -112,60 +112,27 @@ async def _update_repo_baseline(project_path: Path) -> dict[str, Any]:
         import json
         from datetime import datetime
 
-        from doc_manager_mcp.constants import DEFAULT_EXCLUDE_PATTERNS, MAX_FILES
+        from doc_manager_mcp.constants import MAX_FILES
         from doc_manager_mcp.core import (
             calculate_checksum,
             detect_project_language,
             find_docs_directory,
             load_config,
-            matches_exclude_pattern,
             run_git_command,
         )
+        from doc_manager_mcp.core.file_scanner import scan_project_files
 
-        # Load config and build exclude patterns
+        # Load config
         config = load_config(project_path)
-        user_excludes = config.get("exclude", []) if config else []
-        use_gitignore = config.get("use_gitignore", False) if config else False
 
-        # Build exclude patterns with correct priority:
-        # Priority order: user > gitignore > defaults
-        # User patterns are checked first (highest priority)
-        exclude_patterns = []
-        exclude_patterns.extend(user_excludes)
-
-        # Parse .gitignore if enabled (middle priority)
-        gitignore_spec = None
-        if use_gitignore:
-            from doc_manager_mcp.core import parse_gitignore
-            gitignore_spec = parse_gitignore(project_path)
-
-        # Built-in defaults added last (lowest priority)
-        exclude_patterns.extend(DEFAULT_EXCLUDE_PATTERNS)
-
-        # Scan files and calculate checksums
+        # Scan files and calculate checksums using shared scanner
         checksums = {}
         file_count = 0
 
-        for root, _dirs, files in project_path.walk():
-            if file_count >= MAX_FILES:
-                break
-
-            for file in files:
-                if file_count >= MAX_FILES:
-                    break
-
-                file_path = root / file
-                relative_path = str(file_path.relative_to(project_path)).replace('\\', '/')
-
-                if matches_exclude_pattern(relative_path, exclude_patterns):
-                    continue
-
-                # Skip if matches gitignore patterns
-                if gitignore_spec and gitignore_spec.match_file(relative_path):
-                    continue
-
-                checksums[relative_path] = calculate_checksum(file_path)
-                file_count += 1
+        for file_path in scan_project_files(project_path, max_files=MAX_FILES, use_walk=True):
+            relative_path = str(file_path.relative_to(project_path)).replace('\\', '/')
+            checksums[relative_path] = calculate_checksum(file_path)
+            file_count += 1
 
         # Get git info
         git_commit = await run_git_command(project_path, "rev-parse", "HEAD")

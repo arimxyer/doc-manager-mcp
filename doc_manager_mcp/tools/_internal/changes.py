@@ -48,72 +48,32 @@ def _load_baseline(project_path: Path) -> dict[str, Any] | None:
 
 def _get_changed_files_from_checksums(project_path: Path, baseline: dict[str, Any]) -> list[dict[str, str]]:
     """Compare current checksums with baseline to find changed files."""
+    from doc_manager_mcp.core.file_scanner import scan_project_files, build_exclude_patterns
+
     changed_files = []
     baseline_checksums = baseline.get("files", {})
 
-    # Load config to get exclude patterns (FR-027)
-    config = load_config(project_path)
-    user_excludes = config.get("exclude", []) if config else []
-    use_gitignore = config.get("use_gitignore", False) if config else False
+    # Build exclude patterns for deleted file checks
+    exclude_patterns, gitignore_spec = build_exclude_patterns(project_path)
 
-    # Build exclude patterns with correct priority:
-    # Priority order: user > gitignore > defaults
-    # User patterns are checked first (highest priority)
-    exclude_patterns = []
-    exclude_patterns.extend(user_excludes)
+    # Check existing files for changes using shared scanner
+    for file_path in scan_project_files(project_path, max_files=MAX_FILES):
+        relative_path = str(file_path.relative_to(project_path)).replace('\\', '/')
 
-    # Parse .gitignore if enabled (middle priority)
-    gitignore_spec = None
-    if use_gitignore:
-        from doc_manager_mcp.core import parse_gitignore
-        gitignore_spec = parse_gitignore(project_path)
+        current_checksum = calculate_checksum(file_path)
+        baseline_checksum = baseline_checksums.get(relative_path)
 
-    # Built-in defaults added last (lowest priority)
-    exclude_patterns.extend(DEFAULT_EXCLUDE_PATTERNS)
-
-    # Check existing files for changes
-    file_count = 0
-    for file_path in project_path.rglob("*"):
-        if file_count >= MAX_FILES:
-            raise ValueError(
-                f"File count limit exceeded (maximum: {MAX_FILES:,} files)\n"
-                f"→ Consider processing a smaller directory or increasing the limit."
-            )
-
-        if file_path.is_file() and not any(part.startswith('.') for part in file_path.parts):
-            # Validate path boundary and check for malicious symlinks (T029 - FR-028)
-            try:
-                _ = validate_path_boundary(file_path, project_path)
-            except ValueError:
-                # Skip files that escape project boundary or malicious symlinks
-                continue
-
-            relative_path = str(file_path.relative_to(project_path)).replace('\\', '/')
-
-            # Skip if matches exclude patterns (FR-027)
-            if matches_exclude_pattern(relative_path, exclude_patterns):
-                continue
-
-            # Skip if matches gitignore patterns
-            if gitignore_spec and gitignore_spec.match_file(relative_path):
-                continue
-
-            current_checksum = calculate_checksum(file_path)
-            baseline_checksum = baseline_checksums.get(relative_path)
-
-            if baseline_checksum != current_checksum:
-                if baseline_checksum:
-                    changed_files.append({
-                        "file": relative_path,
-                        "change_type": "modified"
-                    })
-                else:
-                    changed_files.append({
-                        "file": relative_path,
-                        "change_type": "added"
-                    })
-
-            file_count += 1
+        if baseline_checksum != current_checksum:
+            if baseline_checksum:
+                changed_files.append({
+                    "file": relative_path,
+                    "change_type": "modified"
+                })
+            else:
+                changed_files.append({
+                    "file": relative_path,
+                    "change_type": "added"
+                })
 
     # Check for deleted files
     for baseline_file in baseline_checksums.keys():
