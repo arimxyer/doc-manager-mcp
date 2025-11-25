@@ -11,6 +11,7 @@ This workflow orchestrates documentation migration:
 
 import json
 import shutil
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,18 @@ from doc_manager_mcp.models import MigrateInput
 from doc_manager_mcp.tools.analysis.platform import detect_platform
 from doc_manager_mcp.tools.analysis.quality.assessment import assess_quality
 from doc_manager_mcp.tools.analysis.validation.validator import validate_docs
+
+
+def is_git_repo(project_path: Path) -> bool:
+    """Check if project is a git repository.
+
+    Args:
+        project_path: Project root directory
+
+    Returns:
+        True if project has a .git directory
+    """
+    return (project_path / ".git").exists()
 
 
 async def migrate(params: MigrateInput) -> str | dict[str, Any]:
@@ -133,6 +146,9 @@ async def migrate(params: MigrateInput) -> str | dict[str, Any]:
             if not params.dry_run:
                 new_docs.mkdir(parents=True, exist_ok=False)
 
+            # Determine if we should use git for moves
+            use_git = params.preserve_history and is_git_repo(project_path) and not params.dry_run
+
             # Process all files from existing docs
             for old_file in existing_docs.rglob("*"):
                 if not old_file.is_file():
@@ -140,6 +156,7 @@ async def migrate(params: MigrateInput) -> str | dict[str, Any]:
 
                 relative_path = old_file.relative_to(existing_docs)
                 new_file = new_docs / relative_path
+                method = "preview"  # Default for dry run
 
                 # Create parent directories if not dry run
                 if not params.dry_run:
@@ -187,15 +204,56 @@ async def migrate(params: MigrateInput) -> str | dict[str, Any]:
                     if not params.dry_run:
                         new_file.write_text(final_content, encoding='utf-8')
 
+                        # For markdown files with transformations, use git rm + git add
+                        # (Git will detect this as a rename with modifications)
+                        if use_git:
+                            try:
+                                # Stage new file
+                                subprocess.run(
+                                    ['git', 'add', str(new_file)],
+                                    cwd=project_path,
+                                    check=True,
+                                    capture_output=True
+                                )
+                                # Remove old file from git
+                                subprocess.run(
+                                    ['git', 'rm', str(old_file)],
+                                    cwd=project_path,
+                                    check=True,
+                                    capture_output=True
+                                )
+                                method = "git mv"
+                            except subprocess.CalledProcessError:
+                                # Git operations failed, but file is already copied
+                                method = "copy"
+                        else:
+                            method = "copy"
+
                 else:
-                    # Non-markdown files: just copy
+                    # Non-markdown files: use git mv if preserving history, else copy
                     if not params.dry_run:
-                        shutil.copy2(old_file, new_file)
+                        if use_git:
+                            try:
+                                # Use git mv for non-markdown files
+                                subprocess.run(
+                                    ['git', 'mv', str(old_file), str(new_file)],
+                                    cwd=project_path,
+                                    check=True,
+                                    capture_output=True
+                                )
+                                method = "git mv"
+                            except subprocess.CalledProcessError:
+                                # Fallback to regular copy if git mv fails
+                                shutil.copy2(old_file, new_file)
+                                method = "copy"
+                        else:
+                            shutil.copy2(old_file, new_file)
+                            method = "copy"
 
                 moved_files.append({
                     "old": str(old_file.relative_to(project_path)),
                     "new": str(new_file.relative_to(project_path)),
-                    "method": "copy" if not params.dry_run else "preview"
+                    "method": method
                 })
 
         except Exception as e:
