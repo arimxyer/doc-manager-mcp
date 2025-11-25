@@ -19,6 +19,7 @@ from doc_manager_mcp.core import (
 )
 from doc_manager_mcp.indexing.analysis.code_validator import CodeValidator
 from doc_manager_mcp.indexing.analysis.tree_sitter import SymbolIndexer
+from doc_manager_mcp.indexing.link_index import build_link_index
 from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
 from doc_manager_mcp.models import ValidateDocsInput
 
@@ -55,8 +56,18 @@ def _extract_links(content: str, file_path: Path) -> list[dict[str, Any]]:
     return links
 
 
-def _check_internal_link(link_url: str, file_path: Path, docs_root: Path) -> str | None:
-    """Check if internal link is valid. Returns error message if broken."""
+def _check_internal_link(link_url: str, file_path: Path, docs_root: Path, link_index=None) -> str | None:
+    """Check if internal link is valid using link index for O(1) lookup.
+
+    Args:
+        link_url: URL to check
+        file_path: Source file containing the link
+        docs_root: Documentation root directory
+        link_index: Optional LinkIndex for fast lookups (falls back to file system if None)
+
+    Returns:
+        Error message if link is broken, None if valid
+    """
     # Skip external links and anchors
     if link_url.startswith(('http://', 'https://', 'mailto:', 'ftp://')):
         return None
@@ -75,6 +86,25 @@ def _check_internal_link(link_url: str, file_path: Path, docs_root: Path) -> str
     if not url_without_anchor:
         return None
 
+    # Use link index if available (performance optimization)
+    if link_index is not None:
+        # Determine source context for relative links
+        if url_without_anchor.startswith('/'):
+            # Absolute path from docs root
+            source_context = docs_root
+        else:
+            # Relative to current file's directory
+            source_context = file_path.parent
+
+        # O(1) index lookup instead of O(M) iteration or file system check
+        target = link_index.resolve(url_without_anchor, source_context, docs_root)
+
+        if target is None:
+            return f"Broken link: {link_url} (target not found)"
+
+        return None
+
+    # Fallback to file system checks (backward compatibility)
     # Resolve relative path
     if url_without_anchor.startswith('/'):
         # Absolute path from docs root
@@ -107,7 +137,7 @@ def _check_internal_link(link_url: str, file_path: Path, docs_root: Path) -> str
 
 
 def _check_broken_links(docs_path: Path, project_path: Path, include_root_readme: bool = False) -> list[dict[str, Any]]:
-    """Check for broken internal and external links."""
+    """Check for broken internal and external links using link index for performance."""
     issues = []
     markdown_files = find_markdown_files(
         docs_path,
@@ -115,6 +145,9 @@ def _check_broken_links(docs_path: Path, project_path: Path, include_root_readme
         validate_boundaries=False,
         include_root_readme=include_root_readme
     )
+
+    # Build link index once for O(1) lookups instead of O(M) file system checks
+    link_index = build_link_index(docs_path)
 
     for md_file in markdown_files:
         try:
@@ -124,8 +157,8 @@ def _check_broken_links(docs_path: Path, project_path: Path, include_root_readme
             links = _extract_links(content, md_file)
 
             for link in links:
-                # Check internal links only
-                error = _check_internal_link(link['url'], md_file, docs_path)
+                # Check internal links only using link index
+                error = _check_internal_link(link['url'], md_file, docs_path, link_index)
                 if error:
                     issues.append({
                         "type": "broken_link",
