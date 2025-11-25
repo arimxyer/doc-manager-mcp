@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from doc_manager_mcp.core import enforce_response_limit, handle_error
+from doc_manager_mcp.core.security import file_lock
 from doc_manager_mcp.models import DocmgrUpdateBaselineInput
 
 
@@ -191,9 +192,10 @@ async def _update_repo_baseline(project_path: Path) -> dict[str, Any]:
             "files": checksums
         }
 
-        # Write baseline
+        # Write baseline with file locking to prevent corruption
         baseline_path = project_path / ".doc-manager" / "memory" / "repo-baseline.json"
-        baseline_path.write_text(json.dumps(baseline, indent=2))
+        with file_lock(baseline_path, timeout=10, retries=3):
+            baseline_path.write_text(json.dumps(baseline, indent=2))
 
         return {
             "status": "success",

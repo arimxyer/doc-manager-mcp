@@ -25,6 +25,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .tree_sitter import Symbol, SymbolType
+from doc_manager_mcp.core.security import file_lock
 
 
 @dataclass
@@ -195,8 +196,10 @@ def save_symbol_baseline(
             json.dump(baseline_data, f, indent=2, ensure_ascii=False)
             f.flush()
 
-        # Atomic rename (overwrites existing file on POSIX, may not be atomic on Windows)
-        Path(temp_path).replace(baseline_path)
+        # Atomic rename with file locking to prevent concurrent write corruption
+        # (overwrites existing file on POSIX, may not be atomic on Windows)
+        with file_lock(baseline_path, timeout=10, retries=3):
+            Path(temp_path).replace(baseline_path)
 
     except Exception:
         # Clean up temp file on any error
