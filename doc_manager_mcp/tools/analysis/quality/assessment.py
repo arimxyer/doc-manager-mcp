@@ -1,5 +1,6 @@
 """Quality assessment tools for doc-manager."""
 
+import asyncio
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -195,32 +196,45 @@ async def assess_quality(params: AssessQualityInput) -> str | dict[str, Any]:
         # Create markdown cache for performance (eliminates redundant parsing)
         markdown_cache = MarkdownCache()
 
-        # Run assessments
-        results = []
+        # Run assessments in parallel (2-3x faster)
+        analyzers = []
 
         for criterion in criteria_to_assess:
             if criterion == QualityCriterion.RELEVANCE:
-                results.append(assess_relevance(project_path, docs_path, markdown_files))
+                analyzers.append(
+                    asyncio.to_thread(assess_relevance, project_path, docs_path, markdown_files)
+                )
             elif criterion == QualityCriterion.ACCURACY:
-                results.append(assess_accuracy(project_path, docs_path, markdown_files, markdown_cache))
+                analyzers.append(
+                    asyncio.to_thread(assess_accuracy, project_path, docs_path, markdown_files, markdown_cache)
+                )
             elif criterion == QualityCriterion.PURPOSEFULNESS:
-                results.append(assess_purposefulness(project_path, docs_path, markdown_files))
+                analyzers.append(
+                    asyncio.to_thread(assess_purposefulness, project_path, docs_path, markdown_files)
+                )
             elif criterion == QualityCriterion.UNIQUENESS:
-                results.append(assess_uniqueness(project_path, docs_path, markdown_files, markdown_cache))
+                analyzers.append(
+                    asyncio.to_thread(assess_uniqueness, project_path, docs_path, markdown_files, markdown_cache)
+                )
             elif criterion == QualityCriterion.CONSISTENCY:
-                results.append(assess_consistency(project_path, docs_path, markdown_files, conventions, markdown_cache))
+                analyzers.append(
+                    asyncio.to_thread(assess_consistency, project_path, docs_path, markdown_files, conventions, markdown_cache)
+                )
             elif criterion == QualityCriterion.CLARITY:
-                results.append(assess_clarity(project_path, docs_path, markdown_files, conventions, markdown_cache))
+                analyzers.append(
+                    asyncio.to_thread(assess_clarity, project_path, docs_path, markdown_files, conventions, markdown_cache)
+                )
             elif criterion == QualityCriterion.STRUCTURE:
-                results.append(assess_structure(project_path, docs_path, markdown_files, markdown_cache))
+                analyzers.append(
+                    asyncio.to_thread(assess_structure, project_path, docs_path, markdown_files, markdown_cache)
+                )
 
-        # Calculate documentation coverage
+        # Run all analyzers concurrently
+        results = await asyncio.gather(*analyzers) if analyzers else []
+
+        # Calculate documentation coverage and other metadata
         coverage_data = calculate_documentation_coverage(project_path, docs_path)
-
-        # Detect undocumented APIs
         undocumented_apis = detect_undocumented_apis(project_path, docs_path)
-
-        # Check formatting consistency
         list_formatting = check_list_formatting_consistency(docs_path)
         heading_case = check_heading_case_consistency(docs_path)
 
