@@ -2,7 +2,6 @@
 
 import asyncio
 import json
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -27,15 +26,17 @@ from .symbols import validate_symbols
 from .syntax import validate_code_syntax
 
 
-@lru_cache(maxsize=3)
 def _load_repo_baseline(baseline_path_str: str) -> dict[str, Any] | None:
-    """Load repository baseline from disk (cached).
+    """Load repository baseline from disk.
 
     Args:
         baseline_path_str: String path to baseline file
 
     Returns:
         Baseline dict or None if not found
+
+    Note:
+        Cache was removed to prevent stale data issues across operations.
     """
     baseline_path = Path(baseline_path_str)
     if not baseline_path.exists():
