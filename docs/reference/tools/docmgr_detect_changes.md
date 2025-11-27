@@ -1,4 +1,6 @@
-# docmgr_detect_changes
+# Detect changes
+
+**Tool:** `docmgr_detect_changes`
 
 Detect code changes without modifying baselines (pure read-only).
 

@@ -146,9 +146,9 @@ Updates 3 files atomically:
 
 ## Tool reference
 
-### docmgr_init
+### Initialize documentation manager
 
-**Purpose:** Unified initialization (Tier 1)
+**Tool:** `docmgr_init` (Tier 1)
 **Replaces:** `docmgr_initialize_config`, `docmgr_initialize_memory`, `docmgr_bootstrap`
 
 **Parameters:**
@@ -168,9 +168,9 @@ Updates 3 files atomically:
 }
 ```
 
-### docmgr_detect_changes
+### Detect changes
 
-**Purpose:** Pure read-only change detection (Tier 2)
+**Tool:** `docmgr_detect_changes` (Tier 2)
 **Key Guarantee:** NEVER writes to baselines
 
 **Parameters:**
@@ -204,9 +204,9 @@ Updates 3 files atomically:
 }
 ```
 
-### docmgr_update_baseline
+### Update baseline
 
-**Purpose:** Atomically update all baselines (Tier 3)
+**Tool:** `docmgr_update_baseline` (Tier 3)
 
 **Parameters:**
 - `project_path` (required): Absolute path to project root
@@ -220,9 +220,9 @@ Updates 3 files atomically:
 }
 ```
 
-### docmgr_sync
+### Synchronize documentation
 
-**Purpose:** Orchestrated documentation sync (Tier 4)
+**Tool:** `docmgr_sync` (Tier 4)
 
 **Parameters:**
 - `project_path` (required): Absolute path to project root
@@ -264,8 +264,6 @@ The following tools were **removed in v2.0.0**:
 | `docmgr_bootstrap` | `docmgr_init` with `mode="bootstrap"` | Unified initialization |
 | `docmgr_map_changes` | `docmgr_detect_changes` or `docmgr_sync` | Read-only detection |
 
-> **Note:** If you need backward compatibility with v1.0.x tools, use v1.1.0. See [MIGRATION.md](MIGRATION.md) for details.
-
 ### Migration Steps (v1.0.x → v2.0.0)
 
 1. **Replace initialization calls:**
@@ -301,8 +299,6 @@ The following tools were **removed in v2.0.0**:
    # Analysis + update baselines
    await docmgr_sync(project_path="...", mode="resync")
    ```
-
-See [MIGRATION.md](MIGRATION.md) for detailed migration guide.
 
 ## Project Structure
 

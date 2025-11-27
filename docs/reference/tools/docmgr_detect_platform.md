@@ -1,4 +1,6 @@
-# docmgr_detect_platform
+# Detect platform
+
+**Tool:** `docmgr_detect_platform`
 
 Auto-detect documentation platform or recommend one.
 

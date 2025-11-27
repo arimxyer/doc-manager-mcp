@@ -1,4 +1,6 @@
-# docmgr_sync
+# Synchronize documentation
+
+**Tool:** `docmgr_sync`
 
 Orchestrate complete documentation sync: detect changes, validate, assess quality, optionally update baselines.
 

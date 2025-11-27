@@ -1,4 +1,6 @@
-# docmgr_validate_docs
+# Validate documentation
+
+**Tool:** `docmgr_validate_docs`
 
 Validate documentation for broken links, missing assets, code snippet syntax, and convention compliance.
 

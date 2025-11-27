@@ -11,7 +11,7 @@ The file is automatically created by `docmgr_init` with helpful examples and com
 
 ## Configuration options
 
-### platform
+### Platform
 
 - **Type**: string
 - **Default**: Auto-detected based on project
@@ -31,7 +31,7 @@ The file is automatically created by `docmgr_init` with helpful examples and com
 platform: mkdocs
 ```
 
-### exclude
+### Exclude
 
 - **Type**: list[string]
 - **Default**: `[]`
@@ -48,7 +48,7 @@ exclude:
   - "node_modules/**"
 ```
 
-### use_gitignore
+### Use gitignore
 
 - **Type**: boolean
 - **Default**: `false`
@@ -79,7 +79,7 @@ This means user `exclude` patterns can override both `.gitignore` and built-in d
 - Patterns are parsed from `.gitignore` as-is (comments and blank lines are ignored)
 - If `.gitignore` doesn't exist, this setting has no effect
 
-### sources
+### Sources
 
 - **Type**: list[string]
 - **Default**: `[]`
@@ -102,7 +102,7 @@ sources:
   - "src"  # ✗ Wrong - this won't work!
 ```
 
-### docs_path
+### Docs path
 
 - **Type**: string
 - **Default**: `"docs"`
@@ -114,7 +114,7 @@ sources:
 docs_path: docs
 ```
 
-### metadata
+### Metadata
 
 - **Type**: object
 - **Default**: Auto-generated

@@ -1,4 +1,6 @@
-# docmgr_update_baseline
+# Update baseline
+
+**Tool:** `docmgr_update_baseline`
 
 Update all baseline files to reflect current project state.
 

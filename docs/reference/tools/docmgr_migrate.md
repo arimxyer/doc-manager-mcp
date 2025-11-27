@@ -1,4 +1,6 @@
-# docmgr_migrate
+# Migrate documentation
+
+**Tool:** `docmgr_migrate`
 
 Migrate or restructure documentation while optionally preserving git history.
 

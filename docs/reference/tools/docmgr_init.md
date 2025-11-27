@@ -1,4 +1,6 @@
-# docmgr_init
+# Initialize documentation manager
+
+**Tool:** `docmgr_init`
 
 Initialize doc-manager for a project (existing docs or create new).
 

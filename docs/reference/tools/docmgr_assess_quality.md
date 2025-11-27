@@ -1,4 +1,6 @@
-# docmgr_assess_quality
+# Assess quality
+
+**Tool:** `docmgr_assess_quality`
 
 Assess documentation quality against 7 criteria with scores and actionable findings.
 
