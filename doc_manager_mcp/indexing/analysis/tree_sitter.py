@@ -228,26 +228,26 @@ class SymbolIndexer:
 
         # Read file content
         try:
-            with open(file_path, encoding="utf-8") as f:
-                source_code = f.read()
+            with open(file_path, "rb") as f:
+                source_bytes = f.read()
         except Exception:
             return
 
         # Parse with TreeSitter
         parser = self.parsers[language]
-        tree = parser.parse(bytes(source_code, "utf8"))
+        tree = parser.parse(source_bytes)
 
         # Extract symbols based on language
         relative_path = str(file_path.relative_to(project_path)).replace("\\", "/")
 
         if language == "go":
-            self._extract_go_symbols(tree.root_node, source_code, relative_path)
+            self._extract_go_symbols(tree.root_node, source_bytes, relative_path)
         elif language == "python":
-            self._extract_python_symbols(tree.root_node, source_code, relative_path)
+            self._extract_python_symbols(tree.root_node, source_bytes, relative_path)
         elif language in ("javascript", "typescript", "tsx"):
-            self._extract_js_symbols(tree.root_node, source_code, relative_path)
+            self._extract_js_symbols(tree.root_node, source_bytes, relative_path)
 
-    def _extract_go_symbols(self, node: Any, source: str, file_path: str):
+    def _extract_go_symbols(self, node: Any, source: bytes, file_path: str):
         """Extract symbols from Go AST."""
         # Function declarations
         for func_node in self._find_nodes(node, "function_declaration"):
@@ -319,7 +319,7 @@ class SymbolIndexer:
                         )
                         self._add_symbol(symbol)
 
-    def _extract_python_symbols(self, node: Any, source: str, file_path: str):
+    def _extract_python_symbols(self, node: Any, source: bytes, file_path: str):
         """Extract symbols from Python AST.
 
         Uses processed node tracking to prevent methods from being counted twice
@@ -416,7 +416,7 @@ class SymbolIndexer:
                 )
                 self._add_symbol(symbol)
 
-    def _extract_js_symbols(self, node: Any, source: str, file_path: str):
+    def _extract_js_symbols(self, node: Any, source: bytes, file_path: str):
         """Extract symbols from JavaScript/TypeScript AST."""
         # Function declarations
         for func_node in self._find_nodes(node, "function_declaration"):
@@ -524,9 +524,21 @@ class SymbolIndexer:
                 return child
         return None
 
-    def _get_node_text(self, node: Any, source: str) -> str:
-        """Get the source text for a node."""
-        return source[node.start_byte : node.end_byte]
+    def _get_node_text(self, node: Any, source: bytes) -> str:
+        """Get the source text for a node.
+
+        Args:
+            node: Tree-sitter AST node with byte offset positions
+            source: Source code as bytes (required for correct byte offset slicing)
+
+        Returns:
+            Decoded UTF-8 string of the node's text
+
+        Note:
+            Tree-sitter returns byte offsets, not character indices.
+            Must use bytes for slicing, then decode to string.
+        """
+        return source[node.start_byte : node.end_byte].decode("utf8")
 
     def _add_symbol(self, symbol: Symbol):
         """Add a symbol to the index."""
