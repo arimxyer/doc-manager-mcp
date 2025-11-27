@@ -8,6 +8,7 @@ exclude:
   - "specs/**"
   - ".claude/**"
   - ".doc-manager/**"
+  - "internal_docs/**"
 sources:
   - "doc_manager_mcp/**/*.py"
 docs_path: docs

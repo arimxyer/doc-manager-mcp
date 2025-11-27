@@ -1,19 +1,24 @@
 {
-  "generated_at": "2025-11-22T18:45:34.491730",
+  "generated_at": "2025-11-27T00:33:33.967019",
   "doc_to_code": {
     "getting-started/installation.md": [
+      "doc_manager_mcp/server.py",
       "doc_manager_mcp/tools/analysis/detect_changes.py",
       "doc_manager_mcp/tools/state/init.py",
       "doc_manager_mcp/tools/state/update_baseline.py"
     ],
     "getting-started/quick-start.md": [],
-    "guides/platforms.md": [],
+    "guides/platforms.md": [
+      "doc_manager_mcp/server.py"
+    ],
     "guides/troubleshooting.md": [
+      "doc_manager_mcp/server.py",
       "doc_manager_mcp/tools/analysis/detect_changes.py",
       "doc_manager_mcp/tools/state/init.py",
       "doc_manager_mcp/tools/state/update_baseline.py"
     ],
     "guides/workflows.md": [
+      "doc_manager_mcp/server.py",
       "doc_manager_mcp/tools/state/init.py",
       "doc_manager_mcp/tools/state/update_baseline.py"
     ],
@@ -21,40 +26,64 @@
       "doc_manager_mcp/tools/state/init.py"
     ],
     "reference/file-formats.md": [
+      "doc_manager_mcp/server.py",
       "doc_manager_mcp/tools/analysis/detect_changes.py",
       "doc_manager_mcp/tools/state/init.py",
       "doc_manager_mcp/tools/state/update_baseline.py"
     ],
     "reference/tools/docmgr_assess_quality.md": [],
     "reference/tools/docmgr_detect_changes.md": [
+      "doc_manager_mcp/server.py",
       "doc_manager_mcp/tools/state/init.py"
     ],
     "reference/tools/docmgr_detect_platform.md": [
       "doc_manager_mcp/tools/state/init.py"
     ],
     "reference/tools/docmgr_init.md": [],
-    "reference/tools/docmgr_migrate.md": [],
+    "reference/tools/docmgr_migrate.md": [
+      "doc_manager_mcp/tools/workflows/migrate_helpers.py"
+    ],
     "reference/tools/docmgr_sync.md": [
+      "doc_manager_mcp/server.py",
       "doc_manager_mcp/tools/analysis/detect_changes.py",
       "doc_manager_mcp/tools/state/update_baseline.py"
     ],
     "reference/tools/docmgr_update_baseline.md": [
       "doc_manager_mcp/tools/state/init.py"
     ],
-    "reference/tools/docmgr_validate_docs.md": [],
+    "reference/tools/docmgr_validate_docs.md": [
+      "doc_manager_mcp/tools/analysis/validation/symbols.py",
+      "doc_manager_mcp/tools/analysis/validation/syntax.py"
+    ],
     "reference/tools.md": [
-      "doc_manager_mcp/tools/state/init.py"
+      "doc_manager_mcp/server.py",
+      "doc_manager_mcp/tools/analysis/validation/symbols.py",
+      "doc_manager_mcp/tools/analysis/validation/syntax.py",
+      "doc_manager_mcp/tools/state/init.py",
+      "doc_manager_mcp/tools/workflows/migrate_helpers.py"
     ],
     "README.md": [
       "doc_manager_mcp/models.py",
       "doc_manager_mcp/server.py",
       "doc_manager_mcp/tools/_internal/config.py",
+      "doc_manager_mcp/tools/_internal/memory.py",
       "doc_manager_mcp/tools/analysis/detect_changes.py",
       "doc_manager_mcp/tools/state/init.py",
       "doc_manager_mcp/tools/state/update_baseline.py"
     ]
   },
   "code_to_doc": {
+    "doc_manager_mcp/server.py": [
+      "getting-started/installation.md",
+      "guides/platforms.md",
+      "guides/troubleshooting.md",
+      "guides/workflows.md",
+      "reference/file-formats.md",
+      "reference/tools/docmgr_detect_changes.md",
+      "reference/tools/docmgr_sync.md",
+      "reference/tools.md",
+      "README.md"
+    ],
     "doc_manager_mcp/tools/analysis/detect_changes.py": [
       "getting-started/installation.md",
       "guides/troubleshooting.md",
@@ -82,13 +111,25 @@
       "reference/tools/docmgr_sync.md",
       "README.md"
     ],
+    "doc_manager_mcp/tools/workflows/migrate_helpers.py": [
+      "reference/tools/docmgr_migrate.md",
+      "reference/tools.md"
+    ],
+    "doc_manager_mcp/tools/analysis/validation/symbols.py": [
+      "reference/tools/docmgr_validate_docs.md",
+      "reference/tools.md"
+    ],
+    "doc_manager_mcp/tools/analysis/validation/syntax.py": [
+      "reference/tools/docmgr_validate_docs.md",
+      "reference/tools.md"
+    ],
     "doc_manager_mcp/models.py": [
       "README.md"
     ],
-    "doc_manager_mcp/server.py": [
+    "doc_manager_mcp/tools/_internal/config.py": [
       "README.md"
     ],
-    "doc_manager_mcp/tools/_internal/config.py": [
+    "doc_manager_mcp/tools/_internal/memory.py": [
       "README.md"
     ]
   },
@@ -112,14 +153,14 @@
       "reference/tools/docmgr_sync.md",
       "README.md"
     ],
-    "docmgr_detect_platform": [
+    "docmgr_detect_platform()": [
       "getting-started/installation.md",
       "guides/platforms.md",
       "guides/troubleshooting.md",
       "reference/tools.md",
       "README.md"
     ],
-    "docmgr_validate_docs": [
+    "docmgr_validate_docs()": [
       "getting-started/installation.md",
       "guides/troubleshooting.md",
       "reference/file-formats.md",
@@ -127,7 +168,7 @@
       "reference/tools.md",
       "README.md"
     ],
-    "docmgr_assess_quality": [
+    "docmgr_assess_quality()": [
       "getting-started/installation.md",
       "guides/workflows.md",
       "reference/file-formats.md",
@@ -143,7 +184,7 @@
       "reference/tools/docmgr_sync.md",
       "README.md"
     ],
-    "docmgr_sync": [
+    "docmgr_sync()": [
       "getting-started/installation.md",
       "guides/workflows.md",
       "reference/file-formats.md",
@@ -151,7 +192,7 @@
       "reference/tools.md",
       "README.md"
     ],
-    "docmgr_migrate": [
+    "docmgr_migrate()": [
       "getting-started/installation.md",
       "guides/troubleshooting.md",
       "reference/tools.md",
@@ -272,7 +313,7 @@
       "reference/tools/docmgr_migrate.md",
       "reference/tools.md"
     ],
-    "rewrite_links": [
+    "rewrite_links()": [
       "reference/tools/docmgr_migrate.md",
       "reference/tools.md"
     ],
@@ -296,18 +337,18 @@
       "reference/tools/docmgr_validate_docs.md",
       "reference/tools.md"
     ],
-    "validate_code_syntax": [
+    "validate_code_syntax()": [
       "reference/tools/docmgr_validate_docs.md",
       "reference/tools.md"
     ],
-    "validate_symbols": [
+    "validate_symbols()": [
       "reference/tools/docmgr_validate_docs.md",
       "reference/tools.md"
     ],
     "initialize_config()": [
       "README.md"
     ],
-    "initialize_memory": [
+    "initialize_memory()": [
       "README.md"
     ],
     "docmgr_initialize_config": [
@@ -352,14 +393,14 @@
       "reference/tools/docmgr_sync.md",
       "README.md"
     ],
-    "docmgr_detect_platform": [
+    "docmgr_detect_platform()": [
       "getting-started/installation.md",
       "guides/platforms.md",
       "guides/troubleshooting.md",
       "reference/tools.md",
       "README.md"
     ],
-    "docmgr_validate_docs": [
+    "docmgr_validate_docs()": [
       "getting-started/installation.md",
       "guides/troubleshooting.md",
       "reference/file-formats.md",
@@ -367,7 +408,7 @@
       "reference/tools.md",
       "README.md"
     ],
-    "docmgr_assess_quality": [
+    "docmgr_assess_quality()": [
       "getting-started/installation.md",
       "guides/workflows.md",
       "reference/file-formats.md",
@@ -383,7 +424,7 @@
       "reference/tools/docmgr_sync.md",
       "README.md"
     ],
-    "docmgr_sync": [
+    "docmgr_sync()": [
       "getting-started/installation.md",
       "guides/workflows.md",
       "reference/file-formats.md",
@@ -391,7 +432,7 @@
       "reference/tools.md",
       "README.md"
     ],
-    "docmgr_migrate": [
+    "docmgr_migrate()": [
       "getting-started/installation.md",
       "guides/troubleshooting.md",
       "reference/tools.md",
@@ -810,7 +851,7 @@
       "reference/tools/docmgr_migrate.md",
       "reference/tools.md"
     ],
-    "rewrite_links": [
+    "rewrite_links()": [
       "reference/tools/docmgr_migrate.md",
       "reference/tools.md"
     ],
@@ -847,11 +888,11 @@
       "reference/tools/docmgr_validate_docs.md",
       "reference/tools.md"
     ],
-    "validate_code_syntax": [
+    "validate_code_syntax()": [
       "reference/tools/docmgr_validate_docs.md",
       "reference/tools.md"
     ],
-    "validate_symbols": [
+    "validate_symbols()": [
       "reference/tools/docmgr_validate_docs.md",
       "reference/tools.md"
     ],
@@ -887,7 +928,7 @@
     "initialize_config()": [
       "README.md"
     ],
-    "initialize_memory": [
+    "initialize_memory()": [
       "README.md"
     ],
     "docmgr_initialize_config": [
@@ -1493,8 +1534,36 @@
         "doc_file": "getting-started/installation.md"
       },
       {
+        "reference": "docmgr_detect_platform()",
+        "doc_file": "getting-started/installation.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "getting-started/installation.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
+        "doc_file": "getting-started/installation.md"
+      },
+      {
         "reference": "docmgr_update_baseline()",
         "doc_file": "getting-started/installation.md"
+      },
+      {
+        "reference": "docmgr_sync()",
+        "doc_file": "getting-started/installation.md"
+      },
+      {
+        "reference": "docmgr_migrate()",
+        "doc_file": "getting-started/installation.md"
+      },
+      {
+        "reference": "docmgr_detect_platform()",
+        "doc_file": "guides/platforms.md"
+      },
+      {
+        "reference": "docmgr_detect_platform()",
+        "doc_file": "guides/troubleshooting.md"
       },
       {
         "reference": "docmgr_init()",
@@ -1502,6 +1571,18 @@
       },
       {
         "reference": "docmgr_init()",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "docmgr_migrate()",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "docmgr_migrate()",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "docmgr_migrate()",
         "doc_file": "guides/troubleshooting.md"
       },
       {
@@ -1509,12 +1590,24 @@
         "doc_file": "guides/troubleshooting.md"
       },
       {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
         "reference": "docmgr_init()",
         "doc_file": "guides/troubleshooting.md"
       },
       {
         "reference": "docmgr_update_baseline()",
         "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "docmgr_sync()",
+        "doc_file": "guides/workflows.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
+        "doc_file": "guides/workflows.md"
       },
       {
         "reference": "docmgr_init()",
@@ -1541,6 +1634,10 @@
         "doc_file": "reference/file-formats.md"
       },
       {
+        "reference": "docmgr_sync()",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
         "reference": "docmgr_detect_changes()",
         "doc_file": "reference/file-formats.md"
       },
@@ -1550,6 +1647,10 @@
       },
       {
         "reference": "docmgr_detect_changes()",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
         "doc_file": "reference/file-formats.md"
       },
       {
@@ -1565,8 +1666,28 @@
         "doc_file": "reference/file-formats.md"
       },
       {
+        "reference": "docmgr_sync()",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "docmgr_sync()",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
         "reference": "docmgr_init()",
         "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "docmgr_sync()",
+        "doc_file": "reference/tools/docmgr_detect_changes.md"
       },
       {
         "reference": "docmgr_init()",
@@ -1577,7 +1698,23 @@
         "doc_file": "reference/tools/docmgr_detect_platform.md"
       },
       {
+        "reference": "rewrite_links()",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "rewrite_links()",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
         "reference": "docmgr_detect_changes()",
+        "doc_file": "reference/tools/docmgr_sync.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "reference/tools/docmgr_sync.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
         "doc_file": "reference/tools/docmgr_sync.md"
       },
       {
@@ -1586,6 +1723,14 @@
       },
       {
         "reference": "docmgr_detect_changes()",
+        "doc_file": "reference/tools/docmgr_sync.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "reference/tools/docmgr_sync.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
         "doc_file": "reference/tools/docmgr_sync.md"
       },
       {
@@ -1597,11 +1742,75 @@
         "doc_file": "reference/tools/docmgr_update_baseline.md"
       },
       {
-        "reference": "docmgr_init()",
+        "reference": "validate_code_syntax()",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "validate_symbols()",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "validate_code_syntax()",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "validate_symbols()",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "validate_code_syntax()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "validate_symbols()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "rewrite_links()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_detect_platform()",
         "doc_file": "reference/tools.md"
       },
       {
         "reference": "docmgr_init()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_sync()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_sync()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_sync()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_migrate()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_migrate()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_init()",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
         "doc_file": "reference/tools.md"
       },
       {
@@ -1613,6 +1822,42 @@
         "doc_file": "README.md"
       },
       {
+        "reference": "initialize_memory()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_detect_changes()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_detect_platform()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_update_baseline()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_sync()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_migrate()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_init()",
+        "doc_file": "README.md"
+      },
+      {
         "reference": "docmgr_detect_changes()",
         "doc_file": "README.md"
       },
@@ -1621,6 +1866,34 @@
         "doc_file": "README.md"
       },
       {
+        "reference": "docmgr_sync()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_detect_platform()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_migrate()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_init()",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_init()",
+        "doc_file": "README.md"
+      },
+      {
         "reference": "docmgr_init()",
         "doc_file": "README.md"
       },
@@ -1629,681 +1902,11 @@
         "doc_file": "README.md"
       },
       {
-        "reference": "docmgr_update_baseline()",
+        "reference": "docmgr_sync()",
         "doc_file": "README.md"
       },
       {
-        "reference": "docmgr_init()",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_init()",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_init()",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_detect_changes()",
-        "doc_file": "README.md"
-      }
-    ],
-    "config_key": [
-      {
-        "reference": "docmgr_detect_platform",
-        "doc_file": "getting-started/installation.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "getting-started/installation.md"
-      },
-      {
-        "reference": "docmgr_assess_quality",
-        "doc_file": "getting-started/installation.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "getting-started/installation.md"
-      },
-      {
-        "reference": "docmgr_migrate",
-        "doc_file": "getting-started/installation.md"
-      },
-      {
-        "reference": "index.md",
-        "doc_file": "guides/platforms.md"
-      },
-      {
-        "reference": "config.toml",
-        "doc_file": "guides/platforms.md"
-      },
-      {
-        "reference": "hugo.toml",
-        "doc_file": "guides/platforms.md"
-      },
-      {
-        "reference": "config.toml",
-        "doc_file": "guides/platforms.md"
-      },
-      {
-        "reference": "docmgr_detect_platform",
-        "doc_file": "guides/platforms.md"
-      },
-      {
-        "reference": "config.toml",
-        "doc_file": "guides/platforms.md"
-      },
-      {
-        "reference": "hugo.toml",
-        "doc_file": "guides/platforms.md"
-      },
-      {
-        "reference": "_index.md",
-        "doc_file": "guides/platforms.md"
-      },
-      {
-        "reference": "docmgr_detect_platform",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "config.toml",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "hugo.toml",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "doc_to_code",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "code_to_doc",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "api_coverage",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "docmgr_migrate",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "docmgr_migrate",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "docmgr_migrate",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "preserve_history",
-        "doc_file": "guides/troubleshooting.md"
-      },
-      {
-        "reference": "affected_docs",
-        "doc_file": "guides/workflows.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "guides/workflows.md"
-      },
-      {
-        "reference": "docmgr_assess_quality",
-        "doc_file": "guides/workflows.md"
-      },
-      {
-        "reference": "doc_to_code",
-        "doc_file": "guides/workflows.md"
-      },
-      {
-        "reference": "code_to_doc",
-        "doc_file": "guides/workflows.md"
-      },
-      {
-        "reference": "asset_to_docs",
-        "doc_file": "guides/workflows.md"
-      },
-      {
-        "reference": "unmatched_references",
-        "doc_file": "guides/workflows.md"
-      },
-      {
-        "reference": "use_gitignore",
-        "doc_file": "reference/configuration.md"
-      },
-      {
-        "reference": "use_gitignore",
-        "doc_file": "reference/configuration.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "include_root_readme",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "sources",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "sources",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "doc_to_code",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "code_to_doc",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "asset_to_docs",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "unmatched_references",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "docmgr_assess_quality",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools/docmgr_assess_quality.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools/docmgr_assess_quality.md"
-      },
-      {
-        "reference": "include_root_readme",
-        "doc_file": "reference/tools/docmgr_assess_quality.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools/docmgr_detect_changes.md"
-      },
-      {
-        "reference": "since_commit",
-        "doc_file": "reference/tools/docmgr_detect_changes.md"
-      },
-      {
-        "reference": "include_semantic",
-        "doc_file": "reference/tools/docmgr_detect_changes.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools/docmgr_detect_changes.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "reference/tools/docmgr_detect_changes.md"
-      },
-      {
-        "reference": "git_diff",
-        "doc_file": "reference/tools/docmgr_detect_changes.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools/docmgr_detect_platform.md"
-      },
-      {
-        "reference": "config.toml",
-        "doc_file": "reference/tools/docmgr_detect_platform.md"
-      },
-      {
-        "reference": "hugo.toml",
-        "doc_file": "reference/tools/docmgr_detect_platform.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools/docmgr_init.md"
-      },
-      {
-        "reference": "exclude_patterns",
-        "doc_file": "reference/tools/docmgr_init.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools/docmgr_init.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "source_path",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "target_path",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "target_platform",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "preserve_history",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "rewrite_links",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "regenerate_toc",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "dry_run",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "preserve_history",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "rewrite_links",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "regenerate_toc",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "dry_run",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "preserve_history",
-        "doc_file": "reference/tools/docmgr_migrate.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools/docmgr_sync.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools/docmgr_sync.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "reference/tools/docmgr_sync.md"
-      },
-      {
-        "reference": "docmgr_assess_quality",
-        "doc_file": "reference/tools/docmgr_sync.md"
-      },
-      {
-        "reference": "include_root_readme",
-        "doc_file": "reference/tools/docmgr_sync.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "reference/tools/docmgr_sync.md"
-      },
-      {
-        "reference": "docmgr_assess_quality",
-        "doc_file": "reference/tools/docmgr_sync.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools/docmgr_update_baseline.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools/docmgr_update_baseline.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "check_links",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "check_assets",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "check_snippets",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "validate_code_syntax",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "validate_symbols",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "validate_code_syntax",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "validate_symbols",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "include_root_readme",
-        "doc_file": "reference/tools/docmgr_validate_docs.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "exclude_patterns",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "since_commit",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "include_semantic",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "git_diff",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "check_links",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "check_assets",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "check_snippets",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "validate_code_syntax",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "validate_symbols",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "source_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "target_path",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "target_platform",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "preserve_history",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "rewrite_links",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "regenerate_toc",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "dry_run",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_detect_platform",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_assess_quality",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_migrate",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_migrate",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "reference/tools.md"
-      },
-      {
-        "reference": "initialize_memory",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_detect_platform",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_assess_quality",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_migrate",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_initialize_config",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_initialize_memory",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_bootstrap",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "exclude_patterns",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "since_commit",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "git_diff",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "include_semantic",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "project_path",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docs_path",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_detect_platform",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_validate_docs",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_assess_quality",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_migrate",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_initialize_config",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_initialize_memory",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_bootstrap",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_map_changes",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_sync",
-        "doc_file": "README.md"
-      },
-      {
-        "reference": "docmgr_sync",
+        "reference": "docmgr_sync()",
         "doc_file": "README.md"
       }
     ],
@@ -2730,6 +2333,444 @@
       },
       {
         "reference": "doc_manager_mcp/server.py",
+        "doc_file": "README.md"
+      }
+    ],
+    "config_key": [
+      {
+        "reference": "index.md",
+        "doc_file": "guides/platforms.md"
+      },
+      {
+        "reference": "config.toml",
+        "doc_file": "guides/platforms.md"
+      },
+      {
+        "reference": "hugo.toml",
+        "doc_file": "guides/platforms.md"
+      },
+      {
+        "reference": "config.toml",
+        "doc_file": "guides/platforms.md"
+      },
+      {
+        "reference": "config.toml",
+        "doc_file": "guides/platforms.md"
+      },
+      {
+        "reference": "hugo.toml",
+        "doc_file": "guides/platforms.md"
+      },
+      {
+        "reference": "_index.md",
+        "doc_file": "guides/platforms.md"
+      },
+      {
+        "reference": "config.toml",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "hugo.toml",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "doc_to_code",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "code_to_doc",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "api_coverage",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "preserve_history",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "affected_docs",
+        "doc_file": "guides/workflows.md"
+      },
+      {
+        "reference": "doc_to_code",
+        "doc_file": "guides/workflows.md"
+      },
+      {
+        "reference": "code_to_doc",
+        "doc_file": "guides/workflows.md"
+      },
+      {
+        "reference": "asset_to_docs",
+        "doc_file": "guides/workflows.md"
+      },
+      {
+        "reference": "unmatched_references",
+        "doc_file": "guides/workflows.md"
+      },
+      {
+        "reference": "use_gitignore",
+        "doc_file": "reference/configuration.md"
+      },
+      {
+        "reference": "use_gitignore",
+        "doc_file": "reference/configuration.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "include_root_readme",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "sources",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "sources",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "doc_to_code",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "code_to_doc",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "asset_to_docs",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "unmatched_references",
+        "doc_file": "reference/file-formats.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools/docmgr_assess_quality.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools/docmgr_assess_quality.md"
+      },
+      {
+        "reference": "include_root_readme",
+        "doc_file": "reference/tools/docmgr_assess_quality.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools/docmgr_detect_changes.md"
+      },
+      {
+        "reference": "since_commit",
+        "doc_file": "reference/tools/docmgr_detect_changes.md"
+      },
+      {
+        "reference": "include_semantic",
+        "doc_file": "reference/tools/docmgr_detect_changes.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools/docmgr_detect_changes.md"
+      },
+      {
+        "reference": "git_diff",
+        "doc_file": "reference/tools/docmgr_detect_changes.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools/docmgr_detect_platform.md"
+      },
+      {
+        "reference": "config.toml",
+        "doc_file": "reference/tools/docmgr_detect_platform.md"
+      },
+      {
+        "reference": "hugo.toml",
+        "doc_file": "reference/tools/docmgr_detect_platform.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
+        "reference": "exclude_patterns",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "source_path",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "target_path",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "target_platform",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "preserve_history",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "regenerate_toc",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "dry_run",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "preserve_history",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "regenerate_toc",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "dry_run",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "preserve_history",
+        "doc_file": "reference/tools/docmgr_migrate.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools/docmgr_sync.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools/docmgr_sync.md"
+      },
+      {
+        "reference": "include_root_readme",
+        "doc_file": "reference/tools/docmgr_sync.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "check_links",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "check_assets",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "check_snippets",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "include_root_readme",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "exclude_patterns",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "since_commit",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "include_semantic",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "git_diff",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "check_links",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "check_assets",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "check_snippets",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "source_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "target_path",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "target_platform",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "preserve_history",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "regenerate_toc",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "dry_run",
+        "doc_file": "reference/tools.md"
+      },
+      {
+        "reference": "docmgr_initialize_config",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_initialize_memory",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_bootstrap",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "exclude_patterns",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "since_commit",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "git_diff",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "include_semantic",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "project_path",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docs_path",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_initialize_config",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_initialize_memory",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_bootstrap",
+        "doc_file": "README.md"
+      },
+      {
+        "reference": "docmgr_map_changes",
         "doc_file": "README.md"
       }
     ],

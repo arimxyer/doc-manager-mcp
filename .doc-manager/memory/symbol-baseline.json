@@ -1,7 +1,7 @@
 {
   "version": "1.0",
-  "created_at": "2025-11-21T22:26:50.995982+00:00",
-  "updated_at": "2025-11-21T23:12:42.397179+00:00",
+  "created_at": "2025-11-27T05:28:45.696884+00:00",
+  "updated_at": "2025-11-27T05:33:33.293079+00:00",
   "project_root": "R:\\mcp-servers\\doc-manager",
   "symbols": {
     "DocumentationPlatform": [
@@ -9,7 +9,7 @@
         "name": "DocumentationPlatform",
         "type": "class",
         "file": "doc_manager_mcp/constants.py",
-        "line": 199,
+        "line": 247,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -21,7 +21,7 @@
         "name": "QualityCriterion",
         "type": "class",
         "file": "doc_manager_mcp/constants.py",
-        "line": 210,
+        "line": 258,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -33,7 +33,7 @@
         "name": "ChangeDetectionMode",
         "type": "class",
         "file": "doc_manager_mcp/constants.py",
-        "line": 220,
+        "line": 268,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -57,7 +57,7 @@
         "name": "validate_project_path",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 211,
+        "line": 215,
         "column": 4,
         "signature": "def validate_project_path(cls, v",
         "parent": "InitializeConfigInput",
@@ -67,7 +67,7 @@
         "name": "validate_project_path",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 249,
+        "line": 253,
         "column": 4,
         "signature": "def validate_project_path(cls, v",
         "parent": "InitializeMemoryInput",
@@ -77,7 +77,7 @@
         "name": "validate_project_path",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 670,
+        "line": 678,
         "column": 4,
         "signature": "def validate_project_path(cls, v",
         "parent": "DocmgrInitInput",
@@ -87,7 +87,7 @@
         "name": "validate_project_path",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 722,
+        "line": 730,
         "column": 4,
         "signature": "def validate_project_path(cls, v",
         "parent": "DocmgrDetectChangesInput",
@@ -97,7 +97,7 @@
         "name": "validate_project_path",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 753,
+        "line": 761,
         "column": 4,
         "signature": "def validate_project_path(cls, v",
         "parent": "DocmgrUpdateBaselineInput",
@@ -109,7 +109,7 @@
         "name": "validate_docs_path",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 217,
+        "line": 221,
         "column": 4,
         "signature": "def validate_docs_path(cls, v",
         "parent": "InitializeConfigInput",
@@ -119,7 +119,7 @@
         "name": "validate_docs_path",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 675,
+        "line": 683,
         "column": 4,
         "signature": "def validate_docs_path(cls, v",
         "parent": "DocmgrInitInput",
@@ -129,7 +129,7 @@
         "name": "validate_docs_path",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 758,
+        "line": 766,
         "column": 4,
         "signature": "def validate_docs_path(cls, v",
         "parent": "DocmgrUpdateBaselineInput",
@@ -141,7 +141,7 @@
         "name": "validate_exclude_patterns",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 223,
+        "line": 227,
         "column": 4,
         "signature": "def validate_exclude_patterns(cls, v",
         "parent": "InitializeConfigInput",
@@ -151,7 +151,7 @@
         "name": "validate_exclude_patterns",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 680,
+        "line": 688,
         "column": 4,
         "signature": "def validate_exclude_patterns(cls, v",
         "parent": "DocmgrInitInput",
@@ -163,7 +163,7 @@
         "name": "validate_sources",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 229,
+        "line": 233,
         "column": 4,
         "signature": "def validate_sources(cls, v",
         "parent": "InitializeConfigInput",
@@ -173,7 +173,7 @@
         "name": "validate_sources",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 685,
+        "line": 693,
         "column": 4,
         "signature": "def validate_sources(cls, v",
         "parent": "DocmgrInitInput",
@@ -185,7 +185,7 @@
         "name": "InitializeMemoryInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 233,
+        "line": 237,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -197,7 +197,7 @@
         "name": "DetectPlatformInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 253,
+        "line": 257,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -209,7 +209,7 @@
         "name": "AssessQualityInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 267,
+        "line": 271,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -221,7 +221,7 @@
         "name": "ValidateDocsInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 293,
+        "line": 297,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -233,7 +233,7 @@
         "name": "MapChangesInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 335,
+        "line": 343,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -245,7 +245,7 @@
         "name": "validate_mode",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 363,
+        "line": 371,
         "column": 4,
         "signature": "def validate_mode(cls, v",
         "parent": "MapChangesInput",
@@ -257,7 +257,7 @@
         "name": "validate_commit_hash",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 408,
+        "line": 416,
         "column": 4,
         "signature": "def validate_commit_hash(cls, v",
         "parent": "MapChangesInput",
@@ -269,7 +269,7 @@
         "name": "validate_mode_requirements",
         "type": "method",
         "file": "doc_manager_mcp/models.py",
-        "line": 439,
+        "line": 447,
         "column": 4,
         "signature": "def validate_mode_requirements(self) -> 'MapChangesInput'",
         "parent": "MapChangesInput",
@@ -281,7 +281,7 @@
         "name": "MapChangesOutput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 454,
+        "line": 462,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -293,7 +293,7 @@
         "name": "TrackDependenciesInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 500,
+        "line": 508,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -305,7 +305,7 @@
         "name": "BootstrapInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 519,
+        "line": 527,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -317,7 +317,7 @@
         "name": "MigrateInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 542,
+        "line": 550,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -329,7 +329,7 @@
         "name": "SyncInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 586,
+        "line": 594,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -341,7 +341,7 @@
         "name": "DocmgrInitInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 615,
+        "line": 623,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -353,7 +353,7 @@
         "name": "DocmgrDetectChangesInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 689,
+        "line": 697,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -365,7 +365,7 @@
         "name": "DocmgrUpdateBaselineInput",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 726,
+        "line": 734,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -377,7 +377,7 @@
         "name": "TerminologyRule",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 766,
+        "line": 774,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -389,7 +389,7 @@
         "name": "PreferredTerminology",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 789,
+        "line": 797,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -401,7 +401,7 @@
         "name": "StyleConventions",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 812,
+        "line": 820,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -413,7 +413,7 @@
         "name": "HeadingConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 820,
+        "line": 828,
         "column": 4,
         "signature": null,
         "parent": "StyleConventions",
@@ -425,7 +425,7 @@
         "name": "CodeConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 833,
+        "line": 841,
         "column": 4,
         "signature": null,
         "parent": "StyleConventions",
@@ -437,7 +437,7 @@
         "name": "VoiceConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 846,
+        "line": 854,
         "column": 4,
         "signature": null,
         "parent": "StyleConventions",
@@ -449,7 +449,7 @@
         "name": "StructureConventions",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 873,
+        "line": 881,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -461,7 +461,7 @@
         "name": "TocConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 881,
+        "line": 889,
         "column": 4,
         "signature": null,
         "parent": "StructureConventions",
@@ -473,7 +473,7 @@
         "name": "QualityConventions",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 915,
+        "line": 923,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -485,7 +485,7 @@
         "name": "SentenceConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 923,
+        "line": 931,
         "column": 4,
         "signature": null,
         "parent": "QualityConventions",
@@ -497,7 +497,7 @@
         "name": "ParagraphConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 938,
+        "line": 946,
         "column": 4,
         "signature": null,
         "parent": "QualityConventions",
@@ -509,7 +509,7 @@
         "name": "LinkConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 948,
+        "line": 956,
         "column": 4,
         "signature": null,
         "parent": "QualityConventions",
@@ -521,7 +521,7 @@
         "name": "ImageConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 957,
+        "line": 965,
         "column": 4,
         "signature": null,
         "parent": "QualityConventions",
@@ -533,7 +533,7 @@
         "name": "CodeQualityConfig",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 966,
+        "line": 974,
         "column": 4,
         "signature": null,
         "parent": "QualityConventions",
@@ -545,7 +545,7 @@
         "name": "TerminologyConventions",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 997,
+        "line": 1005,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -557,7 +557,7 @@
         "name": "DocumentationConventions",
         "type": "class",
         "file": "doc_manager_mcp/models.py",
-        "line": 1015,
+        "line": 1023,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -607,7 +607,7 @@
         "file": "doc_manager_mcp/models.py",
         "line": 127,
         "column": 0,
-        "signature": "def _validate_pattern_list(\n    patterns",
+        "signature": "def _validate_pattern_list(\r\n    patterns",
         "parent": null,
         "doc": null
       }
@@ -619,7 +619,7 @@
         "file": "doc_manager_mcp/server.py",
         "line": 77,
         "column": 0,
-        "signature": "async def tool_docmgr_init(\n    project_path",
+        "signature": "async def tool_docmgr_init(\r\n    project_path",
         "parent": null,
         "doc": null
       }
@@ -631,7 +631,7 @@
         "file": "doc_manager_mcp/server.py",
         "line": 124,
         "column": 0,
-        "signature": "async def tool_docmgr_detect_changes(\n    project_path",
+        "signature": "async def tool_docmgr_detect_changes(\r\n    project_path",
         "parent": null,
         "doc": null
       }
@@ -643,79 +643,79 @@
         "file": "doc_manager_mcp/server.py",
         "line": 166,
         "column": 0,
-        "signature": "async def tool_docmgr_update_baseline(\n    project_path",
+        "signature": "async def tool_docmgr_update_baseline(\r\n    project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "gr_detect_platform(\n  ": [
+    "docmgr_detect_platform": [
       {
-        "name": "gr_detect_platform(\n  ",
+        "name": "docmgr_detect_platform",
         "type": "function",
         "file": "doc_manager_mcp/server.py",
         "line": 201,
         "column": 0,
-        "signature": "c def docmgr_detect_platform(\n    project_path",
+        "signature": "async def docmgr_detect_platform(\r\n    project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "gr_validate_docs(\n  ": [
+    "docmgr_validate_docs": [
       {
-        "name": "gr_validate_docs(\n  ",
+        "name": "docmgr_validate_docs",
         "type": "function",
         "file": "doc_manager_mcp/server.py",
         "line": 229,
         "column": 0,
-        "signature": "c def docmgr_validate_docs(\n    project_path",
+        "signature": "async def docmgr_validate_docs(\r\n    project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "gr_assess_quality(\n  ": [
+    "docmgr_assess_quality": [
       {
-        "name": "gr_assess_quality(\n  ",
+        "name": "docmgr_assess_quality",
         "type": "function",
         "file": "doc_manager_mcp/server.py",
         "line": 274,
         "column": 0,
-        "signature": "c def docmgr_assess_quality(\n    project_path",
+        "signature": "async def docmgr_assess_quality(\r\n    project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "gr_migrate(\n  ": [
+    "docmgr_migrate": [
       {
-        "name": "gr_migrate(\n  ",
+        "name": "docmgr_migrate",
         "type": "function",
         "file": "doc_manager_mcp/server.py",
         "line": 317,
         "column": 0,
-        "signature": "c def docmgr_migrate(\n    project_path",
+        "signature": "async def docmgr_migrate(\r\n    project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "ync(\n    pr": [
+    "docmgr_sync": [
       {
-        "name": "ync(\n    pr",
+        "name": "docmgr_sync",
         "type": "function",
         "file": "doc_manager_mcp/server.py",
         "line": 363,
         "column": 0,
-        "signature": "f docmgr_sync(\n    project_path",
+        "signature": "async def docmgr_sync(\r\n    project_path",
         "parent": null,
         "doc": null
       }
     ],
-    " poi": [
+    "main": [
       {
-        "name": " poi",
+        "name": "main",
         "type": "function",
         "file": "doc_manager_mcp/server.py",
         "line": 389,
         "column": 0,
-        "signature": "ntry point for the MCP server.\"\"\"\n    mcp.run()\n\nif __name__ == \"__",
+        "signature": "def main()",
         "parent": null,
         "doc": null
       }
@@ -775,7 +775,7 @@
         "file": "doc_manager_mcp/core/conventions.py",
         "line": 46,
         "column": 0,
-        "signature": "def validate_against_conventions(\n    content",
+        "signature": "def validate_against_conventions(\r\n    content",
         "parent": null,
         "doc": null
       }
@@ -799,7 +799,7 @@
         "file": "doc_manager_mcp/core/conventions.py",
         "line": 196,
         "column": 0,
-        "signature": "def _check_heading_hierarchy_from_headers(\n    headers",
+        "signature": "def _check_heading_hierarchy_from_headers(\r\n    headers",
         "parent": null,
         "doc": null
       }
@@ -824,6 +824,54 @@
         "line": 8,
         "column": 0,
         "signature": "def handle_error(e",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "scan_project_files": [
+      {
+        "name": "scan_project_files",
+        "type": "function",
+        "file": "doc_manager_mcp/core/file_scanner.py",
+        "line": 28,
+        "column": 0,
+        "signature": "def scan_project_files(\r\n    project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_walk_files": [
+      {
+        "name": "_walk_files",
+        "type": "function",
+        "file": "doc_manager_mcp/core/file_scanner.py",
+        "line": 110,
+        "column": 0,
+        "signature": "def _walk_files(project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "categorize_file": [
+      {
+        "name": "categorize_file",
+        "type": "function",
+        "file": "doc_manager_mcp/core/file_scanner.py",
+        "line": 124,
+        "column": 0,
+        "signature": "def categorize_file(file_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "scan_and_categorize": [
+      {
+        "name": "scan_and_categorize",
+        "type": "function",
+        "file": "doc_manager_mcp/core/file_scanner.py",
+        "line": 155,
+        "column": 0,
+        "signature": "def scan_and_categorize(\r\n    project_path",
         "parent": null,
         "doc": null
       }
@@ -864,6 +912,170 @@
         "doc": null
       }
     ],
+    "ParsedMarkdown": [
+      {
+        "name": "ParsedMarkdown",
+        "type": "class",
+        "file": "doc_manager_mcp/core/markdown_cache.py",
+        "line": 18,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "MarkdownCache": [
+      {
+        "name": "MarkdownCache",
+        "type": "class",
+        "file": "doc_manager_mcp/core/markdown_cache.py",
+        "line": 31,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "__init__": [
+      {
+        "name": "__init__",
+        "type": "method",
+        "file": "doc_manager_mcp/core/markdown_cache.py",
+        "line": 49,
+        "column": 4,
+        "signature": "def __init__(self)",
+        "parent": "MarkdownCache",
+        "doc": null
+      },
+      {
+        "name": "__init__",
+        "type": "method",
+        "file": "doc_manager_mcp/core/resources.py",
+        "line": 20,
+        "column": 4,
+        "signature": "def __init__(self, max_files",
+        "parent": "ResourceLimits",
+        "doc": null
+      },
+      {
+        "name": "__init__",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/link_index.py",
+        "line": 24,
+        "column": 4,
+        "signature": "def __init__(self)",
+        "parent": "LinkIndex",
+        "doc": null
+      },
+      {
+        "name": "__init__",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 20,
+        "column": 4,
+        "signature": "def __init__(self)",
+        "parent": "PathIndex",
+        "doc": null
+      },
+      {
+        "name": "__init__",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/analysis/code_validator.py",
+        "line": 28,
+        "column": 4,
+        "signature": "def __init__(self)",
+        "parent": "CodeValidator",
+        "doc": null
+      },
+      {
+        "name": "__init__",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
+        "line": 83,
+        "column": 4,
+        "signature": "def __init__(self)",
+        "parent": "SymbolIndexer",
+        "doc": null
+      },
+      {
+        "name": "__init__",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/parsers/markdown.py",
+        "line": 29,
+        "column": 4,
+        "signature": "def __init__(self)",
+        "parent": "MarkdownParser",
+        "doc": null
+      }
+    ],
+    "parse": [
+      {
+        "name": "parse",
+        "type": "method",
+        "file": "doc_manager_mcp/core/markdown_cache.py",
+        "line": 53,
+        "column": 4,
+        "signature": "def parse(self, file_path",
+        "parent": "MarkdownCache",
+        "doc": null
+      }
+    ],
+    "clear": [
+      {
+        "name": "clear",
+        "type": "method",
+        "file": "doc_manager_mcp/core/markdown_cache.py",
+        "line": 87,
+        "column": 4,
+        "signature": "def clear(self)",
+        "parent": "MarkdownCache",
+        "doc": null
+      }
+    ],
+    "__len__": [
+      {
+        "name": "__len__",
+        "type": "method",
+        "file": "doc_manager_mcp/core/markdown_cache.py",
+        "line": 97,
+        "column": 4,
+        "signature": "def __len__(self) -> int",
+        "parent": "MarkdownCache",
+        "doc": null
+      },
+      {
+        "name": "__len__",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/link_index.py",
+        "line": 165,
+        "column": 4,
+        "signature": "def __len__(self) -> int",
+        "parent": "LinkIndex",
+        "doc": null
+      }
+    ],
+    "__contains__": [
+      {
+        "name": "__contains__",
+        "type": "method",
+        "file": "doc_manager_mcp/core/markdown_cache.py",
+        "line": 101,
+        "column": 4,
+        "signature": "def __contains__(self, file_path",
+        "parent": "MarkdownCache",
+        "doc": null
+      },
+      {
+        "name": "__contains__",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/link_index.py",
+        "line": 169,
+        "column": 4,
+        "signature": "def __contains__(self, key",
+        "parent": "LinkIndex",
+        "doc": null
+      }
+    ],
     "safe_resolve": [
       {
         "name": "safe_resolve",
@@ -876,14 +1088,26 @@
         "doc": null
       }
     ],
-    "lidate_path_boundary(p": [
+    "validate_path_boundary": [
       {
-        "name": "lidate_path_boundary(p",
+        "name": "validate_path_boundary",
         "type": "function",
         "file": "doc_manager_mcp/core/paths.py",
         "line": 51,
         "column": 0,
-        "signature": "f validate_path_boundary(path",
+        "signature": "def validate_path_boundary(path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "build_exclude_patterns": [
+      {
+        "name": "build_exclude_patterns",
+        "type": "function",
+        "file": "doc_manager_mcp/core/patterns.py",
+        "line": 18,
+        "column": 0,
+        "signature": "def build_exclude_patterns(project_path",
         "parent": null,
         "doc": null
       }
@@ -893,9 +1117,21 @@
         "name": "matches_exclude_pattern",
         "type": "function",
         "file": "doc_manager_mcp/core/patterns.py",
-        "line": 11,
+        "line": 56,
         "column": 0,
         "signature": "def matches_exclude_pattern(path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "categorize_file_change": [
+      {
+        "name": "categorize_file_change",
+        "type": "function",
+        "file": "doc_manager_mcp/core/patterns.py",
+        "line": 137,
+        "column": 0,
+        "signature": "def categorize_file_change(file_path",
         "parent": null,
         "doc": null
       }
@@ -943,31 +1179,31 @@
         "file": "doc_manager_mcp/core/project.py",
         "line": 105,
         "column": 0,
-        "signature": "def find_markdown_files(\n    docs_path",
+        "signature": "def find_markdown_files(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
     ],
-    "ublic_symbol(sym": [
+    "is_public_symbol": [
       {
-        "name": "ublic_symbol(sym",
+        "name": "is_public_symbol",
         "type": "function",
         "file": "doc_manager_mcp/core/project.py",
-        "line": 183,
+        "line": 189,
         "column": 0,
-        "signature": "is_public_symbol(symbol",
+        "signature": "def is_public_symbol(symbol",
         "parent": null,
         "doc": null
       }
     ],
-    "ct_platform_quick(pro": [
+    "detect_platform_quick": [
       {
-        "name": "ct_platform_quick(pro",
+        "name": "detect_platform_quick",
         "type": "function",
         "file": "doc_manager_mcp/core/project.py",
-        "line": 215,
+        "line": 221,
         "column": 0,
-        "signature": "detect_platform_quick(project_path",
+        "signature": "def detect_platform_quick(project_path",
         "parent": null,
         "doc": null
       }
@@ -981,48 +1217,6 @@
         "column": 0,
         "signature": null,
         "parent": null,
-        "doc": null
-      }
-    ],
-    "__init__": [
-      {
-        "name": "__init__",
-        "type": "method",
-        "file": "doc_manager_mcp/core/resources.py",
-        "line": 20,
-        "column": 4,
-        "signature": "def __init__(self, max_files",
-        "parent": "ResourceLimits",
-        "doc": null
-      },
-      {
-        "name": "__init__",
-        "type": "method",
-        "file": "doc_manager_mcp/indexing/analysis/code_validator.py",
-        "line": 28,
-        "column": 4,
-        "signature": "def __init__(self)",
-        "parent": "CodeValidator",
-        "doc": null
-      },
-      {
-        "name": "__init__",
-        "type": "method",
-        "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 83,
-        "column": 4,
-        "signature": "def __init__(self)",
-        "parent": "SymbolIndexer",
-        "doc": null
-      },
-      {
-        "name": "__init__",
-        "type": "method",
-        "file": "doc_manager_mcp/indexing/parsers/markdown.py",
-        "line": 29,
-        "column": 4,
-        "signature": "def __init__(self)",
-        "parent": "MarkdownParser",
         "doc": null
       }
     ],
@@ -1142,6 +1336,150 @@
         "doc": null
       }
     ],
+    "LinkIndex": [
+      {
+        "name": "LinkIndex",
+        "type": "class",
+        "file": "doc_manager_mcp/indexing/link_index.py",
+        "line": 12,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "add": [
+      {
+        "name": "add",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/link_index.py",
+        "line": 30,
+        "column": 4,
+        "signature": "def add(self, file_path",
+        "parent": "LinkIndex",
+        "doc": null
+      }
+    ],
+    "resolve": [
+      {
+        "name": "resolve",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/link_index.py",
+        "line": 71,
+        "column": 4,
+        "signature": "def resolve(self, link_url",
+        "parent": "LinkIndex",
+        "doc": null
+      }
+    ],
+    "build_link_index": [
+      {
+        "name": "build_link_index",
+        "type": "function",
+        "file": "doc_manager_mcp/indexing/link_index.py",
+        "line": 174,
+        "column": 0,
+        "signature": "def build_link_index(docs_root",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "PathIndex": [
+      {
+        "name": "PathIndex",
+        "type": "class",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 11,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "add_file": [
+      {
+        "name": "add_file",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 26,
+        "column": 4,
+        "signature": "def add_file(self, file_path",
+        "parent": "PathIndex",
+        "doc": null
+      }
+    ],
+    "exists": [
+      {
+        "name": "exists",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 51,
+        "column": 4,
+        "signature": "def exists(self, doc_path",
+        "parent": "PathIndex",
+        "doc": null
+      }
+    ],
+    "get_by_category": [
+      {
+        "name": "get_by_category",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 80,
+        "column": 4,
+        "signature": "def get_by_category(self, category",
+        "parent": "PathIndex",
+        "doc": null
+      }
+    ],
+    "get_by_name": [
+      {
+        "name": "get_by_name",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 91,
+        "column": 4,
+        "signature": "def get_by_name(self, filename",
+        "parent": "PathIndex",
+        "doc": null
+      }
+    ],
+    "build_path_index": [
+      {
+        "name": "build_path_index",
+        "type": "function",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 103,
+        "column": 0,
+        "signature": "def build_path_index(docs_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_scan_markdown_files": [
+      {
+        "name": "_scan_markdown_files",
+        "type": "function",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 135,
+        "column": 0,
+        "signature": "def _scan_markdown_files(docs_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_categorize_doc_file": [
+      {
+        "name": "_categorize_doc_file",
+        "type": "function",
+        "file": "doc_manager_mcp/indexing/path_index.py",
+        "line": 151,
+        "column": 0,
+        "signature": "def _categorize_doc_file(file_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
     "docmgr_detect_changes": [
       {
         "name": "docmgr_detect_changes",
@@ -1161,7 +1499,7 @@
         "file": "doc_manager_mcp/tools/analysis/detect_changes.py",
         "line": 142,
         "column": 0,
-        "signature": "async def _get_semantic_changes_readonly(\n    project_path",
+        "signature": "async def _get_semantic_changes_readonly(\r\n    project_path",
         "parent": null,
         "doc": null
       }
@@ -1171,7 +1509,7 @@
         "name": "_check_root_configs",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/platform.py",
-        "line": 12,
+        "line": 18,
         "column": 0,
         "signature": "def _check_root_configs(project_path",
         "parent": null,
@@ -1183,7 +1521,7 @@
         "name": "_check_doc_directories",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/platform.py",
-        "line": 73,
+        "line": 36,
         "column": 0,
         "signature": "def _check_doc_directories(project_path",
         "parent": null,
@@ -1195,7 +1533,7 @@
         "name": "_check_dependencies",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/platform.py",
-        "line": 127,
+        "line": 60,
         "column": 0,
         "signature": "def _check_dependencies(project_path",
         "parent": null,
@@ -1207,7 +1545,7 @@
         "name": "detect_platform",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/platform.py",
-        "line": 209,
+        "line": 110,
         "column": 0,
         "signature": "async def detect_platform(params",
         "parent": null,
@@ -1231,9 +1569,57 @@
         "name": "docmgr_update_baseline",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 10,
+        "line": 11,
         "column": 0,
-        "signature": "async def docmgr_update_baseline(\n    params",
+        "signature": "async def docmgr_update_baseline(\r\n    params",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_calculate_file_checksums": [
+      {
+        "name": "_calculate_file_checksums",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/state/update_baseline.py",
+        "line": 102,
+        "column": 0,
+        "signature": "def _calculate_file_checksums(project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_get_git_metadata": [
+      {
+        "name": "_get_git_metadata",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/state/update_baseline.py",
+        "line": 126,
+        "column": 0,
+        "signature": "async def _get_git_metadata(project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_build_baseline_structure": [
+      {
+        "name": "_build_baseline_structure",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/state/update_baseline.py",
+        "line": 146,
+        "column": 0,
+        "signature": "def _build_baseline_structure(\r\n    project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_write_baseline_safely": [
+      {
+        "name": "_write_baseline_safely",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/state/update_baseline.py",
+        "line": 184,
+        "column": 0,
+        "signature": "def _write_baseline_safely(baseline_path",
         "parent": null,
         "doc": null
       }
@@ -1243,7 +1629,7 @@
         "name": "_update_repo_baseline",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 101,
+        "line": 197,
         "column": 0,
         "signature": "async def _update_repo_baseline(project_path",
         "parent": null,
@@ -1255,7 +1641,7 @@
         "name": "_update_symbol_baseline",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 212,
+        "line": 239,
         "column": 0,
         "signature": "async def _update_symbol_baseline(project_path",
         "parent": null,
@@ -1267,9 +1653,21 @@
         "name": "_update_dependencies",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 250,
+        "line": 277,
         "column": 0,
-        "signature": "async def _update_dependencies(\n    project_path",
+        "signature": "async def _update_dependencies(\r\n    project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "is_git_repo": [
+      {
+        "name": "is_git_repo",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/workflows/migrate.py",
+        "line": 26,
+        "column": 0,
+        "signature": "def is_git_repo(project_path",
         "parent": null,
         "doc": null
       }
@@ -1279,9 +1677,81 @@
         "name": "migrate",
         "type": "function",
         "file": "doc_manager_mcp/tools/workflows/migrate.py",
-        "line": 31,
+        "line": 38,
         "column": 0,
         "signature": "async def migrate(params",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "TransformResult": [
+      {
+        "name": "TransformResult",
+        "type": "class",
+        "file": "doc_manager_mcp/tools/workflows/migrate_helpers.py",
+        "line": 18,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "ProcessResult": [
+      {
+        "name": "ProcessResult",
+        "type": "class",
+        "file": "doc_manager_mcp/tools/workflows/migrate_helpers.py",
+        "line": 25,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "rewrite_links": [
+      {
+        "name": "rewrite_links",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/workflows/migrate_helpers.py",
+        "line": 34,
+        "column": 0,
+        "signature": "def rewrite_links(\r\n    body",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "add_toc": [
+      {
+        "name": "add_toc",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/workflows/migrate_helpers.py",
+        "line": 68,
+        "column": 0,
+        "signature": "def add_toc(body",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "process_markdown_file": [
+      {
+        "name": "process_markdown_file",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/workflows/migrate_helpers.py",
+        "line": 86,
+        "column": 0,
+        "signature": "def process_markdown_file(\r\n    old_file",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "process_single_file": [
+      {
+        "name": "process_single_file",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/workflows/migrate_helpers.py",
+        "line": 181,
+        "column": 0,
+        "signature": "def process_single_file(\r\n    old_file",
         "parent": null,
         "doc": null
       }
@@ -1291,7 +1761,7 @@
         "name": "sync",
         "type": "function",
         "file": "doc_manager_mcp/tools/workflows/sync.py",
-        "line": 34,
+        "line": 35,
         "column": 0,
         "signature": "async def sync(params",
         "parent": null,
@@ -1387,7 +1857,7 @@
         "name": "_load_baseline",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 35,
+        "line": 39,
         "column": 0,
         "signature": "def _load_baseline(project_path",
         "parent": null,
@@ -1399,105 +1869,105 @@
         "name": "_get_changed_files_from_checksums",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 49,
+        "line": 65,
         "column": 0,
         "signature": "def _get_changed_files_from_checksums(project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "et_changed_files_from_git(p": [
+    "_get_changed_files_from_git": [
       {
-        "name": "et_changed_files_from_git(p",
+        "name": "_get_changed_files_from_git",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 138,
+        "line": 115,
         "column": 0,
-        "signature": "ync def _get_changed_files_from_git(project_path",
+        "signature": "async def _get_changed_files_from_git(project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "ategorize_change(f": [
+    "_map_to_affected_docs": [
       {
-        "name": "ategorize_change(f",
+        "name": "_map_to_affected_docs",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 206,
+        "line": 188,
         "column": 0,
-        "signature": "f _categorize_change(file_path",
+        "signature": "def _map_to_affected_docs(changed_files",
         "parent": null,
         "doc": null
       }
     ],
-    "ap_to_affected_docs(c": [
+    "_add_affected_doc": [
       {
-        "name": "ap_to_affected_docs(c",
+        "name": "_add_affected_doc",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 247,
+        "line": 356,
         "column": 0,
-        "signature": "f _map_to_affected_docs(changed_files",
+        "signature": "def _add_affected_doc(affected_docs",
         "parent": null,
         "doc": null
       }
     ],
-    "dd_affected_doc(a": [
+    "_get_semantic_changes": [
       {
-        "name": "dd_affected_doc(a",
+        "name": "_get_semantic_changes",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 358,
+        "line": 374,
         "column": 0,
-        "signature": "f _add_affected_doc(affected_docs",
+        "signature": "def _get_semantic_changes(project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "et_semantic_changes(p": [
+    "_format_changes_report": [
       {
-        "name": "et_semantic_changes(p",
+        "name": "_format_changes_report",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 376,
+        "line": 412,
         "column": 0,
-        "signature": "f _get_semantic_changes(project_path",
+        "signature": "def _format_changes_report(changed_files",
         "parent": null,
         "doc": null
       }
     ],
-    "ormat_changes_report(c": [
+    "_map_changes_impl": [
       {
-        "name": "ormat_changes_report(c",
+        "name": "_map_changes_impl",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 414,
+        "line": 427,
         "column": 0,
-        "signature": "f _format_changes_report(changed_files",
+        "signature": "async def _map_changes_impl(params",
         "parent": null,
         "doc": null
       }
     ],
-    "ap_changes_impl(p": [
+    "map_changes": [
       {
-        "name": "ap_changes_impl(p",
+        "name": "map_changes",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 429,
+        "line": 466,
         "column": 0,
-        "signature": "ync def _map_changes_impl(params",
+        "signature": "async def map_changes(params",
         "parent": null,
         "doc": null
       }
     ],
-    "p_changes(p": [
+    "_generate_default_doc_mappings": [
       {
-        "name": "p_changes(p",
+        "name": "_generate_default_doc_mappings",
         "type": "function",
-        "file": "doc_manager_mcp/tools/_internal/changes.py",
-        "line": 468,
+        "file": "doc_manager_mcp/tools/_internal/config.py",
+        "line": 18,
         "column": 0,
-        "signature": "ync def map_changes(params",
+        "signature": "def _generate_default_doc_mappings(docs_path",
         "parent": null,
         "doc": null
       }
@@ -1507,7 +1977,7 @@
         "name": "initialize_config",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/config.py",
-        "line": 18,
+        "line": 41,
         "column": 0,
         "signature": "async def initialize_config(params",
         "parent": null,
@@ -1519,7 +1989,7 @@
         "name": "_detect_project_name",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 66,
+        "line": 67,
         "column": 0,
         "signature": "def _detect_project_name(project_path",
         "parent": null,
@@ -1531,129 +2001,177 @@
         "name": "_extract_subcommand",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 112,
+        "line": 113,
         "column": 0,
         "signature": "def _extract_subcommand(reference",
         "parent": null,
         "doc": null
       }
     ],
-    "e_references(content: st": [
+    "_extract_code_references": [
       {
-        "name": "e_references(content: st",
+        "name": "_extract_code_references",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 167,
+        "line": 168,
         "column": 0,
-        "signature": "_code_references(content",
+        "signature": "def _extract_code_references(content",
         "parent": null,
         "doc": null
       }
     ],
-    "mands_from_code_blocks(content: st": [
+    "_extract_commands_from_code_blocks": [
       {
-        "name": "mands_from_code_blocks(content: st",
+        "name": "_extract_commands_from_code_blocks",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 331,
+        "line": 332,
         "column": 0,
-        "signature": "_commands_from_code_blocks(content",
+        "signature": "def _extract_commands_from_code_blocks(content",
         "parent": null,
         "doc": null
       }
     ],
-    "_files(\n    projec": [
+    "_find_source_files": [
       {
-        "name": "_files(\n    projec",
+        "name": "_find_source_files",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 420,
+        "line": 421,
         "column": 0,
-        "signature": "urce_files(\n    project_path",
+        "signature": "def _find_source_files(\r\n    project_path",
         "parent": null,
         "doc": null
       }
     ],
-    "ces_to_sources(\n    referenc": [
+    "_build_path_index": [
       {
-        "name": "ces_to_sources(\n    referenc",
+        "name": "_build_path_index",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 503,
+        "line": 504,
         "column": 0,
-        "signature": "erences_to_sources(\n    references",
+        "signature": "def _build_path_index(source_files",
         "parent": null,
         "doc": null
       }
     ],
-    "ndex(dependencies: d": [
+    "_get_language_specific_patterns": [
       {
-        "name": "ndex(dependencies: d",
+        "name": "_get_language_specific_patterns",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 618,
+        "line": 541,
         "column": 0,
-        "signature": "se_index(dependencies",
+        "signature": "def _get_language_specific_patterns(identifier",
         "parent": null,
         "doc": null
       }
     ],
-    "_index(all_references:": [
+    "_search_file_for_pattern": [
       {
-        "name": "_index(all_references:",
+        "name": "_search_file_for_pattern",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 704,
+        "line": 629,
         "column": 0,
-        "signature": "ence_index(all_references",
+        "signature": "def _search_file_for_pattern(\r\n    source_file",
         "parent": null,
         "doc": null
       }
     ],
-    "docs_index(all_assets: lis": [
+    "_match_command_to_files": [
       {
-        "name": "docs_index(all_assets: lis",
+        "name": "_match_command_to_files",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 720,
+        "line": 669,
         "column": 0,
-        "signature": "_to_docs_index(all_assets",
+        "signature": "def _match_command_to_files(\r\n    command_name",
         "parent": null,
         "doc": null
       }
     ],
-    "es_to_memory(project_path: P": [
+    "_match_references_to_sources": [
       {
-        "name": "es_to_memory(project_path: P",
+        "name": "_match_references_to_sources",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 736,
+        "line": 714,
         "column": 0,
-        "signature": "encies_to_memory(project_path",
+        "signature": "def _match_references_to_sources(\r\n    references",
         "parent": null,
         "doc": null
       }
     ],
-    "eport(dependencies: dict[": [
+    "_build_reverse_index": [
       {
-        "name": "eport(dependencies: dict[",
+        "name": "_build_reverse_index",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 790,
+        "line": 812,
         "column": 0,
-        "signature": "cy_report(dependencies",
+        "signature": "def _build_reverse_index(dependencies",
         "parent": null,
         "doc": null
       }
     ],
-    "rackDependenciesIn": [
+    "_build_reference_index": [
       {
-        "name": "rackDependenciesIn",
+        "name": "_build_reference_index",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 813,
+        "line": 897,
         "column": 0,
-        "signature": "(params",
+        "signature": "def _build_reference_index(all_references",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_build_asset_to_docs_index": [
+      {
+        "name": "_build_asset_to_docs_index",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/_internal/dependencies.py",
+        "line": 912,
+        "column": 0,
+        "signature": "def _build_asset_to_docs_index(all_assets",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_save_dependencies_to_memory": [
+      {
+        "name": "_save_dependencies_to_memory",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/_internal/dependencies.py",
+        "line": 927,
+        "column": 0,
+        "signature": "def _save_dependencies_to_memory(project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "_format_dependency_report": [
+      {
+        "name": "_format_dependency_report",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/_internal/dependencies.py",
+        "line": 981,
+        "column": 0,
+        "signature": "def _format_dependency_report(dependencies",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "track_dependencies": [
+      {
+        "name": "track_dependencies",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/_internal/dependencies.py",
+        "line": 1004,
+        "column": 0,
+        "signature": "async def track_dependencies(params",
         "parent": null,
         "doc": null
       }
@@ -1663,7 +2181,7 @@
         "name": "scandir_async",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/memory.py",
-        "line": 27,
+        "line": 29,
         "column": 0,
         "signature": "async def scandir_async(path",
         "parent": null,
@@ -1675,17 +2193,7 @@
         "name": "with_timeout",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/memory.py",
-        "line": 37,
-        "column": 0,
-        "signature": "def with_timeout(timeout_seconds)",
-        "parent": null,
-        "doc": null
-      },
-      {
-        "name": "with_timeout",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 411,
+        "line": 39,
         "column": 0,
         "signature": "def with_timeout(timeout_seconds)",
         "parent": null,
@@ -1697,17 +2205,7 @@
         "name": "decorator",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/memory.py",
-        "line": 46,
-        "column": 4,
-        "signature": "def decorator(func)",
-        "parent": null,
-        "doc": null
-      },
-      {
-        "name": "decorator",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 413,
+        "line": 48,
         "column": 4,
         "signature": "def decorator(func)",
         "parent": null,
@@ -1719,139 +2217,45 @@
         "name": "wrapper",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/memory.py",
-        "line": 48,
-        "column": 8,
-        "signature": "async def wrapper(*args, **kwargs)",
-        "parent": null,
-        "doc": null
-      },
-      {
-        "name": "wrapper",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 417,
+        "line": 50,
         "column": 8,
         "signature": "async def wrapper(*args, **kwargs)",
         "parent": null,
         "doc": null
       }
     ],
-    "itialize_memory(p": [
+    "initialize_memory": [
       {
-        "name": "itialize_memory(p",
+        "name": "initialize_memory",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/memory.py",
-        "line": 63,
+        "line": 65,
         "column": 0,
-        "signature": "ync def initialize_memory(params",
+        "signature": "async def initialize_memory(params",
         "parent": null,
         "doc": null
       }
     ],
-    "ocess_directory(c": [
+    "process_directory": [
       {
-        "name": "ocess_directory(c",
+        "name": "process_directory",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/memory.py",
-        "line": 137,
+        "line": 124,
         "column": 8,
-        "signature": "ync def process_directory(current_path",
+        "signature": "async def process_directory(current_path",
         "parent": null,
         "doc": null
       }
     ],
-    "_assess_relevance": [
+    "assess_accuracy": [
       {
-        "name": "_assess_relevance",
+        "name": "assess_accuracy",
         "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 32,
+        "file": "doc_manager_mcp/tools/analysis/quality/accuracy.py",
+        "line": 13,
         "column": 0,
-        "signature": "def _assess_relevance(project_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_assess_accuracy": [
-      {
-        "name": "_assess_accuracy",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 123,
-        "column": 0,
-        "signature": "def _assess_accuracy(project_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_assess_purposefulness": [
-      {
-        "name": "_assess_purposefulness",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 199,
-        "column": 0,
-        "signature": "def _assess_purposefulness(project_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_remove_code_blocks": [
-      {
-        "name": "_remove_code_blocks",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 264,
-        "column": 0,
-        "signature": "def _remove_code_blocks(content",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_assess_uniqueness": [
-      {
-        "name": "_assess_uniqueness",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 271,
-        "column": 0,
-        "signature": "def _assess_uniqueness(project_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_assess_consistency": [
-      {
-        "name": "_assess_consistency",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 326,
-        "column": 0,
-        "signature": "def _assess_consistency(project_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_assess_clarity": [
-      {
-        "name": "_assess_clarity",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 394,
-        "column": 0,
-        "signature": "def _assess_clarity(project_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_assess_structure": [
-      {
-        "name": "_assess_structure",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 497,
-        "column": 0,
-        "signature": "def _assess_structure(project_path",
+        "signature": "def assess_accuracy(\r\n    project_path",
         "parent": null,
         "doc": null
       }
@@ -1861,9 +2265,9 @@
         "name": "_format_quality_report",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 574,
+        "line": 36,
         "column": 0,
-        "signature": "def _format_quality_report(\n    results",
+        "signature": "def _format_quality_report(\r\n    results",
         "parent": null,
         "doc": null
       }
@@ -1873,7 +2277,7 @@
         "name": "_calculate_overall_score",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 609,
+        "line": 72,
         "column": 0,
         "signature": "def _calculate_overall_score(results",
         "parent": null,
@@ -1885,9 +2289,33 @@
         "name": "assess_quality",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/assessment.py",
-        "line": 655,
+        "line": 118,
         "column": 0,
         "signature": "async def assess_quality(params",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "assess_clarity": [
+      {
+        "name": "assess_clarity",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/clarity.py",
+        "line": 14,
+        "column": 0,
+        "signature": "def assess_clarity(\r\n    project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "assess_consistency": [
+      {
+        "name": "assess_consistency",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/consistency.py",
+        "line": 12,
+        "column": 0,
+        "signature": "def assess_consistency(\r\n    project_path",
         "parent": null,
         "doc": null
       }
@@ -1899,7 +2327,7 @@
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
         "line": 10,
         "column": 0,
-        "signature": "def check_list_formatting_consistency(\n    docs_path",
+        "signature": "def check_list_formatting_consistency(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
@@ -1911,7 +2339,7 @@
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
         "line": 121,
         "column": 0,
-        "signature": "def check_heading_case_consistency(\n    docs_path",
+        "signature": "def check_heading_case_consistency(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
@@ -1935,7 +2363,7 @@
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
         "line": 277,
         "column": 0,
-        "signature": "def detect_multiple_h1s(\n    docs_path",
+        "signature": "def detect_multiple_h1s(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
@@ -1947,7 +2375,7 @@
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
         "line": 326,
         "column": 0,
-        "signature": "def detect_undocumented_apis(\n    project_path",
+        "signature": "def detect_undocumented_apis(\r\n    project_path",
         "parent": null,
         "doc": null
       }
@@ -1959,7 +2387,7 @@
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
         "line": 416,
         "column": 0,
-        "signature": "def calculate_documentation_coverage(\n    project_path",
+        "signature": "def calculate_documentation_coverage(\r\n    project_path",
         "parent": null,
         "doc": null
       }
@@ -1976,6 +2404,112 @@
         "doc": null
       }
     ],
+    "assess_purposefulness": [
+      {
+        "name": "assess_purposefulness",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/purposefulness.py",
+        "line": 9,
+        "column": 0,
+        "signature": "def assess_purposefulness(project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "assess_relevance": [
+      {
+        "name": "assess_relevance",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/relevance.py",
+        "line": 13,
+        "column": 0,
+        "signature": "def assess_relevance(project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "assess_structure": [
+      {
+        "name": "assess_structure",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/structure.py",
+        "line": 13,
+        "column": 0,
+        "signature": "def assess_structure(\r\n    project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "assess_uniqueness": [
+      {
+        "name": "assess_uniqueness",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/uniqueness.py",
+        "line": 12,
+        "column": 0,
+        "signature": "def assess_uniqueness(\r\n    project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "remove_code_blocks": [
+      {
+        "name": "remove_code_blocks",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/utils.py",
+        "line": 6,
+        "column": 0,
+        "signature": "def remove_code_blocks(content",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "extract_images": [
+      {
+        "name": "extract_images",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/validation/assets.py",
+        "line": 17,
+        "column": 0,
+        "signature": "def extract_images(\r\n    content",
+        "parent": null,
+        "doc": null
+      },
+      {
+        "name": "extract_images",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/parsers/markdown.py",
+        "line": 166,
+        "column": 4,
+        "signature": "def extract_images(self, content",
+        "parent": "MarkdownParser",
+        "doc": null
+      }
+    ],
+    "validate_assets": [
+      {
+        "name": "validate_assets",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/validation/assets.py",
+        "line": 57,
+        "column": 0,
+        "signature": "def validate_assets(\r\n    docs_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "validate_conventions": [
+      {
+        "name": "validate_conventions",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/validation/conventions.py",
+        "line": 14,
+        "column": 0,
+        "signature": "def validate_conventions(\r\n    docs_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
     "validate_code_examples": [
       {
         "name": "validate_code_examples",
@@ -1983,7 +2517,7 @@
         "file": "doc_manager_mcp/tools/analysis/validation/helpers.py",
         "line": 13,
         "column": 0,
-        "signature": "def validate_code_examples(\n    content",
+        "signature": "def validate_code_examples(\r\n    content",
         "parent": null,
         "doc": null
       }
@@ -1995,115 +2529,135 @@
         "file": "doc_manager_mcp/tools/analysis/validation/helpers.py",
         "line": 72,
         "column": 0,
-        "signature": "def validate_documented_symbols(\n    content",
+        "signature": "def validate_documented_symbols(\r\n    content",
         "parent": null,
         "doc": null
       }
     ],
-    "_extract_links": [
+    "extract_links": [
       {
-        "name": "_extract_links",
+        "name": "extract_links",
         "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 28,
+        "file": "doc_manager_mcp/tools/analysis/validation/links.py",
+        "line": 18,
         "column": 0,
-        "signature": "def _extract_links(content",
+        "signature": "def extract_links(\r\n    content",
+        "parent": null,
+        "doc": null
+      },
+      {
+        "name": "extract_links",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/parsers/markdown.py",
+        "line": 75,
+        "column": 4,
+        "signature": "def extract_links(self, content",
+        "parent": "MarkdownParser",
+        "doc": null
+      }
+    ],
+    "check_internal_link": [
+      {
+        "name": "check_internal_link",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/validation/links.py",
+        "line": 57,
+        "column": 0,
+        "signature": "def check_internal_link(\r\n    link_url",
         "parent": null,
         "doc": null
       }
     ],
-    "_check_internal_link": [
+    "check_broken_links": [
       {
-        "name": "_check_internal_link",
+        "name": "check_broken_links",
         "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 58,
+        "file": "doc_manager_mcp/tools/analysis/validation/links.py",
+        "line": 142,
         "column": 0,
-        "signature": "def _check_internal_link(link_url",
+        "signature": "def check_broken_links(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
     ],
-    "_check_broken_links": [
+    "extract_code_blocks": [
       {
-        "name": "_check_broken_links",
+        "name": "extract_code_blocks",
         "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 109,
+        "file": "doc_manager_mcp/tools/analysis/validation/snippets.py",
+        "line": 15,
         "column": 0,
-        "signature": "def _check_broken_links(docs_path",
+        "signature": "def extract_code_blocks(\r\n    content",
+        "parent": null,
+        "doc": null
+      },
+      {
+        "name": "extract_code_blocks",
+        "type": "method",
+        "file": "doc_manager_mcp/indexing/parsers/markdown.py",
+        "line": 134,
+        "column": 4,
+        "signature": "def extract_code_blocks(self, content",
+        "parent": "MarkdownParser",
+        "doc": null
+      }
+    ],
+    "validate_code_snippets": [
+      {
+        "name": "validate_code_snippets",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/validation/snippets.py",
+        "line": 42,
+        "column": 0,
+        "signature": "def validate_code_snippets(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
     ],
-    "_extract_images": [
+    "validate_symbols": [
       {
-        "name": "_extract_images",
+        "name": "validate_symbols",
         "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 152,
+        "file": "doc_manager_mcp/tools/analysis/validation/symbols.py",
+        "line": 16,
         "column": 0,
-        "signature": "def _extract_images(content",
+        "signature": "def validate_symbols(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
     ],
-    "_validate_assets": [
+    "validate_code_syntax": [
       {
-        "name": "_validate_assets",
+        "name": "validate_code_syntax",
         "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 183,
+        "file": "doc_manager_mcp/tools/analysis/validation/syntax.py",
+        "line": 14,
         "column": 0,
-        "signature": "def _validate_assets(docs_path",
+        "signature": "def validate_code_syntax(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
     ],
-    "_extract_code_blocks": [
+    "_load_repo_baseline": [
       {
-        "name": "_extract_code_blocks",
+        "name": "_load_repo_baseline",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 256,
+        "line": 29,
         "column": 0,
-        "signature": "def _extract_code_blocks(content",
+        "signature": "def _load_repo_baseline(baseline_path_str",
         "parent": null,
         "doc": null
       }
     ],
-    "_validate_code_snippets": [
+    "_detect_changed_docs": [
       {
-        "name": "_validate_code_snippets",
+        "name": "_detect_changed_docs",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 274,
+        "line": 51,
         "column": 0,
-        "signature": "def _validate_code_snippets(docs_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_validate_code_syntax": [
-      {
-        "name": "_validate_code_syntax",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 328,
-        "column": 0,
-        "signature": "def _validate_code_syntax(docs_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "_validate_symbols": [
-      {
-        "name": "_validate_symbols",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 359,
-        "column": 0,
-        "signature": "def _validate_symbols(docs_path",
+        "signature": "def _detect_changed_docs(\r\n    docs_path",
         "parent": null,
         "doc": null
       }
@@ -2113,33 +2667,21 @@
         "name": "_format_validation_report",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 401,
+        "line": 106,
         "column": 0,
         "signature": "def _format_validation_report(issues",
         "parent": null,
         "doc": null
       }
     ],
-    "alidate_conventions(d": [
+    "validate_docs": [
       {
-        "name": "alidate_conventions(d",
+        "name": "validate_docs",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 433,
+        "line": 116,
         "column": 0,
-        "signature": "f _validate_conventions(docs_path",
-        "parent": null,
-        "doc": null
-      }
-    ],
-    "lidate_docs(p": [
-      {
-        "name": "lidate_docs(p",
-        "type": "function",
-        "file": "doc_manager_mcp/tools/analysis/validation/validator.py",
-        "line": 483,
-        "column": 0,
-        "signature": "ync def validate_docs(params",
+        "signature": "async def validate_docs(params",
         "parent": null,
         "doc": null
       }
@@ -2197,7 +2739,7 @@
         "name": "SemanticChange",
         "type": "class",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 31,
+        "line": 33,
         "column": 0,
         "signature": null,
         "parent": null,
@@ -2209,7 +2751,7 @@
         "name": "load_symbol_baseline",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 60,
+        "line": 62,
         "column": 0,
         "signature": "def load_symbol_baseline(baseline_path",
         "parent": null,
@@ -2221,9 +2763,9 @@
         "name": "save_symbol_baseline",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 120,
+        "line": 122,
         "column": 0,
-        "signature": "def save_symbol_baseline(\n    baseline_path",
+        "signature": "def save_symbol_baseline(\r\n    baseline_path",
         "parent": null,
         "doc": null
       }
@@ -2233,9 +2775,9 @@
         "name": "compare_symbols",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 210,
+        "line": 214,
         "column": 0,
-        "signature": "def compare_symbols(\n    old_symbols",
+        "signature": "def compare_symbols(\r\n    old_symbols",
         "parent": null,
         "doc": null
       }
@@ -2245,7 +2787,7 @@
         "name": "_is_public_api",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 342,
+        "line": 346,
         "column": 0,
         "signature": "def _is_public_api(symbol",
         "parent": null,
@@ -2435,7 +2977,7 @@
         "name": "_add_symbol",
         "type": "method",
         "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 531,
+        "line": 543,
         "column": 4,
         "signature": "def _add_symbol(self, symbol",
         "parent": "SymbolIndexer",
@@ -2447,7 +2989,7 @@
         "name": "lookup",
         "type": "method",
         "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 537,
+        "line": 549,
         "column": 4,
         "signature": "def lookup(self, symbol_name",
         "parent": "SymbolIndexer",
@@ -2459,7 +3001,7 @@
         "name": "get_symbols_in_file",
         "type": "method",
         "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 541,
+        "line": 553,
         "column": 4,
         "signature": "def get_symbols_in_file(self, file_path",
         "parent": "SymbolIndexer",
@@ -2471,7 +3013,7 @@
         "name": "get_all_symbols",
         "type": "method",
         "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 550,
+        "line": 562,
         "column": 4,
         "signature": "def get_all_symbols(self) -> list[Symbol]",
         "parent": "SymbolIndexer",
@@ -2483,7 +3025,7 @@
         "name": "get_index_stats",
         "type": "method",
         "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 557,
+        "line": 569,
         "column": 4,
         "signature": "def get_index_stats(self) -> dict[str, Any]",
         "parent": "SymbolIndexer",
@@ -2495,7 +3037,7 @@
         "name": "extract_bash_code_blocks",
         "type": "method",
         "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 574,
+        "line": 586,
         "column": 4,
         "signature": "def extract_bash_code_blocks(self, content",
         "parent": "SymbolIndexer",
@@ -2507,7 +3049,7 @@
         "name": "_find_all_nodes",
         "type": "method",
         "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 608,
+        "line": 620,
         "column": 4,
         "signature": "def _find_all_nodes(self, node",
         "parent": "SymbolIndexer",
@@ -2519,7 +3061,7 @@
         "name": "_find_child_by_type",
         "type": "method",
         "file": "doc_manager_mcp/indexing/analysis/tree_sitter.py",
-        "line": 617,
+        "line": 629,
         "column": 4,
         "signature": "def _find_child_by_type(self, node",
         "parent": "SymbolIndexer",
@@ -2546,42 +3088,6 @@
         "line": 33,
         "column": 4,
         "signature": "def extract_headers(self, content",
-        "parent": "MarkdownParser",
-        "doc": null
-      }
-    ],
-    "extract_links": [
-      {
-        "name": "extract_links",
-        "type": "method",
-        "file": "doc_manager_mcp/indexing/parsers/markdown.py",
-        "line": 75,
-        "column": 4,
-        "signature": "def extract_links(self, content",
-        "parent": "MarkdownParser",
-        "doc": null
-      }
-    ],
-    "extract_code_blocks": [
-      {
-        "name": "extract_code_blocks",
-        "type": "method",
-        "file": "doc_manager_mcp/indexing/parsers/markdown.py",
-        "line": 134,
-        "column": 4,
-        "signature": "def extract_code_blocks(self, content",
-        "parent": "MarkdownParser",
-        "doc": null
-      }
-    ],
-    "extract_images": [
-      {
-        "name": "extract_images",
-        "type": "method",
-        "file": "doc_manager_mcp/indexing/parsers/markdown.py",
-        "line": 166,
-        "column": 4,
-        "signature": "def extract_images(self, content",
         "parent": "MarkdownParser",
         "doc": null
       }
@@ -2629,7 +3135,7 @@
         "file": "doc_manager_mcp/indexing/transforms/links.py",
         "line": 67,
         "column": 0,
-        "signature": "def preserve_frontmatter(\n    frontmatter_dict",
+        "signature": "def preserve_frontmatter(\r\n    frontmatter_dict",
         "parent": null,
         "doc": null
       }
@@ -2677,7 +3183,7 @@
         "file": "doc_manager_mcp/indexing/transforms/links.py",
         "line": 258,
         "column": 0,
-        "signature": "def compute_link_mappings(\n    content",
+        "signature": "def compute_link_mappings(\r\n    content",
         "parent": null,
         "doc": null
       }
@@ -2737,7 +3243,7 @@
         "file": "doc_manager_mcp/indexing/transforms/links.py",
         "line": 483,
         "column": 0,
-        "signature": "def compute_relative_link(\n    from_file",
+        "signature": "def compute_relative_link(\r\n    from_file",
         "parent": null,
         "doc": null
       }
