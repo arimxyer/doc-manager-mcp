@@ -92,6 +92,43 @@ class LinkIndex:
         if result:
             return result
 
+        # Handle simple relative paths (e.g., "tools/api.md") that don't start with ./ or ../
+        # These should be resolved relative to source_context
+        if not url_without_anchor.startswith(('/', './', '../')) and docs_root:
+            try:
+                import os
+                # Resolve relative to source context
+                full_path = source_context / url_without_anchor
+                normalized_path = os.path.normpath(str(full_path))
+
+                # Get relative path from docs_root
+                normalized_docs = os.path.normpath(str(docs_root))
+
+                if normalized_path.startswith(normalized_docs):
+                    # Remove docs_root prefix and normalize separators
+                    rel_str = normalized_path[len(normalized_docs):].lstrip(os.sep).replace('\\', '/')
+
+                    # Try lookup with computed relative path
+                    result = self._index.get(rel_str)
+                    if result:
+                        return result
+
+                    # Try with .md extension
+                    if not rel_str.endswith('.md'):
+                        result = self._index.get(rel_str + '.md')
+                        if result:
+                            return result
+
+                    # Try without extension
+                    if '.' in rel_str:
+                        stem_path = rel_str.rsplit('.', 1)[0]
+                        result = self._index.get(stem_path)
+                        if result:
+                            return result
+
+            except (ValueError, OSError, IndexError):
+                pass  # Path manipulation failed, continue to other resolution methods
+
         # Handle relative paths (../, ./)
         if url_without_anchor.startswith(('./', '../')) and docs_root:
             # Normalize relative path to docs_root

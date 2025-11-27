@@ -206,11 +206,11 @@ Or use `docmgr_sync mode="resync"` to update atomically.
 
 **Cause**: Code fence doesn't specify language:
 
-```text
+````text
 ```
 code here  ← Missing language tag!
 ```
-```
+````
 
 **Solution**:
 
