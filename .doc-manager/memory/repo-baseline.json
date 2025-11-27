@@ -5,10 +5,10 @@
   "docs_exist": true,
   "docs_path": "docs",
   "metadata": {
-    "git_commit": "326087d79fe98cf1c4dd8e3578743051575550b6",
+    "git_commit": "2bb6b64b2e9df0b6829cf187923c369e4a0c3a32",
     "git_branch": "main"
   },
-  "timestamp": "2025-11-27T01:05:24.498024",
+  "timestamp": "2025-11-27T01:35:56.850626",
   "version": "1.0.0",
   "file_count": 138,
   "files": {
@@ -23,12 +23,12 @@
     "benchmarks/results/validate_quality_parallel.json": "d2573f2fc7932eebe18f1a4a6da7028ecd326968e9a4465e2296c1ca51801c25",
     "docs/index.md": "7074f0002d8be03932a8fa36dcb0666d3f376901e7ad15a7d43d01b0246f3a09",
     "docs/README.md": "7074f0002d8be03932a8fa36dcb0666d3f376901e7ad15a7d43d01b0246f3a09",
-    "docs/getting-started/installation.md": "e3010a3d52410faea10b937ebf0acaf856833efea4f60d28be74bb6403326db4",
+    "docs/getting-started/installation.md": "f1ebdd09268f0863b99ae5239db4a7a22c0d3a572f43a38a869faca93db9344a",
     "docs/getting-started/quick-start.md": "89bfc7999c3074afe582c6bb6853dda34150c3ede8b9a6a397717c2dcfd41be3",
     "docs/guides/platforms.md": "9b84cc15e1ae97dfff9bb527a3426b5c6b9c05d5a561611239f1e358a74305b4",
-    "docs/guides/troubleshooting.md": "e2c26a8d718c78e4a1622010c7eaed12d56bb778e8a9cda12335e2a90e777f51",
+    "docs/guides/troubleshooting.md": "283296bd0ef8f9cfb05286e1b7fd95f4f1da59763b9afbd14b5676738db2296b",
     "docs/guides/workflows.md": "bd247e527cdb9c4a32ecae5fb1a967fb8b80063a6d06472e56ea3ab829bb9645",
-    "docs/reference/configuration.md": "5908ab877a5ab124779243b33ad24155d9f57ccfdbab0e07aaeb64796cafddbd",
+    "docs/reference/configuration.md": "c4a344727a9c7fb063e453a6e506455b4609c22d87cfc752c74186b58ec1c258",
     "docs/reference/file-formats.md": "749116960aba450c9019dde099bfb05765fc27e77b6c8bf92bf5495a2571e07c",
     "docs/reference/tools.md": "aa411fbd94b855e67537d4d98df1236660b8fb756cabfcbcdc73d3426ba8d4a9",
     "docs/reference/tools/docmgr_assess_quality.md": "70978562ae14741c57778288c006bab31753a85632f601443e96c3bcf01e92f9",

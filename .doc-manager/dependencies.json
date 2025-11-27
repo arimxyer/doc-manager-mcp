@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-27T01:05:25.085218",
+  "generated_at": "2025-11-27T01:35:57.379644",
   "doc_to_code": {
     "getting-started/installation.md": [
       "doc_manager_mcp/server.py",
@@ -237,6 +237,12 @@
     ],
     "_index.md": [
       "guides/platforms.md"
+    ],
+    "ImportError": [
+      "guides/troubleshooting.md"
+    ],
+    "ModuleNotFoundError": [
+      "guides/troubleshooting.md"
     ],
     "doc_to_code": [
       "guides/troubleshooting.md",
@@ -580,12 +586,30 @@
     "nav": [
       "guides/platforms.md"
     ],
-    ".doc-manager/memory/symbol-baseline.json": [
+    "ImportError": [
+      "guides/troubleshooting.md"
+    ],
+    "ModuleNotFoundError": [
+      "guides/troubleshooting.md"
+    ],
+    "symbol-baseline.json": [
       "guides/troubleshooting.md",
-      "guides/workflows.md",
+      "README.md"
+    ],
+    "sources": [
+      "guides/troubleshooting.md",
       "reference/file-formats.md",
+      "reference/tools/docmgr_detect_changes.md",
       "reference/tools/docmgr_init.md",
-      "reference/tools/docmgr_update_baseline.md"
+      "reference/tools.md",
+      "README.md"
+    ],
+    "repo-baseline.json": [
+      "guides/troubleshooting.md",
+      "reference/file-formats.md",
+      "reference/tools/docmgr_detect_changes.md",
+      "reference/tools.md",
+      "README.md"
     ],
     ".doc-manager/dependencies.json": [
       "guides/troubleshooting.md",
@@ -644,14 +668,6 @@
       "reference/tools/docmgr_migrate.md",
       "reference/tools.md"
     ],
-    "repo-baseline.json": [
-      "guides/troubleshooting.md",
-      "reference/configuration.md",
-      "reference/file-formats.md",
-      "reference/tools/docmgr_detect_changes.md",
-      "reference/tools.md",
-      "README.md"
-    ],
     "HEAD": [
       "guides/troubleshooting.md"
     ],
@@ -662,6 +678,12 @@
       "guides/workflows.md"
     ],
     ".doc-manager/memory/repo-baseline.json": [
+      "guides/workflows.md",
+      "reference/file-formats.md",
+      "reference/tools/docmgr_init.md",
+      "reference/tools/docmgr_update_baseline.md"
+    ],
+    ".doc-manager/memory/symbol-baseline.json": [
       "guides/workflows.md",
       "reference/file-formats.md",
       "reference/tools/docmgr_init.md",
@@ -729,18 +751,6 @@
     ],
     "file1.py": [
       "reference/configuration.md"
-    ],
-    "symbol-baseline.json": [
-      "reference/configuration.md",
-      "README.md"
-    ],
-    "sources": [
-      "reference/configuration.md",
-      "reference/file-formats.md",
-      "reference/tools/docmgr_detect_changes.md",
-      "reference/tools/docmgr_init.md",
-      "reference/tools.md",
-      "README.md"
     ],
     "platform": [
       "reference/file-formats.md",
@@ -1024,6 +1034,10 @@
         "doc_file": "guides/platforms.md"
       },
       {
+        "reference": "sources",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
         "reference": "python",
         "doc_file": "guides/troubleshooting.md"
       },
@@ -1101,10 +1115,6 @@
       },
       {
         "reference": "gitwildmatch",
-        "doc_file": "reference/configuration.md"
-      },
-      {
-        "reference": "sources",
         "doc_file": "reference/configuration.md"
       },
       {
@@ -2116,7 +2126,7 @@
         "doc_file": "guides/platforms.md"
       },
       {
-        "reference": ".doc-manager/memory/symbol-baseline.json",
+        "reference": "symbol-baseline.json",
         "doc_file": "guides/troubleshooting.md"
       },
       {
@@ -2124,7 +2134,15 @@
         "doc_file": "guides/troubleshooting.md"
       },
       {
+        "reference": "repo-baseline.json",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
         "reference": ".doc-manager.yml",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "repo-baseline.json",
         "doc_file": "guides/troubleshooting.md"
       },
       {
@@ -2217,14 +2235,6 @@
       },
       {
         "reference": ".doc-manager.yml",
-        "doc_file": "reference/configuration.md"
-      },
-      {
-        "reference": "symbol-baseline.json",
-        "doc_file": "reference/configuration.md"
-      },
-      {
-        "reference": "repo-baseline.json",
         "doc_file": "reference/configuration.md"
       },
       {
@@ -2855,6 +2865,14 @@
       }
     ],
     "class": [
+      {
+        "reference": "ImportError",
+        "doc_file": "guides/troubleshooting.md"
+      },
+      {
+        "reference": "ModuleNotFoundError",
+        "doc_file": "guides/troubleshooting.md"
+      },
       {
         "reference": "HEAD",
         "doc_file": "guides/troubleshooting.md"
