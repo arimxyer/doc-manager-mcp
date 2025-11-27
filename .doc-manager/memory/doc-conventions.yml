@@ -43,7 +43,7 @@ structure:
     min_length: 500
 
   # Maximum heading depth (1-6, where 1 is #, 6 is ######)
-  max_heading_depth: 3
+  max_heading_depth: 4
 
   # Enforce strict heading hierarchy (no skipping levels: H1→H3 is invalid)
   # Options: strict | relaxed
