@@ -12,7 +12,7 @@
   "repository": "https://github.com/ari1110/doc-manager-mcp.git",
   "keywords": ["documentation", "docs", "sync", "validation", "quality", "mcp", "doc-management"],
   "commands": ["./commands"],
-  "agents": ["./agents"],
+  "agents": ["./agents/doc-expert.md", "./agents/doc-writer.md"],
   "skills": "./skills",
   "mcpServers": ["./.mcp.json"]
 }
