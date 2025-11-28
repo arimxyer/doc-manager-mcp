@@ -1,8 +1,8 @@
 # Documentation Manager MCP Server
 
 [![PyPI version](https://img.shields.io/pypi/v/doc-manager-mcp.svg)](https://pypi.org/project/doc-manager-mcp/)
-[![PyPI - Last Updated](https://img.shields.io/pypi/last-upload/doc-manager-mcp)](https://pypi.org/project/doc-manager-mcp/)
-[![Python Version](https://img.shields.io/pypi/pyversions/doc-manager-mcp.svg)](https://pypi.org/project/doc-manager-mcp/)
+[![Python Version](https://img.shields.io/pypi/pyversions/doc-manager-mcp)](https://pypi.org/project/doc-manager-mcp/)
+[![License](https://img.shields.io/github/license/ari1110/doc-manager-mcp)](https://github.com/ari1110/doc-manager-mcp/blob/main/LICENSE)
 
 An MCP (Model Context Protocol) server for comprehensive documentation lifecycle management. Automates documentation creation, maintenance, quality assessment, and synchronization for software projects.
 
