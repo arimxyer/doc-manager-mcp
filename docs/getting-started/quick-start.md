@@ -1,14 +1,23 @@
 # Quick start
 
-Get up and running with Documentation Manager in 5 minutes.
+Get up and running with Documentation Manager MCP server in 5 minutes.
 
-## Step 1: Installation
+## Step 1: Add to MCP client
 
-See [Installation Guide](installation.md) for detailed instructions, or install quickly:
+Add to your MCP settings file (e.g., `claude_desktop_config.json`):
 
-```bash
-pip install doc-manager-mcp
+```json
+{
+  "mcpServers": {
+    "doc-manager": {
+      "command": "uvx",
+      "args": ["doc-manager-mcp"]
+    }
+  }
+}
 ```
+
+Restart your MCP client (e.g., Claude Desktop) to load the server.
 
 ## Step 2: Initialize for your project
 

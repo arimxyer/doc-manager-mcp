@@ -17,16 +17,6 @@ An MCP (Model Context Protocol) server for comprehensive documentation lifecycle
 
 ## Installation
 
-### From source (development)
-
-```bash
-git clone https://github.com/ari1110/doc-manager-mcp
-cd doc-manager-mcp
-pip install -e .
-```
-
-### As MCP server
-
 Add to your MCP settings file (e.g., `claude_desktop_config.json`):
 
 ```json
@@ -40,7 +30,17 @@ Add to your MCP settings file (e.g., `claude_desktop_config.json`):
 }
 ```
 
-Or for local development:
+The MCP client will automatically download and run the server when needed.
+
+**For local development:**
+
+```bash
+git clone https://github.com/ari1110/doc-manager-mcp
+cd doc-manager-mcp
+pip install -e .
+```
+
+Then configure your MCP client:
 
 ```json
 {

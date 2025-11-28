@@ -1,37 +1,16 @@
 # Installation
 
+Documentation Manager is an MCP (Model Context Protocol) server that integrates with Claude Desktop and other MCP clients to automate documentation lifecycle management.
+
 ## Prerequisites
 
 - Python 3.10 or higher
-- `uv` package manager (recommended) or `pip`
-- Git (for version control features)
-- TreeSitter language pack (installed automatically with dependencies)
+- An MCP client (like Claude Desktop)
+- Git (optional, for version control features)
 
-## Installation methods
+## Quick setup
 
-### Method 1: Install from PyPI (recommended)
-
-```bash
-pip install doc-manager-mcp
-```
-
-### Method 2: Install from source
-
-```bash
-git clone https://github.com/ari1110/doc-manager-mcp
-cd doc-manager-mcp
-pip install -e .
-```
-
-### Method 3: Install with uv
-
-```bash
-uv pip install doc-manager-mcp
-```
-
-## MCP server configuration
-
-To use Documentation Manager as an MCP server, add it to your MCP settings file:
+Add Documentation Manager to your MCP settings file (e.g., `claude_desktop_config.json`):
 
 ```json
 {
@@ -44,7 +23,13 @@ To use Documentation Manager as an MCP server, add it to your MCP settings file:
 }
 ```
 
-Or for local development:
+That's it! The MCP client will automatically download and run the server when needed.
+
+## Alternative installation methods
+
+### Local development
+
+For contributing or testing local changes:
 
 ```json
 {
@@ -55,6 +40,20 @@ Or for local development:
     }
   }
 }
+```
+
+### Standalone installation (advanced)
+
+If you need to install the package directly (not common for MCP usage):
+
+```bash
+# With pip
+pip install doc-manager-mcp
+
+# From source
+git clone https://github.com/ari1110/doc-manager-mcp
+cd doc-manager-mcp
+pip install -e .
 ```
 
 ## Verification
