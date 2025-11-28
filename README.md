@@ -1,8 +1,10 @@
 # Documentation Manager MCP Server
 
-An MCP (Model Context Protocol) server for comprehensive documentation lifecycle management. Automates documentation creation, maintenance, quality assessment, and synchronization for software projects.
+[![PyPI version](https://img.shields.io/pypi/v/doc-manager-mcp.svg)](https://pypi.org/project/doc-manager-mcp/)
+[![PyPI - Last Updated](https://img.shields.io/pypi/last-upload/doc-manager-mcp)](https://pypi.org/project/doc-manager-mcp/)
+[![Python Version](https://img.shields.io/pypi/pyversions/doc-manager-mcp.svg)](https://pypi.org/project/doc-manager-mcp/)
 
-**Version:** 1.0.1
+An MCP (Model Context Protocol) server for comprehensive documentation lifecycle management. Automates documentation creation, maintenance, quality assessment, and synchronization for software projects.
 
 ## Features
 
