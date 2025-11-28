@@ -124,7 +124,7 @@ Doc-manager maintains 3 baseline files in `.doc-manager/memory/`:
 3. `dependencies.json` - Code-to-docs dependency mappings
 
 Workflow:
-```
+```text
 1. docmgr_init              → Create initial baselines
 2. (make code changes)
 3. docmgr_detect_changes    → Detect changes (read-only)
@@ -207,7 +207,6 @@ uv run pyright
 - [Tools Reference](docs/reference/tools.md)
 - [Configuration](docs/reference/configuration.md)
 - [Troubleshooting](docs/guides/troubleshooting.md)
-- [Technical Specs](specs/)
 
 ## License
 
