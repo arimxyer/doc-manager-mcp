@@ -27,7 +27,7 @@ dev = [
 ]
 
 [project.scripts]
-doc-manager = "doc_manager_mcp.server:main"
+doc-manager-mcp = "doc_manager_mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]

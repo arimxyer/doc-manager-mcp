@@ -20,8 +20,8 @@ An MCP (Model Context Protocol) server for comprehensive documentation lifecycle
 ### From source (development)
 
 ```bash
-git clone https://github.com/yourusername/doc-manager
-cd doc-manager
+git clone https://github.com/ari1110/doc-manager-mcp
+cd doc-manager-mcp
 pip install -e .
 ```
 
@@ -34,7 +34,7 @@ Add to your MCP settings file (e.g., `claude_desktop_config.json`):
   "mcpServers": {
     "doc-manager": {
       "command": "uvx",
-      "args": ["--from", "doc-manager-mcp", "doc-manager"]
+      "args": ["doc-manager-mcp"]
     }
   }
 }
@@ -47,7 +47,7 @@ Or for local development:
   "mcpServers": {
     "doc-manager": {
       "command": "uvx",
-      "args": ["--from", "/path/to/doc-manager", "doc-manager"]
+      "args": ["--from", "/path/to/doc-manager-mcp", "doc-manager-mcp"]
     }
   }
 }
@@ -176,10 +176,10 @@ uv run pytest --cov=doc_manager_mcp
 pip install -e .
 
 # Run server (stdio transport)
-doc-manager
+doc-manager-mcp
 
 # Or with uv
-uvx --from . doc-manager
+uvx --from . doc-manager-mcp
 ```
 
 ### Linting
