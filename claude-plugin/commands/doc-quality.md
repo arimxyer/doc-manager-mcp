@@ -1,5 +1,6 @@
 ---
 description: Assess documentation quality
+allowed-tools: mcp__doc-manager__docmgr_assess_quality, mcp__doc-manager__docmgr_validate_docs
 ---
 
 # Documentation Quality Assessment

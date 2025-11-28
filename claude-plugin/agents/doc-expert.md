@@ -1,14 +1,9 @@
 ---
+name: doc-expert
 description: Documentation lifecycle expert and active orchestrator. Analyzes code changes, assesses documentation quality, runs state operations (init, sync, migrate, baseline updates), and delegates content writing to doc-writer. Use for complex documentation tasks, project setup, quality assessment, and workflow orchestration.
-capabilities:
-  - "Project setup and initialization for new or existing documentation"
-  - "Code change detection and impact analysis"
-  - "Documentation quality assessment against 7 criteria"
-  - "Documentation validation (links, assets, code snippets)"
-  - "Baseline and state management (updates, syncs)"
-  - "Documentation migration and restructuring with git history preservation"
-  - "Workflow orchestration and delegation to specialized agents"
-  - "Platform detection and configuration"
+model: sonnet
+permissionMode: default
+tools: Read, Edit, Write, Glob, Grep, AskUserQuestion, mcp__doc-manager__docmgr_init, mcp__doc-manager__docmgr_detect_platform, mcp__doc-manager__docmgr_detect_changes, mcp__doc-manager__docmgr_validate_docs, mcp__doc-manager__docmgr_assess_quality, mcp__doc-manager__docmgr_update_baseline, mcp__doc-manager__docmgr_sync, mcp__doc-manager__docmgr_migrate
 ---
 
 # Doc-Expert: Documentation Lifecycle Orchestrator

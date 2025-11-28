@@ -1,13 +1,9 @@
 ---
+name: doc-writer
 description: Documentation content writer and executor. Creates and updates documentation files based on code changes. Validates own work and reports results to doc-expert. Focuses purely on writing high-quality documentation content.
-capabilities:
-  - "Create new documentation files from scratch"
-  - "Update and revise existing documentation"
-  - "Write API reference documentation for functions and classes"
-  - "Create code examples and usage guides"
-  - "Validate documentation for broken links and syntax errors"
-  - "Follow platform-specific formatting (MkDocs, Sphinx, Docusaurus, etc.)"
-  - "Adapt writing style to project conventions"
+model: haiku
+permissionMode: default
+tools: Read, Edit, Write, Glob, Grep, AskUserQuestion, mcp__doc-manager__docmgr_detect_changes, mcp__doc-manager__docmgr_validate_docs
 ---
 
 # Doc-Writer: Documentation Content Executor

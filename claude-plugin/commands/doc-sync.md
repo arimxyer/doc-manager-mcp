@@ -1,5 +1,6 @@
 ---
 description: Synchronize documentation with code changes
+allowed-tools: mcp__doc-manager__*
 ---
 
 # Documentation Sync Workflow
