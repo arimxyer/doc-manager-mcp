@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-28T22:40:59.504634",
+  "generated_at": "2025-11-28T23:01:34.785310",
   "doc_to_code": {
     "getting-started/installation.md": [
       "doc_manager_mcp/server.py",
@@ -7,7 +7,11 @@
       "doc_manager_mcp/tools/state/init.py",
       "doc_manager_mcp/tools/state/update_baseline.py"
     ],
-    "getting-started/quick-start.md": [],
+    "getting-started/quick-start.md": [
+      "doc_manager_mcp/server.py",
+      "doc_manager_mcp/tools/analysis/detect_changes.py",
+      "doc_manager_mcp/tools/state/init.py"
+    ],
     "guides/claude-code-plugin.md": [],
     "guides/platforms.md": [
       "doc_manager_mcp/server.py"
@@ -87,7 +91,6 @@
       "doc_manager_mcp/tools/workflows/migrate_helpers.py"
     ],
     "README.md": [
-      "doc-management/.mcp.json",
       "doc_manager_mcp/models.py",
       "doc_manager_mcp/server.py",
       "doc_manager_mcp/tools/analysis/detect_changes.py",
@@ -98,6 +101,7 @@
   "code_to_doc": {
     "doc_manager_mcp/server.py": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/platforms.md",
       "guides/troubleshooting.md",
       "guides/workflows.md",
@@ -113,6 +117,7 @@
     ],
     "doc_manager_mcp/tools/analysis/detect_changes.py": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/troubleshooting.md",
       "reference/file-formats.md",
       "reference/tools/docmgr_detect_changes.md",
@@ -121,6 +126,7 @@
     ],
     "doc_manager_mcp/tools/state/init.py": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/troubleshooting.md",
       "guides/workflows.md",
       "reference/api/enums.md",
@@ -165,14 +171,12 @@
       "reference/api/models.md",
       "reference/tools/docmgr_migrate.md",
       "reference/tools.md"
-    ],
-    "doc-management/.mcp.json": [
-      "README.md"
     ]
   },
   "unmatched_references": {
     "docmgr_init()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/troubleshooting.md",
       "guides/workflows.md",
       "reference/api/enums.md",
@@ -187,6 +191,7 @@
     ],
     "docmgr_detect_changes()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/troubleshooting.md",
       "reference/file-formats.md",
       "reference/tools/docmgr_detect_changes.md",
@@ -195,6 +200,7 @@
     ],
     "docmgr_detect_platform()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/platforms.md",
       "guides/troubleshooting.md",
       "reference/tools/docmgr_detect_platform.md",
@@ -203,6 +209,7 @@
     ],
     "docmgr_validate_docs()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/troubleshooting.md",
       "reference/file-formats.md",
       "reference/tools/docmgr_sync.md",
@@ -212,6 +219,7 @@
     ],
     "docmgr_assess_quality()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/workflows.md",
       "reference/file-formats.md",
       "reference/tools/docmgr_assess_quality.md",
@@ -522,11 +530,11 @@
   "reference_to_doc": {
     "claude_desktop_config.json": [
       "getting-started/installation.md",
-      "getting-started/quick-start.md",
       "README.md"
     ],
     "docmgr_init()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/troubleshooting.md",
       "guides/workflows.md",
       "reference/api/enums.md",
@@ -541,6 +549,7 @@
     ],
     "docmgr_detect_changes()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/troubleshooting.md",
       "reference/file-formats.md",
       "reference/tools/docmgr_detect_changes.md",
@@ -549,6 +558,7 @@
     ],
     "docmgr_detect_platform()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/platforms.md",
       "guides/troubleshooting.md",
       "reference/tools/docmgr_detect_platform.md",
@@ -557,6 +567,7 @@
     ],
     "docmgr_validate_docs()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/troubleshooting.md",
       "reference/file-formats.md",
       "reference/tools/docmgr_sync.md",
@@ -566,6 +577,7 @@
     ],
     "docmgr_assess_quality()": [
       "getting-started/installation.md",
+      "getting-started/quick-start.md",
       "guides/workflows.md",
       "reference/file-formats.md",
       "reference/tools/docmgr_assess_quality.md",
@@ -1292,9 +1304,6 @@
       "reference/tools.md",
       "README.md"
     ],
-    ".mcp.json": [
-      "README.md"
-    ],
     "doc_manager_mcp/models.py": [
       "README.md"
     ],
@@ -1310,14 +1319,6 @@
       {
         "reference": "claude_desktop_config.json",
         "doc_file": "getting-started/installation.md"
-      },
-      {
-        "reference": "claude_desktop_config.json",
-        "doc_file": "getting-started/quick-start.md"
-      },
-      {
-        "reference": ".doc-manager.yml",
-        "doc_file": "getting-started/quick-start.md"
       },
       {
         "reference": ".doc-manager.yml",
@@ -1768,10 +1769,6 @@
         "doc_file": "reference/tools.md"
       },
       {
-        "reference": ".mcp.json",
-        "doc_file": "README.md"
-      },
-      {
         "reference": "claude_desktop_config.json",
         "doc_file": "README.md"
       },
@@ -1832,6 +1829,26 @@
       {
         "reference": "docmgr_migrate()",
         "doc_file": "getting-started/installation.md"
+      },
+      {
+        "reference": "docmgr_detect_platform()",
+        "doc_file": "getting-started/quick-start.md"
+      },
+      {
+        "reference": "docmgr_init()",
+        "doc_file": "getting-started/quick-start.md"
+      },
+      {
+        "reference": "docmgr_detect_changes()",
+        "doc_file": "getting-started/quick-start.md"
+      },
+      {
+        "reference": "docmgr_validate_docs()",
+        "doc_file": "getting-started/quick-start.md"
+      },
+      {
+        "reference": "docmgr_assess_quality()",
+        "doc_file": "getting-started/quick-start.md"
       },
       {
         "reference": "docmgr_detect_platform()",

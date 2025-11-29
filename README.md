@@ -1,10 +1,10 @@
-# Documentation Manager MCP Server
+# Documentation Manager
 
 [![PyPI version](https://img.shields.io/pypi/v/doc-manager-mcp.svg)](https://pypi.org/project/doc-manager-mcp/)
 [![Python Version](https://img.shields.io/pypi/pyversions/doc-manager-mcp)](https://pypi.org/project/doc-manager-mcp/)
 [![License](https://img.shields.io/github/license/ari1110/doc-manager-mcp)](https://github.com/ari1110/doc-manager-mcp/blob/main/LICENSE)
 
-An MCP (Model Context Protocol) server for comprehensive documentation lifecycle management. Automates documentation creation, maintenance, quality assessment, and synchronization for software projects.
+Comprehensive documentation lifecycle management powered by an MCP (Model Context Protocol) server. Automates documentation creation, maintenance, quality assessment, and synchronization for software projects.
 
 ## Features
 
@@ -16,62 +16,19 @@ An MCP (Model Context Protocol) server for comprehensive documentation lifecycle
 - **Platform detection** - Auto-detect MkDocs, Sphinx, Hugo, Docusaurus, etc.
 - **Documentation migration** - Restructure docs with git history preservation
 
-
 ## Installation
 
-### Claude Code (Recommended)
+### Claude Code Plugin (Recommended)
 
-Run in your project directory:
+The **doc-management plugin** provides an interactive documentation workflow with specialized agents and quick commands, powered by the doc-manager MCP server.
 
-```bash
-claude mcp add doc-manager --scope project -- uvx doc-manager-mcp
-```
-
-Or manually add to your **project-level** `.mcp.json` in your project root:
-
-```json
-{
-  "mcpServers": {
-    "doc-manager": {
-      "command": "uvx",
-      "args": ["doc-manager-mcp"]
-    }
-  }
-}
-```
-
-> **⚠️ Important**: Only add this MCP server at the **project level**. Do not add it to user-level or global MCP configuration. The doc-manager tracks project-specific baselines and documentation state that should not be shared across projects.
-
-### Claude Desktop
-
-Add to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "doc-manager": {
-      "command": "uvx",
-      "args": ["doc-manager-mcp"]
-    }
-  }
-}
-```
-
-The MCP client will automatically download and run the server when needed.
-
-See [Installation Guide](docs/getting-started/installation.md) for local development setup and alternative installation methods.
-
-## Claude Code Plugin
-
-For Claude Code users, the plugin adds specialized agents and quick commands for an interactive documentation workflow.
-
-**Installation:**
+**Install:**
 
 ```bash
-# 1. Add the marketplace
+# Add the marketplace
 /plugin marketplace add ari1110/doc-manager-mcp
 
-# 2. Install the plugin (includes MCP server config)
+# Install the plugin (automatically configures MCP server)
 /plugin install doc-management@doc-manager-suite
 ```
 
@@ -94,6 +51,39 @@ Claude: [Runs quality assessment and shows actionable findings]
 ```
 
 See the [Claude Code Plugin guide](docs/guides/claude-code-plugin.md) for details.
+
+---
+
+### Standalone MCP Server
+
+For using the MCP server without the plugin.
+
+**Claude Code:**
+
+```bash
+claude mcp add doc-manager --scope project -- uvx doc-manager-mcp
+```
+
+**Claude Desktop:**
+
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "doc-manager": {
+      "command": "uvx",
+      "args": ["doc-manager-mcp"]
+    }
+  }
+}
+```
+
+Restart your client. Your AI assistant can then use the 8 doc-manager tools directly.
+
+**Other MCP clients:**
+
+See [Installation Guide](docs/getting-started/installation.md) for local development setup and alternative installation methods.
 
 ## Quick Start
 
@@ -118,7 +108,9 @@ Your AI client will use the appropriate tools (`docmgr_init`, `docmgr_sync`, etc
 
 See [Quick Start Guide](docs/getting-started/quick-start.md) for detailed workflows.
 
-## Available Tools
+## MCP Server Tools
+
+The doc-manager MCP server provides 8 tools for documentation management:
 
 - **`docmgr_init`** - Initialize doc-manager for a project (modes: `existing`, `bootstrap`)
 - **`docmgr_detect_changes`** - Detect code/doc changes (read-only, never writes baselines)
@@ -222,6 +214,7 @@ uv run pyright
 ## Documentation
 
 - [Getting Started](docs/getting-started/installation.md)
+- [Claude Code Plugin Guide](docs/guides/claude-code-plugin.md)
 - [Tools Reference](docs/reference/tools.md)
 - [Configuration](docs/reference/configuration.md)
 - [Troubleshooting](docs/guides/troubleshooting.md)

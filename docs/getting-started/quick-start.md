@@ -1,63 +1,55 @@
 # Quick start
 
-Get up and running with Documentation Manager MCP server in 5 minutes.
+Get started with doc-manager in your project.
 
-> **Using Claude Code?** Consider the [plugin](../guides/claude-code-plugin.md) which adds agents and quick commands for an interactive workflow.
+## With Claude Code Plugin
 
-## Step 1: Add to MCP client
+If you're using the [Claude Code plugin](../guides/claude-code-plugin.md), the workflow is conversational:
 
-Add to your MCP settings file (e.g., `claude_desktop_config.json`):
+```text
+You: "Set up documentation management for this project"
+Claude: [Invokes @doc-expert to detect platform and initialize]
 
-```json
-{
-  "mcpServers": {
-    "doc-manager": {
-      "command": "uvx",
-      "args": ["doc-manager-mcp"]
-    }
-  }
-}
+You: "I changed some code, sync the docs"
+Claude: [Detects changes, shows what needs updating]
+
+You: "/doc-sync"
+Claude: [Runs full sync workflow]
 ```
 
-Restart your MCP client (e.g., Claude Desktop) to load the server.
+**Common commands:**
+- `/doc-status` - Quick health check
+- `/doc-sync` - Full sync (detect → validate → update baselines)
+- `/doc-quality` - Quality assessment
 
-## Step 2: Initialize for your project
+See the [plugin guide](../guides/claude-code-plugin.md) for details.
 
-Choose the workflow that matches your situation:
+---
 
-### For projects with existing documentation
+## With Standalone MCP Server
 
-```json
-{
-  "tool": "docmgr_init",
-  "arguments": {
-    "project_path": "/path/to/your/project",
-    "mode": "existing",
-    "docs_path": "docs"
-  }
-}
-```
+If you're using Claude Desktop or another MCP client, ask your AI assistant in natural language:
 
-This creates `.doc-manager.yml` configuration and baselines without modifying existing docs.
+**Setup:**
+> "Initialize documentation management for this project"
 
-### For projects without documentation
+Your AI will use `docmgr_detect_platform` and `docmgr_init` to set things up.
 
-```json
-{
-  "tool": "docmgr_init",
-  "arguments": {
-    "project_path": "/path/to/your/project",
-    "mode": "bootstrap",
-    "docs_path": "docs"
-  }
-}
-```
+**After making code changes:**
+> "Check if my documentation needs updating"
 
-This generates a complete documentation structure with templates.
+Your AI will use `docmgr_detect_changes` to analyze what changed.
 
-## Step 3: Configure source tracking
+**Before a release:**
+> "Validate my documentation and check quality"
 
-Edit `.doc-manager.yml` to specify which source files to track using **glob patterns**:
+Your AI will use `docmgr_validate_docs` and `docmgr_assess_quality` to audit your docs.
+
+---
+
+## Configuration
+
+After initialization, edit `.doc-manager.yml` to configure source tracking:
 
 ```yaml
 sources:
@@ -70,45 +62,30 @@ exclude:
 
 **Important:** Use glob patterns (e.g., `"src/**/*.py"`), not plain directory names like `"src"`.
 
-## Step 4: Sync and validate
+---
 
-Run a sync check to see the current state:
+## Understanding the Workflow
 
-```json
-{
-  "tool": "docmgr_sync",
-  "arguments": {
-    "project_path": "/path/to/your/project",
-    "mode": "check"
-  }
-}
-```
+Doc-manager tracks your codebase with three baseline files in `.doc-manager/memory/`:
 
-This performs:
-- Change detection
-- Documentation validation
-- Quality assessment
-- Recommendations for updates
+1. **repo-baseline.json** - File checksums for change detection
+2. **symbol-baseline.json** - Code symbols (functions, classes)
+3. **dependencies.json** - Code-to-docs mappings
 
-## Step 5: Update baselines after doc changes
+**Typical workflow:**
 
-After updating your documentation to reflect code changes:
+1. **Initialize** - Create baselines for your project
+2. **Make code changes** - Modify your source code
+3. **Detect changes** - See what code changed and which docs are affected
+4. **Update docs** - Fix the documentation
+5. **Resync** - Update baselines to match current state
 
-```json
-{
-  "tool": "docmgr_sync",
-  "arguments": {
-    "project_path": "/path/to/your/project",
-    "mode": "resync"
-  }
-}
-```
+The cycle repeats as you develop.
 
-This updates all baselines atomically to match the current codebase.
+---
 
 ## Next steps
 
-- [Claude Code Plugin](../guides/claude-code-plugin.md) - Agents and commands for interactive use
-- [Workflows Guide](../guides/workflows.md) - Learn about common workflows
+- [Workflows Guide](../guides/workflows.md) - Common workflows and patterns
 - [Configuration Reference](../reference/configuration.md) - Detailed config options
 - [Tools Reference](../reference/tools.md) - Complete API documentation

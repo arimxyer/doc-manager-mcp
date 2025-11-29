@@ -1,8 +1,31 @@
-# Documentation Manager MCP Server
+# Documentation Manager
 
 ## Overview
 
-Documentation Manager is an MCP (Model Context Protocol) server that automates documentation lifecycle management for software projects. It helps you create, maintain, validate, and keep documentation synchronized with your codebase using intelligent change detection and quality assessment.
+Documentation Manager helps you automate documentation lifecycle management for software projects. Powered by an MCP (Model Context Protocol) server, it helps you create, maintain, validate, and keep documentation synchronized with your codebase using intelligent change detection and quality assessment.
+
+## Get started
+
+### Recommended: Claude Code Plugin
+
+The **doc-management plugin** provides an interactive workflow with specialized agents and quick commands.
+
+**Install:**
+```bash
+/plugin marketplace add ari1110/doc-manager-mcp
+/plugin install doc-management@doc-manager-suite
+```
+
+**What you get:**
+- `@doc-expert` - Expert associate for documentation analysis and workflow orchestration
+- `@doc-writer` - Content specialist for writing and updating docs
+- `/doc-status`, `/doc-sync`, `/doc-quality` - Quick commands
+
+See the [Claude Code Plugin guide](guides/claude-code-plugin.md) for details.
+
+### Alternative: Standalone MCP Server
+
+For Claude Desktop or other MCP clients, install the [MCP server directly](getting-started/installation.md#option-2-standalone-mcp-server).
 
 ## Key features
 
@@ -14,9 +37,9 @@ Documentation Manager is an MCP (Model Context Protocol) server that automates d
 - **Dependency tracking** - Automatic code-to-docs mapping with TreeSitter symbol extraction
 - **Platform support** - Works with MkDocs, Sphinx, Hugo, Docusaurus, and more
 
-## Architecture
+## How it works
 
-The server provides 8 tools organized into 4 tiers:
+The doc-manager MCP server provides 8 tools organized into 4 tiers:
 
 ### Tier 1: Setup & initialization
 - **docmgr_init** - Initialize doc-manager for existing projects or bootstrap new documentation
@@ -34,32 +57,19 @@ The server provides 8 tools organized into 4 tiers:
 ### Tier 4: Workflows & orchestration
 - **docmgr_migrate** - Restructure or migrate documentation with git history preservation
 
-## Quick example
-
-```json
-{
-  "tool": "docmgr_init",
-  "arguments": {
-    "project_path": "/path/to/project",
-    "mode": "bootstrap",
-    "docs_path": "docs"
-  }
-}
-```
-
-This creates a complete documentation structure with configuration, baselines, and templates.
-
-## Claude Code plugin
-
-For Claude Code users, the **doc-management plugin** adds specialized agents, quick commands, and contextual awareness on top of the MCP tools. See the [Claude Code Plugin guide](guides/claude-code-plugin.md) for what it enables.
-
 ## Documentation sections
 
 ### Getting started
-Learn how to install and start using Documentation Manager.
+Learn how to [install](getting-started/installation.md) and [get started](getting-started/quick-start.md) with Documentation Manager.
 
 ### Guides
-Step-by-step tutorials for common tasks like syncing docs with code changes.
+Step-by-step tutorials for common tasks:
+- [Claude Code Plugin](guides/claude-code-plugin.md) - Interactive documentation workflow
+- [Workflows](guides/workflows.md) - Common patterns and workflows
+- [Platforms](guides/platforms.md) - Platform-specific configuration
 
 ### Reference
-Detailed technical reference for all tools, configuration options, and conventions.
+Detailed technical reference:
+- [Tools Reference](reference/tools.md) - Complete API documentation
+- [Configuration](reference/configuration.md) - Configuration options
+- [File Formats](reference/file-formats.md) - Baseline file schemas
