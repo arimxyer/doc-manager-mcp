@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/check-doc-health.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If code files (.py, .ts, .js, .go, .rs, .java, .cpp, .c, .rb, .php) were modified in this session AND a .doc-manager/ directory exists in the project working directory, add this brief note at the end of your response: '📋 Code files were modified. Documentation may need updating - use /doc-status to check sync status.' Do NOT add this note if no code files were modified or if .doc-manager/ does not exist."
+          }
+        ]
+      }
+    ]
+  }
+}
