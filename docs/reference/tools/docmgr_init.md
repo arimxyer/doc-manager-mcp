@@ -90,7 +90,7 @@ await mcp.call_tool("docmgr_init", {
 - **Mode differences**:
   - `mode="existing"`: Only creates config and baselines (assumes docs already exist)
   - `mode="bootstrap"`: Creates documentation structure from templates plus config and baselines
-- **Source patterns**: Must use glob syntax (`src/**/*.py`), not just directory names (`src`)
+- **Source patterns**: Must use glob syntax (`src/**/*.py`), not plain directory names like `src`
 - **Platform detection**: If `platform` not specified, auto-detection will be attempted
 - **Idempotent**: Safe to run multiple times (won't overwrite existing baselines)
 - **Prerequisites**: Project must have git repository initialized

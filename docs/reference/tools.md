@@ -423,3 +423,11 @@ Common errors:
 - .doc-manager not initialized (run docmgr_init first)
 - Invalid configuration
 - Baseline files missing or corrupted
+
+---
+
+## See also
+
+- [Models reference](api/models.md) - Pydantic model schemas (input/output)
+- [Enums reference](api/enums.md) - Enumeration types (DocumentationPlatform, QualityCriterion, ChangeDetectionMode)
+- [Configuration reference](configuration.md) - Configuration file schemas (.doc-manager.yml)

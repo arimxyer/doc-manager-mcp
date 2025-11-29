@@ -19,7 +19,32 @@ An MCP (Model Context Protocol) server for comprehensive documentation lifecycle
 
 ## Installation
 
-Add to your MCP settings file (e.g., `claude_desktop_config.json`):
+### Claude Code (Recommended)
+
+Run in your project directory:
+
+```bash
+claude mcp add doc-manager --scope project -- uvx doc-manager-mcp
+```
+
+Or manually add to your **project-level** `.mcp.json` in your project root:
+
+```json
+{
+  "mcpServers": {
+    "doc-manager": {
+      "command": "uvx",
+      "args": ["doc-manager-mcp"]
+    }
+  }
+}
+```
+
+> **⚠️ Important**: Only add this MCP server at the **project level**. Do not add it to user-level or global MCP configuration. The doc-manager tracks project-specific baselines and documentation state that should not be shared across projects.
+
+### Claude Desktop
+
+Add to your `claude_desktop_config.json`:
 
 ```json
 {
@@ -34,73 +59,86 @@ Add to your MCP settings file (e.g., `claude_desktop_config.json`):
 
 The MCP client will automatically download and run the server when needed.
 
-**For local development:**
+See [Installation Guide](docs/getting-started/installation.md) for local development setup and alternative installation methods.
+
+## Claude Code Plugin
+
+For Claude Code users, a plugin is available that provides a streamlined documentation workflow with specialized agents and commands.
+
+### Installation
 
 ```bash
-git clone https://github.com/ari1110/doc-manager-mcp
-cd doc-manager-mcp
-pip install -e .
+# Install the plugin from the repository
+claude plugin install /path/to/doc-manager-mcp/claude-plugin
 ```
 
-Then configure your MCP client:
-
-```json
-{
-  "mcpServers": {
-    "doc-manager": {
-      "command": "uvx",
-      "args": ["--from", "/path/to/doc-manager-mcp", "doc-manager-mcp"]
-    }
-  }
-}
+Or if published to a marketplace:
+```bash
+claude plugin install doc-manager@marketplace-name
 ```
+
+### What's Included
+
+**Agents**:
+- `@doc-expert` - Documentation lifecycle orchestrator (setup, analysis, quality assessment)
+- `@doc-writer` - Content writer and updater (creates/edits documentation)
+
+**Slash Commands**:
+- `/doc-status` - Quick health check
+- `/doc-sync` - Full sync workflow (detect → update → validate → assess)
+- `/doc-quality` - Quality assessment with actionable findings
+
+**Skill**:
+- `doc-management` - Gentle reminders about documentation status
+
+### Quick Usage
+
+```bash
+# Setup documentation management
+@doc-expert Set up documentation management for this project
+
+# Check status
+/doc-status
+
+# Sync after code changes
+/doc-sync
+
+# Assess quality before release
+/doc-quality
+
+# Update specific documentation
+@doc-writer Update the API documentation for the new authentication endpoints
+```
+
+The plugin provides a feedback loop where @doc-expert analyzes changes, @doc-writer creates content, and @doc-expert validates quality before updating baselines.
 
 ## Quick Start
 
-### 1. Initialize for existing project
+Initialize for your project:
 
 ```json
 {
   "tool": "docmgr_init",
   "arguments": {
     "project_path": "/path/to/project",
-    "mode": "existing",
-    "docs_path": "docs"
+    "mode": "existing"
   }
 }
 ```
 
-Creates `.doc-manager.yml`, baselines, and code-to-docs mappings.
-
-### 2. Detect changes (read-only)
-
-```json
-{
-  "tool": "docmgr_detect_changes",
-  "arguments": {
-    "project_path": "/path/to/project",
-    "mode": "checksum",
-    "include_semantic": true
-  }
-}
-```
-
-Never writes to baselines.
-
-### 3. Sync documentation
+Then sync documentation changes:
 
 ```json
 {
   "tool": "docmgr_sync",
   "arguments": {
     "project_path": "/path/to/project",
-    "mode": "resync",
-    "docs_path": "docs"
+    "mode": "check"
   }
 }
 ```
 
-Modes: `check` (read-only) or `resync` (update baselines).
+See [Quick Start Guide](docs/getting-started/quick-start.md) for step-by-step instructions and workflow details.
 
 ## Available Tools
 

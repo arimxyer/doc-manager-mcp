@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "doc-manager": {
+      "command": "uvx",
+      "args": ["doc-manager-mcp"],
+      "description": "Documentation lifecycle management MCP server"
+    }
+  }
+}

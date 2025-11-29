@@ -66,7 +66,7 @@ exclude:
   - "**/__pycache__/**"
 ```
 
-**Important:** Use glob patterns (e.g., `"src/**/*.py"`), not just directory names.
+**Important:** Use glob patterns (e.g., `"src/**/*.py"`), not plain directory names like `"src"`.
 
 ## Step 4: Sync and validate
 

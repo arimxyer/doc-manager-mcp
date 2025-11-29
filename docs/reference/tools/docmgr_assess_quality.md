@@ -171,7 +171,7 @@ await mcp.call_tool("docmgr_assess_quality", {
 - Same concept with different names
 
 ### 6. Clarity
-**What it measures**: Precise language and easy navigation
+**What it measures**: Precise language and clear navigation
 
 **Good indicators**:
 - Concise sentences (<25 words)

@@ -86,7 +86,7 @@ This means user `exclude` patterns can override both `.gitignore` and built-in d
 - **Required**: No, but recommended
 - **Description**: **Glob patterns** specifying which source files to track for symbol extraction
 
-**IMPORTANT**: Must use glob patterns (e.g., `"src/**/*.py"`), not just directory names!
+**IMPORTANT**: Must use glob patterns (e.g., `"src/**/*.py"`), not plain directory names like `"src"`!
 
 **Example:**
 ```yaml
