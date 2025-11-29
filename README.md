@@ -21,7 +21,13 @@ An MCP (Model Context Protocol) server for comprehensive documentation lifecycle
 
 ### Claude Code (Recommended)
 
-Add to your **project-level** `.mcp.json` in your project root:
+Run in your project directory:
+
+```bash
+claude mcp add doc-manager --scope project -- uvx doc-manager-mcp
+```
+
+Or manually add to your **project-level** `.mcp.json` in your project root:
 
 ```json
 {
