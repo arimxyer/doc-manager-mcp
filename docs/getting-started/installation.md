@@ -21,7 +21,7 @@ Documentation Manager is an MCP (Model Context Protocol) server that integrates 
 /plugin marketplace add ari1110/doc-manager-mcp
 
 # Install the plugin (automatically configures MCP server)
-/plugin install doc-management@doc-manager-suite
+/plugin install doc-manager@doc-manager-suite
 ```
 
 **What you get:**

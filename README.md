@@ -29,7 +29,7 @@ The **doc-management plugin** provides an interactive documentation workflow wit
 /plugin marketplace add ari1110/doc-manager-mcp
 
 # Install the plugin (automatically configures MCP server)
-/plugin install doc-management@doc-manager-suite
+/plugin install doc-manager@doc-manager-suite
 ```
 
 **What you get:**

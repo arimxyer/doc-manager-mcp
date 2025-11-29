@@ -60,7 +60,7 @@ It suggests, it doesn't demand. You control when heavy workflows run.
 
 ```bash
 /plugin marketplace add ari1110/doc-manager-mcp
-/plugin install doc-management@doc-manager-suite
+/plugin install doc-manager@doc-manager-suite
 ```
 
 The plugin automatically configures the doc-manager MCP server.

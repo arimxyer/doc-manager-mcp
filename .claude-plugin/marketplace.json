@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "doc-management",
-      "source": "./doc-management",
-      "description": "Documentation lifecycle management integration for Claude Code",
-      "version": "1.0.2",
+      "name": "doc-manager",
+      "source": "./plugin",
+      "description": "Documentation lifecycle management integration for Claude Code. Proactive health monitoring, quality assessment, and intelligent agent coordination.",
+      "version": "1.1.0",
       "author": {
         "name": "ari1110"
       }
