@@ -6,9 +6,10 @@ exclude:
   - ".venv/**"
   - "dist/**"
   - "specs/**"
-  - ".claude/**"
+  - ".claude**/**"
   - ".doc-manager/**"
   - "internal_docs/**"
+  - "doc_management/**"
 sources:
   - "doc_manager_mcp/**/*.py"
 docs_path: docs

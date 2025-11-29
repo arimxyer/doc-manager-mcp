@@ -34,26 +34,7 @@ Add to your MCP settings file (e.g., `claude_desktop_config.json`):
 
 The MCP client will automatically download and run the server when needed.
 
-**For local development:**
-
-```bash
-git clone https://github.com/ari1110/doc-manager-mcp
-cd doc-manager-mcp
-pip install -e .
-```
-
-Then configure your MCP client:
-
-```json
-{
-  "mcpServers": {
-    "doc-manager": {
-      "command": "uvx",
-      "args": ["--from", "/path/to/doc-manager-mcp", "doc-manager-mcp"]
-    }
-  }
-}
-```
+See [Installation Guide](docs/getting-started/installation.md) for local development setup and alternative installation methods.
 
 ## Claude Code Plugin
 
@@ -108,50 +89,31 @@ The plugin provides a feedback loop where @doc-expert analyzes changes, @doc-wri
 
 ## Quick Start
 
-### 1. Initialize for existing project
+Initialize for your project:
 
 ```json
 {
   "tool": "docmgr_init",
   "arguments": {
     "project_path": "/path/to/project",
-    "mode": "existing",
-    "docs_path": "docs"
+    "mode": "existing"
   }
 }
 ```
 
-Creates `.doc-manager.yml`, baselines, and code-to-docs mappings.
-
-### 2. Detect changes (read-only)
-
-```json
-{
-  "tool": "docmgr_detect_changes",
-  "arguments": {
-    "project_path": "/path/to/project",
-    "mode": "checksum",
-    "include_semantic": true
-  }
-}
-```
-
-Never writes to baselines.
-
-### 3. Sync documentation
+Then sync documentation changes:
 
 ```json
 {
   "tool": "docmgr_sync",
   "arguments": {
     "project_path": "/path/to/project",
-    "mode": "resync",
-    "docs_path": "docs"
+    "mode": "check"
   }
 }
 ```
 
-Modes: `check` (read-only) or `resync` (update baselines).
+See [Quick Start Guide](docs/getting-started/quick-start.md) for step-by-step instructions and workflow details.
 
 ## Available Tools
 

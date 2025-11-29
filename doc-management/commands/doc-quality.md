@@ -1,13 +1,13 @@
 ---
 description: Assess documentation quality
-allowed-tools: mcp__doc-manager__docmgr_assess_quality, mcp__doc-manager__docmgr_validate_docs
+allowed-tools: mcp__plugin_doc-manager_doc-manager__docmgr_assess_quality, mcp__plugin_doc-manager_doc-manager__docmgr_validate_docs
 ---
 
 # Documentation Quality Assessment
 
 Run comprehensive quality assessment against 7 criteria.
 
-@doc-expert Please run a documentation quality assessment.
+doc-expert agent Please run a documentation quality assessment.
 
 Execute the quality assessment workflow:
 
@@ -76,5 +76,5 @@ Format the output:
 
 If user wants to fix issues:
 ```
-Would you like me to help fix these issues? I can delegate the revisions to @doc-writer.
+Would you like me to help fix these issues? I can delegate the revisions to doc-writer agent.
 ```

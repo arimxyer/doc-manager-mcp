@@ -1,13 +1,13 @@
 ---
 description: Quick documentation health check
-allowed-tools: mcp__doc-manager__docmgr_detect_changes, mcp__doc-manager__docmgr_detect_platform
+allowed-tools: mcp__plugin_doc-manager_doc-manager__docmgr_detect_changes, mcp__plugin_doc-manager_doc-manager__docmgr_detect_platform
 ---
 
 # Quick Documentation Status Check
 
 Run a quick documentation health check for the current project.
 
-@doc-expert Please provide a quick documentation status check.
+doc-expert agent Please provide a quick documentation status check.
 
 This should include:
 1. Detect if doc-manager is initialized (check for .doc-manager/)
@@ -44,5 +44,5 @@ If not initialized:
 **Status**: Not initialized
 
 ### Setup
-Run `@doc-expert Set up documentation management` to initialize.
+Run `doc-expert agent Set up documentation management` to initialize.
 ```

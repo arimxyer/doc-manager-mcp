@@ -5,7 +5,7 @@ description: Documentation lifecycle management for software projects. Provides 
 
 # Doc-Management Skill
 
-Documentation lifecycle management for software projects through the doc-manager MCP server. This skill coordinates between specialized agents (@doc-expert, @doc-writer) to provide gentle documentation reminders and workflow assistance.
+Documentation lifecycle management for software projects through the doc-manager MCP server. This skill coordinates between specialized agents (doc-expert agent, doc-writer agent) to provide gentle documentation reminders and workflow assistance.
 
 ## Instructions
 
@@ -39,7 +39,7 @@ Activate when the user mentions:
 
 ### 3. Delegate to Appropriate Agent
 
-**Use @doc-expert for**:
+**Use doc-expert agent for**:
 - Complex tasks requiring orchestration
 - Project setup and initialization
 - Quality assessment and validation
@@ -47,33 +47,33 @@ Activate when the user mentions:
 - Documentation migrations
 - Baseline updates
 
-**Use @doc-writer for**:
+**Use doc-writer agent for**:
 - Simple content creation (when clearly just writing)
 - Updating specific documentation files
 - Creating examples or guides
 
-**Typical flow**: User request → @doc-expert → @doc-expert delegates to @doc-writer → @doc-expert validates
+**Typical flow**: User request → doc-expert agent → doc-expert delegates to doc-writer agent → doc-expert agent validates
 
 ### 4. Coordinate Workflows
 
 **For setup tasks**:
 ```
-User wants setup → @doc-expert (detects platform, initializes config)
+User wants setup → doc-expert agent (detects platform, initializes config)
 ```
 
 **For sync tasks**:
 ```
-User wants sync → @doc-expert (detects changes, delegates to @doc-writer, validates, updates baseline)
+User wants sync → doc-expert agent (detects changes, delegates to doc-writer agent, validates, updates baseline)
 ```
 
 **For quality tasks**:
 ```
-User wants quality check → @doc-expert (runs assessment, presents findings)
+User wants quality check → doc-expert agent (runs assessment, presents findings)
 ```
 
 **For content tasks**:
 ```
-User wants specific docs written → @doc-expert or @doc-writer (depending on complexity)
+User wants specific docs written → doc-expert agent or doc-writer agent (depending on complexity)
 ```
 
 ### 5. Handle Edge Cases
@@ -81,7 +81,7 @@ User wants specific docs written → @doc-expert or @doc-writer (depending on co
 **If documentation not initialized**:
 - Detect .doc-manager/ directory absence
 - Suggest initialization
-- Offer to run @doc-expert setup workflow
+- Offer to run doc-expert agent setup workflow
 
 **If large-scale changes detected (50+ files)**:
 - Warn user about processing time
@@ -155,14 +155,14 @@ Just say 'check docs' or use /doc-quality for a full assessment.
 **Your response**:
 ```
 I can help you assess your documentation. Would you like me to:
-1. Run a quick health check (@doc-expert check status)
-2. Full validation with quality assessment (@doc-expert assess quality)
-3. See what needs updating based on recent code changes (@doc-expert detect changes)
+1. Run a quick health check (doc-expert agent check status)
+2. Full validation with quality assessment (doc-expert agent assess quality)
+3. See what needs updating based on recent code changes (doc-expert agent detect changes)
 
 Which would you prefer?
 ```
 
-**Then**: Based on choice, invoke @doc-expert with appropriate task
+**Then**: Based on choice, invoke doc-expert agent with appropriate task
 
 ---
 
@@ -174,7 +174,7 @@ Which would you prefer?
 ```
 I'll help document the authentication system.
 
-@doc-expert Please analyze the authentication system changes and coordinate documentation updates with @doc-writer.
+doc-expert agent Please analyze the authentication system changes and coordinate documentation updates with doc-writer agent.
 
 This will:
 1. Detect what changed in the auth system
@@ -186,7 +186,7 @@ This will:
 Proceeding...
 ```
 
-**Flow**: @doc-expert detects changes → delegates to @doc-writer → validates quality → updates baseline
+**Flow**: doc-expert agent detects changes → delegates to doc-writer agent → validates quality → updates baseline
 
 ---
 
@@ -196,7 +196,7 @@ Proceeding...
 
 **Your response**:
 ```
-@doc-expert Please set up documentation management for this project.
+doc-expert agent Please set up documentation management for this project.
 
 This will:
 1. Detect the documentation platform
@@ -207,7 +207,7 @@ This will:
 Proceeding...
 ```
 
-**Flow**: @doc-expert detects platform → initializes → creates baselines → reports completion
+**Flow**: doc-expert agent detects platform → initializes → creates baselines → reports completion
 
 ---
 
@@ -221,7 +221,7 @@ Proceeding...
 ```
 Documentation management isn't set up yet for this project. Would you like me to initialize it?
 
-@doc-expert can:
+doc-expert agent can:
 - Detect your documentation platform
 - Create configuration
 - Set up baseline tracking
@@ -233,7 +233,7 @@ Say 'setup docs' to proceed.
 
 ### Example 6: Large-Scale Changes
 
-**Condition**: @doc-expert detects 50+ changed files
+**Condition**: doc-expert agent detects 50+ changed files  
 
 **Your response**:
 ```
@@ -245,7 +245,7 @@ Progress will be checkpointed after each batch.
 Proceed with documentation sync?
 ```
 
-**Then**: Wait for confirmation, invoke @doc-expert with sync workflow if approved
+**Then**: Wait for confirmation, invoke doc-expert agent with sync workflow if approved
 
 ---
 
@@ -257,7 +257,7 @@ Proceed with documentation sync?
 ```
 I'll create a quickstart guide for the CLI.
 
-@doc-writer Please create a quickstart guide in docs/guides/quickstart.md covering:
+doc-writer agent Please create a quickstart guide in docs/guides/quickstart.md covering:
 - Installation
 - Basic commands
 - Common use cases
@@ -265,7 +265,7 @@ I'll create a quickstart guide for the CLI.
 Follow the existing guide format and MkDocs conventions.
 ```
 
-**Flow**: Direct to @doc-writer for straightforward content creation
+**Flow**: Direct to doc-writer agent for straightforward content creation
 
 ---
 
@@ -274,6 +274,6 @@ Follow the existing guide format and MkDocs conventions.
 1. **Be Gentle**: Suggest, don't command. Users control when workflows run.
 2. **Be Actionable**: Provide clear next steps with slash commands or simple requests.
 3. **Be Contextual**: Tailor suggestions to what the user is doing.
-4. **Be Efficient**: Delegate to the right agent (@doc-expert for orchestration, @doc-writer for content).
+4. **Be Efficient**: Delegate to the right agent (doc-expert agent for orchestration, doc-writer agent for content).
 5. **Be Transparent**: Explain what will happen before invoking agents.
 6. **Be Respectful**: Don't interrupt primary workflows.

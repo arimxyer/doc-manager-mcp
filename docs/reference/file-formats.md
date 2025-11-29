@@ -66,7 +66,7 @@ metadata:
 - Default: `false` (backwards compatible)
 
 **`sources`** (list of strings)
-- **Important**: Must use glob patterns (e.g., `"src/**/*.py"`), not just directory names
+- **Important**: Must use glob patterns (e.g., `"src/**/*.py"`), not plain directory names like `"src"`
 - Specifies which source files to track for doc dependencies
 - Empty list means only docs are tracked
 
