@@ -5,10 +5,10 @@
   "docs_exist": true,
   "docs_path": "docs",
   "metadata": {
-    "git_commit": "56da002baee74aba7658fd435e170a90f11d610d",
+    "git_commit": "4ae1224f2a86fbfa19b2b179f8f6e121becad656",
     "git_branch": "main"
   },
-  "timestamp": "2025-11-28T22:09:55.727604",
+  "timestamp": "2025-11-28T22:22:39.904563",
   "version": "1.0.0",
   "file_count": 99,
   "files": {
@@ -16,8 +16,8 @@
     "pyproject.toml": "856ae0c7c61e604f837f2a2e086614dabf1cc6f623919cfaefe667c699419602",
     "README.md": "480145ae977625a494884a40060c65f41ec436fc237776b0a00a5250fd8cc287",
     "uv.lock": "c62a3e3b6a8addc0dbd4a50795d6369eb677244eaffb488733e3eb127f6c6d32",
-    "doc-management/agents/doc-expert.md": "3e03178920be66b766ebaab3a136a0925cdf890e6b07f55bd11d9a88f09a31a8",
-    "doc-management/agents/doc-writer.md": "10a14608c32c0245640a904ba692b84ef2f937ec2acf0105155a297db0f1c036",
+    "doc-management/agents/doc-expert.md": "d92015831bb55d9a789fefbbd5a45d1f8576d256bc49c326e854d8c3834395d7",
+    "doc-management/agents/doc-writer.md": "e87eec127f6bfc3251d2dfb1d702b98e2a33ab6aa1895df557052cc5eb94b6f5",
     "doc-management/commands/doc-quality.md": "da318daeeaf604c944b68271a29110fc7eb618c1cad8b5f5ff76da3370751e0a",
     "doc-management/commands/doc-status.md": "6dc1d9779ab2390fceec848b4f18d1012c40d8d34bea7db8c3b5c79078c0bf61",
     "doc-management/commands/doc-sync.md": "f002d8619c40d82193e7f97214f0b79ce5329d5dabdb83fa9dbf4b0d52f08e4e",
@@ -26,7 +26,7 @@
     "docs/README.md": "836085ebdafc04151244a8622fc4187174fcec6f3c783708a0e41a268a0bc54b",
     "docs/getting-started/installation.md": "ede799e556667bdb832791bb054db5d5127895f8249ca9ab25596e34229e6b5a",
     "docs/getting-started/quick-start.md": "194f5c00d78cff1eb829b8bf5d77ed1559c07fdaf1aae28c397d08c3897a75c3",
-    "docs/guides/claude-code-plugin.md": "8e744d7409878d48a3b5f74f4b0f45ef800a3caa7813cbb17d1b154832b8c0c6",
+    "docs/guides/claude-code-plugin.md": "ae3ec308b56721111c7d132fdb623a6a51df8665791ef04aa90d79485ce47e77",
     "docs/guides/platforms.md": "9b84cc15e1ae97dfff9bb527a3426b5c6b9c05d5a561611239f1e358a74305b4",
     "docs/guides/troubleshooting.md": "283296bd0ef8f9cfb05286e1b7fd95f4f1da59763b9afbd14b5676738db2296b",
     "docs/guides/workflows.md": "be956bbed159d0647c4359c3f17ddbaee8562309e7b8cab6aaaf97e7b5676be8",

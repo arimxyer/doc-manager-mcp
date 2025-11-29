@@ -8,7 +8,7 @@ The raw MCP server gives you 8 tools for documentation management. The plugin la
 
 | Layer | What it provides |
 |-------|-----------------|
-| **Agents** | Specialized AI agents that know how to use the tools effectively |
+| **Agents** | Expert associates who use the tools, analyze results, and act on them |
 | **Commands** | Quick slash commands for common workflows |
 | **Skill** | Contextual awareness that suggests documentation tasks at the right moments |
 
@@ -16,9 +16,9 @@ The raw MCP server gives you 8 tools for documentation management. The plugin la
 
 The plugin uses a division of labor:
 
-### Doc-expert (orchestrator)
+### Doc-expert (documentation expert)
 
-The strategic agent. Handles setup, analysis, quality gates, and workflow coordination. Has access to all 8 MCP tools.
+The expert associate for documentation. Uses the MCP tools to analyze and assess documentation state, then acts on results - asking clear questions when needed or providing direction on next steps. Delegates content fixes to doc-writer.
 
 **Use for:**
 - Setting up documentation management (`"Set up docs for this project"`)
@@ -26,9 +26,9 @@ The strategic agent. Handles setup, analysis, quality gates, and workflow coordi
 - Syncing after code changes (`"Sync docs with recent changes"`)
 - Migrations (`"Move docs from docs/ to documentation/"`)
 
-### Doc-writer (executor)
+### Doc-writer (content specialist)
 
-The tactical agent. Focuses purely on writing and updating documentation content. Has limited tool access (just change detection and validation).
+Focuses purely on writing and updating documentation content. Has limited tool access (just change detection and validation).
 
 **Use for:**
 - Creating new docs (`"Document the new API endpoint"`)
