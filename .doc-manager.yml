@@ -9,7 +9,7 @@ exclude:
   - ".claude**/**"
   - ".doc-manager/**"
   - "internal_docs/**"
-  - "doc_management/**"
+  - "doc-management/**"
 sources:
   - "doc_manager_mcp/**/*.py"
 docs_path: docs
