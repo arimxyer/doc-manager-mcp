@@ -265,12 +265,4 @@ The `.doc-manager.yml` file should be committed to version control, but the `.do
 
 ## Troubleshooting
 
-Having configuration issues? See the [Troubleshooting guide](../guides/troubleshooting.md#configuration-issues) for solutions to:
-
-- Symbols not being extracted
-- Too many files tracked
-- Platform not detected
-- Config file not found
-- Empty symbol baseline
-
-For complete troubleshooting, see the [full guide](../guides/troubleshooting.md).
+Having configuration issues? See the [Troubleshooting guide](../guides/troubleshooting.md#configuration-issues) for solutions to symbol extraction, file tracking, platform detection, and baseline issues.

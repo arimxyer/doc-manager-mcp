@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-30T00:52:53.928523",
+  "generated_at": "2025-11-30T01:54:16.235779",
   "doc_to_code": {
     "getting-started/installation.md": [
       "doc_manager_mcp/server.py",
@@ -519,9 +519,6 @@
     ],
     "semantic_changes": [
       "reference/api/models.md"
-    ],
-    "sources": [
-      "reference/file-formats.md"
     ],
     "doc-manager-mcp": [
       "README.md"
@@ -1649,10 +1646,6 @@
         "doc_file": "reference/file-formats.md"
       },
       {
-        "reference": ".doc-manager.yml",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
         "reference": "repo-baseline.json",
         "doc_file": "reference/file-formats.md"
       },
@@ -2543,14 +2536,6 @@
         "doc_file": "reference/file-formats.md"
       },
       {
-        "reference": "sources",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "sources",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
         "reference": "doc_to_code",
         "doc_file": "reference/file-formats.md"
       },
@@ -3358,10 +3343,6 @@
       },
       {
         "reference": "index",
-        "doc_file": "reference/file-formats.md"
-      },
-      {
-        "reference": "sources",
         "doc_file": "reference/file-formats.md"
       },
       {

@@ -1,4 +1,4 @@
-platform: unknown
+platform: markdown
 exclude:
   - "tests/**"
   - "**/__pycache__/**"
@@ -11,7 +11,6 @@ exclude:
   - "internal_docs/**"
 sources:
   - "doc_manager_mcp/**/*.py"
-  - "doc-management/**"
 docs_path: docs
 use_gitignore: true
 metadata:
@@ -21,6 +20,7 @@ metadata:
 include_root_readme: true
 api_coverage:
   preset: 'pydantic'
+  strategy: 'all_only'  # Only document symbols explicitly exported via __all__
 
 # ============================================================================
 # Configuration Guide & Examples

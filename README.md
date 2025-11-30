@@ -91,22 +91,14 @@ See [Installation Guide](docs/getting-started/installation.md) for local develop
 
 ```text
 You: "Set up documentation management for this project"
-Claude: [Uses @doc-expert to detect platform and initialize]
-
 You: "/doc-sync"
-Claude: [Detects changes, shows what needs updating]
 ```
 
 **With any MCP client:**
 
-Ask your AI assistant to:
-- Initialize documentation management for your project
-- Check documentation sync status
-- Validate documentation quality
+Ask your AI assistant to initialize documentation management, check sync status, or validate quality. The AI will use the appropriate tools (`docmgr_init`, `docmgr_sync`, etc.) automatically.
 
-Your AI client will use the appropriate tools (`docmgr_init`, `docmgr_sync`, etc.) automatically.
-
-See [Quick Start Guide](docs/getting-started/quick-start.md) for detailed workflows.
+See [Quick Start Guide](docs/getting-started/quick-start.md) for complete workflows and examples.
 
 ## MCP Server Tools
 

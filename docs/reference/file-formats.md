@@ -205,12 +205,7 @@ Changes are categorized as: `code`, `documentation`, `asset`, `config`, `depende
 
 ### Troubleshooting
 
-**Empty `index`**: If symbol baseline is empty ({}), check that:
-1. `sources` in `.doc-manager.yml` uses glob patterns, not directory names
-   - ❌ `sources: ["src"]`
-   - ✅ `sources: ["src/**/*.py"]`
-2. TreeSitter has language support for your files
-3. Source files contain parseable code
+**Empty `index`**: See [Troubleshooting guide](../guides/troubleshooting.md#symbols-not-being-extracted) if symbol baseline is empty.
 
 ### Safe to edit
 

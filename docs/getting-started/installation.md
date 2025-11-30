@@ -110,11 +110,4 @@ Verify the installation by checking the tools are available in your MCP client. 
 
 ## Troubleshooting
 
-Having installation issues? See the [Troubleshooting guide](../guides/troubleshooting.md#installation-issues) for solutions to:
-
-- TreeSitter not available
-- Permission errors on Windows
-- Import errors
-- Python version compatibility
-
-For other issues, check the [complete troubleshooting guide](../guides/troubleshooting.md).
+Having installation issues? See the [Troubleshooting guide](../guides/troubleshooting.md#installation-issues) for solutions to TreeSitter availability, permission errors, import errors, and Python version compatibility.

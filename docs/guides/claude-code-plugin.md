@@ -28,7 +28,7 @@ The expert associate for documentation. Uses the MCP tools to analyze and assess
 
 ### Doc-writer (content specialist)
 
-Focuses purely on writing and updating documentation content. Has limited tool access (just change detection and validation).
+Focuses purely on writing and updating documentation content. Has limited tool access (change detection and validation only).
 
 **Use for:**
 - Creating new docs (`"Document the new API endpoint"`)
