@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Any
 
-from doc_manager_mcp.core import is_public_symbol
+from doc_manager_mcp.core import extract_module_all, is_public_symbol
 from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
 
 
@@ -330,6 +330,10 @@ def detect_undocumented_apis(
     """Detect public APIs without documentation.
 
     Compares codebase public symbols against documented references.
+    Uses industry-standard conventions from Sphinx, mkdocstrings, and pdoc:
+    - __all__ takes precedence when defined
+    - Underscore convention as fallback
+    - Excludes known internal patterns (Pydantic validators, etc.)
 
     Args:
         project_path: Root directory of the project
@@ -343,7 +347,7 @@ def detect_undocumented_apis(
     from ....indexing import SymbolIndexer
     from ....indexing.parsers.markdown import MarkdownParser
 
-    # Step 1: Get all public symbols from codebase
+    # Step 1: Get all symbols from codebase
     try:
         indexer = SymbolIndexer()
         indexer.index_project(project_path)
@@ -353,8 +357,26 @@ def detect_undocumented_apis(
         print(f"Warning: Failed to index project symbols: {e}", file=sys.stderr)
         return []
 
-    # Filter to only public symbols based on language conventions
-    public_symbols = [symbol for symbol in all_symbols if is_public_symbol(symbol)]
+    # Step 1b: Extract __all__ from Python modules for accurate public API detection
+    # Group symbols by file and extract __all__ for each Python module
+    module_all_cache: dict[str, set[str] | None] = {}
+
+    def get_module_all(file_path: str) -> set[str] | None:
+        """Get cached __all__ for a Python module."""
+        if file_path not in module_all_cache:
+            abs_path = project_path / file_path
+            if abs_path.suffix == '.py' and abs_path.exists():
+                module_all_cache[file_path] = extract_module_all(abs_path)
+            else:
+                module_all_cache[file_path] = None
+        return module_all_cache[file_path]
+
+    # Filter to only public symbols using industry-standard conventions
+    public_symbols = []
+    for symbol in all_symbols:
+        module_all = get_module_all(symbol.file)
+        if is_public_symbol(symbol, module_all):
+            public_symbols.append(symbol)
 
     # Step 2: Scan documentation for symbol references
     documented_symbols = set()
@@ -419,6 +441,11 @@ def calculate_documentation_coverage(
 ) -> dict[str, Any]:
     """Calculate percentage of documented symbols.
 
+    Uses industry-standard conventions from Sphinx, mkdocstrings, and pdoc:
+    - __all__ takes precedence when defined
+    - Underscore convention as fallback
+    - Excludes known internal patterns (Pydantic validators, etc.)
+
     Args:
         project_path: Path to project root
         docs_path: Path to documentation directory
@@ -447,8 +474,25 @@ def calculate_documentation_coverage(
             "breakdown_by_type": {}
         }
 
-    # Filter to only public symbols based on language conventions
-    public_symbols = [symbol for symbol in all_symbols if is_public_symbol(symbol)]
+    # Extract __all__ from Python modules for accurate public API detection
+    module_all_cache: dict[str, set[str] | None] = {}
+
+    def get_module_all(file_path: str) -> set[str] | None:
+        """Get cached __all__ for a Python module."""
+        if file_path not in module_all_cache:
+            abs_path = project_path / file_path
+            if abs_path.suffix == '.py' and abs_path.exists():
+                module_all_cache[file_path] = extract_module_all(abs_path)
+            else:
+                module_all_cache[file_path] = None
+        return module_all_cache[file_path]
+
+    # Filter to only public symbols using industry-standard conventions
+    public_symbols = []
+    for symbol in all_symbols:
+        module_all = get_module_all(symbol.file)
+        if is_public_symbol(symbol, module_all):
+            public_symbols.append(symbol)
 
     if not public_symbols:
         return {

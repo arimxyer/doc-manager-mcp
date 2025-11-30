@@ -186,18 +186,50 @@ def find_markdown_files(
     return sorted(markdown_files)
 
 
-def is_public_symbol(symbol: Any) -> bool:
+# Python internal symbol patterns (framework-generated, not part of public API)
+# These match industry standards from Sphinx, mkdocstrings, and pdoc
+PYTHON_INTERNAL_PATTERNS: set[str] = {
+    # Pydantic validators (auto-generated, internal implementation)
+    "model_validator",
+    "field_validator",
+    "root_validator",
+    "validator",
+    # Pydantic config classes
+    "Config",
+    "model_config",
+    # Common internal class names
+    "Meta",
+    # Test fixtures and helpers
+    "conftest",
+    "fixture",
+}
+
+# Python internal name prefixes (beyond single underscore)
+PYTHON_INTERNAL_PREFIXES: tuple[str, ...] = (
+    "test_",  # Test functions
+    "Test",   # Test classes
+)
+
+
+def is_public_symbol(symbol: Any, module_all: set[str] | None = None) -> bool:
     """Determine if a symbol is public based on language-specific conventions.
 
+    Follows industry standards from Sphinx autodoc, mkdocstrings/Griffe, and pdoc:
+
+    1. If module defines __all__, only symbols in __all__ are public (Python)
+    2. Names starting with underscore are private
+    3. Known internal patterns (Pydantic validators, etc.) are excluded
+
     Args:
-        symbol: Symbol object with 'name' and 'file' attributes
+        symbol: Symbol object with 'name', 'file', and optionally 'parent' attributes
+        module_all: Optional set of names from module's __all__ (takes precedence)
 
     Returns:
         True if symbol is public, False otherwise
 
     Language-specific rules:
         - Go: exported names start with uppercase
-        - Python: public if no leading underscore
+        - Python: __all__ > underscore convention > internal pattern exclusion
         - JavaScript/TypeScript: public if no leading underscore
     """
     if not symbol.name:
@@ -207,15 +239,77 @@ def is_public_symbol(symbol: Any) -> bool:
     if symbol.file.endswith('.go'):
         # Go: exported names start with uppercase
         return symbol.name[0].isupper()
+
     elif symbol.file.endswith('.py'):
-        # Python: public if no leading underscore
-        return not symbol.name.startswith('_')
+        # Python: multi-tier approach following industry standards
+
+        # Tier 1: If __all__ is provided, it's authoritative
+        if module_all is not None:
+            return symbol.name in module_all
+
+        # Tier 2: Underscore convention (standard Python)
+        if symbol.name.startswith('_'):
+            return False
+
+        # Tier 3: Exclude known internal patterns
+        if symbol.name in PYTHON_INTERNAL_PATTERNS:
+            return False
+
+        # Tier 4: Exclude internal prefixes (tests, etc.)
+        if symbol.name.startswith(PYTHON_INTERNAL_PREFIXES):
+            return False
+
+        # Tier 5: Exclude nested classes that are typically internal
+        # (e.g., Pydantic model's Config class is already in PYTHON_INTERNAL_PATTERNS)
+        if hasattr(symbol, 'parent') and symbol.parent:
+            # Methods/nested classes inherit parent's public status
+            # but certain patterns are always internal
+            if symbol.name in {'__init__', '__new__', '__del__'}:
+                return False  # Dunder methods not part of API coverage
+
+        return True
+
     elif symbol.file.endswith(('.js', '.ts', '.jsx', '.tsx')):
         # JavaScript/TypeScript: public if no leading underscore
         return not symbol.name.startswith('_')
 
     # Default: consider public for unknown languages
     return True
+
+
+def extract_module_all(file_path: Path) -> set[str] | None:
+    """Extract __all__ from a Python module if defined.
+
+    Uses AST parsing to safely extract __all__ without executing the module.
+
+    Args:
+        file_path: Path to Python file
+
+    Returns:
+        Set of names in __all__, or None if __all__ is not defined
+    """
+    import ast
+
+    try:
+        with open(file_path, encoding='utf-8') as f:
+            tree = ast.parse(f.read(), filename=str(file_path))
+    except (SyntaxError, OSError):
+        return None
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == '__all__':
+                    # Extract list elements
+                    if isinstance(node.value, ast.List):
+                        names = set()
+                        for elt in node.value.elts:
+                            if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
+                                names.add(elt.value)
+                            elif isinstance(elt, ast.Str):  # Python 3.7 compat
+                                names.add(elt.s)
+                        return names
+    return None
 
 
 def detect_platform_quick(project_path: Path) -> DocumentationPlatform:

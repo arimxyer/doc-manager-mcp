@@ -43,8 +43,11 @@ from .patterns import matches_exclude_pattern
 
 # Project detection
 from .project import (
+    PYTHON_INTERNAL_PATTERNS,
+    PYTHON_INTERNAL_PREFIXES,
     detect_platform_quick,
     detect_project_language,
+    extract_module_all,
     find_docs_directory,
     find_markdown_files,
     get_doc_relative_path,
@@ -61,11 +64,14 @@ from .responses import enforce_response_limit, safe_json_dumps
 from .security import file_lock
 
 __all__ = [
+    "PYTHON_INTERNAL_PATTERNS",
+    "PYTHON_INTERNAL_PREFIXES",
     "ResourceLimits",
     "calculate_checksum",
     "detect_platform_quick",
     "detect_project_language",
     "enforce_response_limit",
+    "extract_module_all",
     "file_lock",
     "find_docs_directory",
     "find_markdown_files",
