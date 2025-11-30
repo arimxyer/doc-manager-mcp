@@ -19,6 +19,8 @@ metadata:
   created: '2025-11-21T17:24:01.825693'
   version: 1.0.0
 include_root_readme: true
+api_coverage:
+  preset: 'pydantic'
 
 # ============================================================================
 # Configuration Guide & Examples

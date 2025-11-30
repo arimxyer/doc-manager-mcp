@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "created_at": "2025-11-27T05:28:45.696884+00:00",
-  "updated_at": "2025-11-29T23:49:30.600837+00:00",
+  "updated_at": "2025-11-30T05:52:53.188953+00:00",
   "project_root": "R:\\mcp-servers\\doc-manager",
   "symbols": {
     "DocumentationPlatform": [
@@ -720,6 +720,54 @@
         "doc": null
       }
     ],
+    "ApiCoverageConfig": [
+      {
+        "name": "ApiCoverageConfig",
+        "type": "class",
+        "file": "doc_manager_mcp/core/api_coverage.py",
+        "line": 166,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "get_resolved_exclude_patterns": [
+      {
+        "name": "get_resolved_exclude_patterns",
+        "type": "method",
+        "file": "doc_manager_mcp/core/api_coverage.py",
+        "line": 196,
+        "column": 4,
+        "signature": "def get_resolved_exclude_patterns(self) -> list[str]",
+        "parent": "ApiCoverageConfig",
+        "doc": null
+      }
+    ],
+    "matches_any_pattern": [
+      {
+        "name": "matches_any_pattern",
+        "type": "function",
+        "file": "doc_manager_mcp/core/api_coverage.py",
+        "line": 215,
+        "column": 0,
+        "signature": "def matches_any_pattern(name",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "get_default_config": [
+      {
+        "name": "get_default_config",
+        "type": "function",
+        "file": "doc_manager_mcp/core/api_coverage.py",
+        "line": 234,
+        "column": 0,
+        "signature": "def get_default_config() -> ApiCoverageConfig",
+        "parent": null,
+        "doc": null
+      }
+    ],
     "calculate_checksum": [
       {
         "name": "calculate_checksum",
@@ -749,7 +797,7 @@
         "name": "save_config",
         "type": "function",
         "file": "doc_manager_mcp/core/config.py",
-        "line": 40,
+        "line": 48,
         "column": 0,
         "signature": "def save_config(project_path",
         "parent": null,
@@ -1191,7 +1239,19 @@
         "file": "doc_manager_mcp/core/project.py",
         "line": 189,
         "column": 0,
-        "signature": "def is_public_symbol(symbol",
+        "signature": "def is_public_symbol(\r\n    symbol",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "extract_module_all": [
+      {
+        "name": "extract_module_all",
+        "type": "function",
+        "file": "doc_manager_mcp/core/project.py",
+        "line": 284,
+        "column": 0,
+        "signature": "def extract_module_all(file_path",
         "parent": null,
         "doc": null
       }
@@ -1201,7 +1261,7 @@
         "name": "detect_platform_quick",
         "type": "function",
         "file": "doc_manager_mcp/core/project.py",
-        "line": 221,
+        "line": 319,
         "column": 0,
         "signature": "def detect_platform_quick(project_path",
         "parent": null,
@@ -2320,12 +2380,24 @@
         "doc": null
       }
     ],
+    "_load_api_coverage_config": [
+      {
+        "name": "_load_api_coverage_config",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
+        "line": 15,
+        "column": 0,
+        "signature": "def _load_api_coverage_config(project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
     "check_list_formatting_consistency": [
       {
         "name": "check_list_formatting_consistency",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
-        "line": 10,
+        "line": 30,
         "column": 0,
         "signature": "def check_list_formatting_consistency(\r\n    docs_path",
         "parent": null,
@@ -2337,7 +2409,7 @@
         "name": "check_heading_case_consistency",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
-        "line": 121,
+        "line": 141,
         "column": 0,
         "signature": "def check_heading_case_consistency(\r\n    docs_path",
         "parent": null,
@@ -2349,7 +2421,7 @@
         "name": "_classify_heading_style",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
-        "line": 224,
+        "line": 244,
         "column": 0,
         "signature": "def _classify_heading_style(heading",
         "parent": null,
@@ -2361,7 +2433,7 @@
         "name": "detect_multiple_h1s",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
-        "line": 277,
+        "line": 297,
         "column": 0,
         "signature": "def detect_multiple_h1s(\r\n    docs_path",
         "parent": null,
@@ -2373,9 +2445,31 @@
         "name": "detect_undocumented_apis",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
-        "line": 326,
+        "line": 346,
         "column": 0,
         "signature": "def detect_undocumented_apis(\r\n    project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "get_module_all": [
+      {
+        "name": "get_module_all",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
+        "line": 387,
+        "column": 4,
+        "signature": "def get_module_all(file_path",
+        "parent": null,
+        "doc": null
+      },
+      {
+        "name": "get_module_all",
+        "type": "function",
+        "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
+        "line": 513,
+        "column": 4,
+        "signature": "def get_module_all(file_path",
         "parent": null,
         "doc": null
       }
@@ -2385,7 +2479,7 @@
         "name": "calculate_documentation_coverage",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
-        "line": 416,
+        "line": 467,
         "column": 0,
         "signature": "def calculate_documentation_coverage(\r\n    project_path",
         "parent": null,
@@ -2397,7 +2491,7 @@
         "name": "check_terminology_compliance",
         "type": "function",
         "file": "doc_manager_mcp/tools/analysis/quality/helpers.py",
-        "line": 543,
+        "line": 626,
         "column": 0,
         "signature": "def check_terminology_compliance(docs_path, conventions)",
         "parent": null,
