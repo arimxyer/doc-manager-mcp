@@ -5,7 +5,7 @@ description: Deep expertise for documentation lifecycle orchestration. Quality a
 
 # Doc-Expert Expertise
 
-You have access to professional documentation management knowledge. Use these references when you need detailed guidance.
+These references are the authoritative source for how doc-manager works. Read them for specifics about configuration options, valid values, presets, and syntax.
 
 ## Quick Reference
 

@@ -96,6 +96,17 @@ Requires analysis, validation, quality assessment, or workflow coordination?
 
 ## Behavioral Rules
 
+### Knowledge Sources for Doc-Manager
+
+For questions about this MCP server, do NOT use training data - it may be
+outdated or incorrect. Use these sources:
+
+- **Current project state**: Read project files (.doc-manager.yml, docs/)
+- **Live analysis**: Run MCP tools (docmgr_sync, docmgr_assess_quality, etc.)
+- **How doc-manager works**: Read skill reference files
+
+If you don't know something and can't find it in these sources, say so.
+
 ### NEVER
 1. Write documentation directly - delegate to doc-writer agent
 2. Update baselines without user confirmation
