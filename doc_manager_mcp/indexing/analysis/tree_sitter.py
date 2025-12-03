@@ -25,6 +25,7 @@ try:
     md_language = get_language("markdown")
     bash_language = get_language("bash")
     yaml_language = get_language("yaml")
+    rust_language = get_language("rust")
 
     TREE_SITTER_AVAILABLE = True
 except ImportError:
@@ -37,6 +38,7 @@ except ImportError:
     md_language = None
     bash_language = None
     yaml_language = None
+    rust_language = None
     print(
         "Warning: TreeSitter not available. Run: pip install tree-sitter tree-sitter-language-pack",
         file=sys.stderr,
@@ -122,6 +124,7 @@ class SymbolIndexer:
         assert md_language is not None
         assert bash_language is not None
         assert yaml_language is not None
+        assert rust_language is not None
 
         self.parsers = {
             "go": self._create_parser(go_language),
@@ -132,6 +135,7 @@ class SymbolIndexer:
             "markdown": self._create_parser(md_language),
             "bash": self._create_parser(bash_language),
             "yaml": self._create_parser(yaml_language),
+            "rust": self._create_parser(rust_language),
         }
 
         # Symbol index: symbol_name -> list of Symbol objects
@@ -169,6 +173,7 @@ class SymbolIndexer:
                 "**/*.js",
                 "**/*.ts",
                 "**/*.tsx",
+                "**/*.rs",
             ]
 
         # Merge user excludes with hardcoded defaults (correct priority: user > gitignore > defaults)
@@ -245,6 +250,8 @@ class SymbolIndexer:
             language = "typescript"
         elif ext == "tsx":
             language = "tsx"
+        elif ext == "rs":
+            language = "rust"
 
         if not language or language not in self.parsers:
             return
@@ -269,6 +276,8 @@ class SymbolIndexer:
             self._extract_python_symbols(tree.root_node, source_bytes, relative_path)
         elif language in ("javascript", "typescript", "tsx"):
             self._extract_js_symbols(tree.root_node, source_bytes, relative_path)
+        elif language == "rust":
+            self._extract_rust_symbols(tree.root_node, source_bytes, relative_path)
 
     def _extract_go_symbols(self, node: Any, source: bytes, file_path: str):
         """Extract symbols from Go AST."""
@@ -493,6 +502,439 @@ class SymbolIndexer:
                         signature=signature,
                     )
                     self._add_symbol(symbol)
+
+    def _extract_rust_symbols(self, node: Any, source: bytes, file_path: str):
+        """Extract symbols from Rust AST: fn, struct, impl, trait."""
+        # Function declarations
+        for func_node in self._find_nodes(node, "function_item"):
+            name_node = self._find_child(func_node, "identifier")
+            if name_node:
+                name = self._get_node_text(name_node, source)
+                # Get signature up to the block
+                signature = self._get_node_text(func_node, source).split("{")[0].strip()
+
+                symbol = Symbol(
+                    name=name,
+                    type=SymbolType.FUNCTION,
+                    file=file_path,
+                    line=func_node.start_point[0] + 1,
+                    column=func_node.start_point[1],
+                    signature=signature,
+                )
+                self._add_symbol(symbol)
+
+        # Struct declarations
+        for struct_node in self._find_nodes(node, "struct_item"):
+            name_node = self._find_child(struct_node, "type_identifier")
+            if name_node:
+                name = self._get_node_text(name_node, source)
+
+                symbol = Symbol(
+                    name=name,
+                    type=SymbolType.STRUCT,
+                    file=file_path,
+                    line=struct_node.start_point[0] + 1,
+                    column=struct_node.start_point[1],
+                )
+                self._add_symbol(symbol)
+
+        # Trait declarations
+        for trait_node in self._find_nodes(node, "trait_item"):
+            name_node = self._find_child(trait_node, "type_identifier")
+            if name_node:
+                name = self._get_node_text(name_node, source)
+
+                symbol = Symbol(
+                    name=name,
+                    type=SymbolType.INTERFACE,  # Traits are like interfaces
+                    file=file_path,
+                    line=trait_node.start_point[0] + 1,
+                    column=trait_node.start_point[1],
+                )
+                self._add_symbol(symbol)
+
+        # Type aliases
+        for type_node in self._find_nodes(node, "type_item"):
+            name_node = self._find_child(type_node, "type_identifier")
+            if name_node:
+                name = self._get_node_text(name_node, source)
+
+                symbol = Symbol(
+                    name=name,
+                    type=SymbolType.TYPE,
+                    file=file_path,
+                    line=type_node.start_point[0] + 1,
+                    column=type_node.start_point[1],
+                )
+                self._add_symbol(symbol)
+
+    # ============================================================================
+    # Config Detection Methods - T004-T007
+    # ============================================================================
+
+    def _is_python_config_class(self, class_node: Any, source: bytes) -> str | None:
+        """Detect if class is a config model.
+
+        Returns:
+            'pydantic' | 'dataclass' | 'typeddict' | 'attrs' | None
+        """
+        # Check decorators for @dataclass, @attrs, @define
+        for child in class_node.children:
+            if child.type == "decorator":
+                decorator_text = self._get_node_text(child, source)
+                if "@dataclass" in decorator_text:
+                    return "dataclass"
+                if "@attr.s" in decorator_text or "@attrs" in decorator_text or "@define" in decorator_text:
+                    return "attrs"
+
+        # Check base classes for BaseModel, BaseSettings, TypedDict
+        for child in class_node.children:
+            if child.type == "argument_list":
+                bases_text = self._get_node_text(child, source)
+                if "BaseModel" in bases_text or "BaseSettings" in bases_text:
+                    return "pydantic"
+                if "TypedDict" in bases_text:
+                    return "typeddict"
+
+        return None
+
+    def _extract_python_config_fields(
+        self,
+        class_node: Any,
+        class_name: str,
+        source: bytes,
+        file_path: str,
+        config_type: str,
+    ) -> list[ConfigField]:
+        """Extract config fields from a Python config class."""
+        fields: list[ConfigField] = []
+
+        # Find the class body (block node)
+        body_node = self._find_child(class_node, "block")
+        if not body_node:
+            return fields
+
+        for child in body_node.children:
+            # Look for typed assignments: field_name: Type = default
+            if child.type == "expression_statement":
+                expr = child.children[0] if child.children else None
+                if expr and expr.type == "assignment":
+                    # Handle: field: Type = value
+                    left = self._find_child(expr, "identifier")
+                    if not left:
+                        # Try typed assignment pattern
+                        for subchild in expr.children:
+                            if subchild.type == "identifier":
+                                left = subchild
+                                break
+
+                    if left:
+                        field_name = self._get_node_text(left, source)
+                        # Skip private/dunder fields
+                        if field_name.startswith("_"):
+                            continue
+
+                        field_type = None
+                        default_value = None
+                        is_optional = False
+                        doc = None
+
+                        # Look for type annotation
+                        for subchild in expr.children:
+                            if subchild.type == "type":
+                                field_type = self._get_node_text(subchild, source)
+                                if "None" in field_type or "Optional" in field_type:
+                                    is_optional = True
+
+                        # Look for default value
+                        right_side = expr.children[-1] if len(expr.children) > 1 else None
+                        if right_side and right_side.type not in ("identifier", "type"):
+                            default_value = self._get_node_text(right_side, source)
+                            # Extract description from Field(description=...)
+                            if "Field(" in default_value and "description=" in default_value:
+                                import re
+                                match = re.search(r'description\s*=\s*["\']([^"\']+)["\']', default_value)
+                                if match:
+                                    doc = match.group(1)
+
+                        fields.append(ConfigField(
+                            name=field_name,
+                            parent_symbol=class_name,
+                            field_type=field_type,
+                            default_value=default_value,
+                            file=file_path,
+                            line=child.start_point[0] + 1,
+                            column=child.start_point[1],
+                            is_optional=is_optional,
+                            doc=doc,
+                        ))
+
+            # Also handle typed declarations without assignment: field: Type
+            elif child.type == "type" or (child.type == "expression_statement" and ":" in self._get_node_text(child, source)):
+                text = self._get_node_text(child, source)
+                if ":" in text and "=" not in text:
+                    parts = text.split(":", 1)
+                    if len(parts) == 2:
+                        field_name = parts[0].strip()
+                        field_type = parts[1].strip()
+                        if not field_name.startswith("_"):
+                            is_optional = "None" in field_type or "Optional" in field_type
+                            fields.append(ConfigField(
+                                name=field_name,
+                                parent_symbol=class_name,
+                                field_type=field_type,
+                                default_value=None,
+                                file=file_path,
+                                line=child.start_point[0] + 1,
+                                column=child.start_point[1],
+                                is_optional=is_optional,
+                            ))
+
+        return fields
+
+    def _is_go_config_struct(self, struct_node: Any, source: bytes, struct_name: str) -> bool:
+        """Detect if struct has yaml/json field tags or config naming pattern."""
+        # Check naming pattern
+        if any(struct_name.endswith(suffix) for suffix in ("Config", "Settings", "Options")):
+            return True
+
+        # Check if any field has yaml/json tags
+        field_list = self._find_child(struct_node, "field_declaration_list")
+        if field_list:
+            for field in self._find_nodes(field_list, "field_declaration"):
+                tag_node = self._find_child(field, "raw_string_literal")
+                if tag_node:
+                    tag_text = self._get_node_text(tag_node, source)
+                    if "yaml:" in tag_text or "json:" in tag_text:
+                        return True
+
+        return False
+
+    def _extract_go_config_fields(
+        self,
+        struct_node: Any,
+        struct_name: str,
+        source: bytes,
+        file_path: str,
+    ) -> list[ConfigField]:
+        """Extract config fields from a Go struct with yaml/json tags."""
+        fields: list[ConfigField] = []
+
+        field_list = self._find_child(struct_node, "field_declaration_list")
+        if not field_list:
+            return fields
+
+        for field_node in self._find_nodes(field_list, "field_declaration"):
+            # Get field name
+            name_node = self._find_child(field_node, "field_identifier")
+            if not name_node:
+                continue
+
+            field_name = self._get_node_text(name_node, source)
+
+            # Get field type
+            field_type = None
+            for child in field_node.children:
+                if child.type in ("type_identifier", "pointer_type", "slice_type", "map_type", "qualified_type"):
+                    field_type = self._get_node_text(child, source)
+                    break
+
+            # Parse tags
+            tags: dict[str, str] = {}
+            tag_node = self._find_child(field_node, "raw_string_literal")
+            if tag_node:
+                tag_text = self._get_node_text(tag_node, source).strip("`")
+                # Parse yaml:"name,omitempty" json:"name"
+                import re
+                for match in re.finditer(r'(\w+):"([^"]*)"', tag_text):
+                    tags[match.group(1)] = match.group(2)
+
+            is_optional = False
+            if tags.get("yaml", "").endswith(",omitempty") or tags.get("json", "").endswith(",omitempty"):
+                is_optional = True
+
+            fields.append(ConfigField(
+                name=field_name,
+                parent_symbol=struct_name,
+                field_type=field_type,
+                default_value=None,
+                file=file_path,
+                line=field_node.start_point[0] + 1,
+                column=field_node.start_point[1],
+                tags=tags if tags else None,
+                is_optional=is_optional,
+            ))
+
+        return fields
+
+    def _is_ts_config_interface(self, interface_node: Any, source: bytes, interface_name: str) -> bool:
+        """Detect if interface is config-like by name pattern."""
+        config_suffixes = ("Config", "Options", "Settings", "Props")
+        return any(interface_name.endswith(suffix) for suffix in config_suffixes)
+
+    def _extract_ts_config_fields(
+        self,
+        interface_node: Any,
+        interface_name: str,
+        source: bytes,
+        file_path: str,
+    ) -> list[ConfigField]:
+        """Extract properties from TypeScript interface."""
+        fields: list[ConfigField] = []
+
+        # Find the object type body
+        body_node = self._find_child(interface_node, "object_type") or self._find_child(interface_node, "interface_body")
+        if not body_node:
+            return fields
+
+        for child in body_node.children:
+            if child.type == "property_signature":
+                # Get property name
+                name_node = self._find_child(child, "property_identifier")
+                if not name_node:
+                    continue
+
+                field_name = self._get_node_text(name_node, source)
+
+                # Check for optional marker (?)
+                is_optional = False
+                full_text = self._get_node_text(child, source)
+                if "?" in full_text.split(":")[0]:
+                    is_optional = True
+
+                # Get type annotation
+                field_type = None
+                type_node = self._find_child(child, "type_annotation")
+                if type_node:
+                    field_type = self._get_node_text(type_node, source).lstrip(":").strip()
+
+                fields.append(ConfigField(
+                    name=field_name,
+                    parent_symbol=interface_name,
+                    field_type=field_type,
+                    default_value=None,
+                    file=file_path,
+                    line=child.start_point[0] + 1,
+                    column=child.start_point[1],
+                    is_optional=is_optional,
+                ))
+
+        return fields
+
+    def _is_rust_config_struct(self, struct_node: Any, source: bytes) -> bool:
+        """Detect if struct has serde derives or serde attributes."""
+        # Look for attributes before the struct
+        # TreeSitter puts attributes as siblings before the struct_item
+        parent = struct_node.parent
+        if not parent:
+            return False
+
+        # Find attribute nodes that precede this struct
+        struct_index = -1
+        for i, child in enumerate(parent.children):
+            if child == struct_node:
+                struct_index = i
+                break
+
+        # Check preceding attribute items
+        for i in range(struct_index - 1, -1, -1):
+            child = parent.children[i]
+            if child.type != "attribute_item":
+                break
+            attr_text = self._get_node_text(child, source)
+            # Check for serde derives
+            if "#[derive(" in attr_text:
+                if "Serialize" in attr_text or "Deserialize" in attr_text:
+                    return True
+                if "serde::" in attr_text:
+                    return True
+            # Check for #[serde(...)]
+            if "#[serde(" in attr_text:
+                return True
+
+        return False
+
+    def _extract_rust_config_fields(
+        self,
+        struct_node: Any,
+        struct_name: str,
+        source: bytes,
+        file_path: str,
+    ) -> list[ConfigField]:
+        """Extract fields from Rust struct with serde attributes."""
+        fields: list[ConfigField] = []
+
+        # Find field declaration list
+        field_list = self._find_child(struct_node, "field_declaration_list")
+        if not field_list:
+            return fields
+
+        for field_node in self._find_nodes(field_list, "field_declaration"):
+            # Get field name
+            name_node = self._find_child(field_node, "field_identifier")
+            if not name_node:
+                continue
+
+            field_name = self._get_node_text(name_node, source)
+
+            # Get field type
+            field_type = None
+            type_node = self._find_child(field_node, "type_identifier")
+            if not type_node:
+                # Try generic type
+                type_node = self._find_child(field_node, "generic_type")
+            if type_node:
+                field_type = self._get_node_text(type_node, source)
+
+            # Check for Option<T> to determine optionality
+            is_optional = False
+            if field_type and field_type.startswith("Option<"):
+                is_optional = True
+
+            # Parse serde attributes on the field
+            tags: dict[str, str] = {}
+            # Look for attribute items before this field
+            parent = field_node.parent
+            if parent:
+                field_index = -1
+                for i, child in enumerate(parent.children):
+                    if child == field_node:
+                        field_index = i
+                        break
+
+                for i in range(field_index - 1, -1, -1):
+                    child = parent.children[i]
+                    if child.type != "attribute_item":
+                        break
+                    attr_text = self._get_node_text(child, source)
+                    if "#[serde(" in attr_text:
+                        # Parse serde attributes
+                        import re
+                        # Handle rename = "name"
+                        match = re.search(r'rename\s*=\s*"([^"]+)"', attr_text)
+                        if match:
+                            tags["serde_rename"] = match.group(1)
+                        # Handle default
+                        if "default" in attr_text:
+                            tags["serde_default"] = "true"
+                        # Handle skip_serializing_if
+                        match = re.search(r'skip_serializing_if\s*=\s*"([^"]+)"', attr_text)
+                        if match:
+                            tags["serde_skip_if"] = match.group(1)
+
+            fields.append(ConfigField(
+                name=field_name,
+                parent_symbol=struct_name,
+                field_type=field_type,
+                default_value=None,
+                file=file_path,
+                line=field_node.start_point[0] + 1,
+                column=field_node.start_point[1],
+                tags=tags if tags else None,
+                is_optional=is_optional,
+            ))
+
+        return fields
 
     def _find_nodes(self, node: Any, node_type: str) -> list[Any]:
         """Recursively find all nodes of a specific type."""
