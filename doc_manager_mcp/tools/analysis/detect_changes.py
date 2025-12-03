@@ -110,13 +110,19 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
 
         # Semantic analysis (read-only - loads baseline but DOES NOT save)
         semantic_changes = []
+        config_field_changes = []
+        action_items = []
         if params.include_semantic:
             # Extract file paths for semantic analysis
             file_paths = [change["file"] for change in categorized_changes]
-            semantic_changes = await _get_semantic_changes_readonly(
+            analysis_result = await _get_semantic_changes_readonly(
                 project_path,
-                file_paths
+                file_paths,
+                affected_docs,
             )
+            semantic_changes = analysis_result.get("semantic_changes", [])
+            config_field_changes = analysis_result.get("config_field_changes", [])
+            action_items = analysis_result.get("action_items", [])
 
         return {
             "status": "success",
@@ -125,6 +131,8 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
             "changed_files": categorized_changes,
             "affected_documentation": affected_docs,
             "semantic_changes": semantic_changes,
+            "config_field_changes": config_field_changes,
+            "action_items": action_items,
             "baseline_info": baseline_info,
             "note": "Read-only detection - baselines NOT updated. Use docmgr_update_baseline to refresh baselines."
         }
@@ -141,16 +149,18 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
 
 async def _get_semantic_changes_readonly(
     project_path: Path,
-    changed_files: list[str]
-) -> list[dict[str, Any]]:
+    changed_files: list[str],
+    affected_docs: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
     """Perform semantic analysis without saving baseline (read-only).
 
     Args:
         project_path: Project root path
         changed_files: List of changed file paths
+        affected_docs: Optional list of affected documentation mappings
 
     Returns:
-        list of semantic changes detected
+        dict with semantic_changes, config_field_changes, and action_items
 
     Note:
         This function loads the existing symbol baseline and compares with current
@@ -158,18 +168,23 @@ async def _get_semantic_changes_readonly(
         truly read-only.
     """
     try:
-        from ...indexing.analysis.semantic_diff import compare_symbols, load_symbol_baseline
+        from ...core.actions import ActionGenerator, actions_to_dicts
+        from ...indexing.analysis.semantic_diff import (
+            compare_config_fields,
+            compare_symbols,
+            load_symbol_baseline,
+        )
         from ...indexing.analysis.tree_sitter import SymbolIndexer
 
         baseline_path = project_path / ".doc-manager" / "memory" / "symbol-baseline.json"
 
         if not baseline_path.exists():
-            return []
+            return {"semantic_changes": [], "config_field_changes": [], "action_items": []}
 
         # Load existing baseline (read-only)
         old_symbols = load_symbol_baseline(baseline_path)
         if not old_symbols:
-            return []
+            return {"semantic_changes": [], "config_field_changes": [], "action_items": []}
 
         # Index current symbols
         indexer = SymbolIndexer()
@@ -178,25 +193,57 @@ async def _get_semantic_changes_readonly(
         # Compare symbols (use indexer.index which is dict[str, list[Symbol]])
         semantic_changes = compare_symbols(old_symbols, indexer.index)
 
+        # Compare config fields (T016: New feature)
+        config_field_changes = compare_config_fields(old_symbols, indexer.index)
+
+        # Generate action items (T016: New feature)
+        action_generator = ActionGenerator()
+        action_items = action_generator.generate_actions(
+            semantic_changes,
+            config_field_changes,
+            affected_docs,
+        )
+
         # *** KEY: DO NOT call save_symbol_baseline() ***
         # This keeps the function read-only
 
-        # Convert SemanticChange objects to dicts for JSON serialization
-        return [
-            {
-                "change_type": change.change_type,
-                "symbol_name": change.name,
-                "symbol_type": change.symbol_type,
-                "file_path": change.file,
-                "severity": change.severity,
-                "old_signature": change.old_signature,
-                "new_signature": change.new_signature
-            }
-            for change in semantic_changes
-        ]
+        # Convert to dicts for JSON serialization
+        return {
+            "semantic_changes": [
+                {
+                    "change_type": change.change_type,
+                    "symbol_name": change.name,
+                    "symbol_type": change.symbol_type,
+                    "file_path": change.file,
+                    "severity": change.severity,
+                    "old_signature": change.old_signature,
+                    "new_signature": change.new_signature
+                }
+                for change in semantic_changes
+            ],
+            "config_field_changes": [
+                {
+                    "field_name": change.field_name,
+                    "parent_symbol": change.parent_symbol,
+                    "change_type": change.change_type,
+                    "file": change.file,
+                    "line": change.line,
+                    "old_type": change.old_type,
+                    "new_type": change.new_type,
+                    "old_default": change.old_default,
+                    "new_default": change.new_default,
+                    "severity": change.severity,
+                    "documentation_action": change.documentation_action,
+                }
+                for change in config_field_changes
+            ],
+            "action_items": actions_to_dicts(action_items),
+        }
 
     except Exception as e:
         # Don't fail the entire detection if semantic analysis fails
-        return [{
-            "error": f"Semantic analysis failed: {e!s}"
-        }]
+        return {
+            "semantic_changes": [{"error": f"Semantic analysis failed: {e!s}"}],
+            "config_field_changes": [],
+            "action_items": [],
+        }
