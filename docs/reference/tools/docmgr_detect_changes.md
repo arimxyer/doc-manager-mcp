@@ -43,7 +43,30 @@ Identifies changed files by comparing current state against baselines. Categoriz
     "added": ["new_function"],
     "modified": ["existing_class"],
     "deleted": ["old_method"]
-  }
+  },
+  "config_field_changes": [
+    {
+      "field_name": "timeout",
+      "parent_symbol": "AppConfig",
+      "change_type": "added",
+      "file": "src/config.py",
+      "line": 15,
+      "new_type": "int",
+      "new_default": "30",
+      "severity": "non-breaking",
+      "documentation_action": "add_field_doc"
+    }
+  ],
+  "action_items": [
+    {
+      "action_type": "add_field_doc",
+      "target_file": "docs/reference/configuration.md",
+      "target_section": "AppConfig",
+      "description": "Document new 'timeout' field in AppConfig",
+      "priority": "high",
+      "source_change": {"type": "config_field", "field_name": "timeout"}
+    }
+  ]
 }
 ```
 
@@ -98,8 +121,28 @@ Changes are categorized as:
   - `checksum`: Compare current file checksums against `repo-baseline.json`
   - `git_diff`: Compare current files against a specific git commit
 - **Semantic detection**: When `include_semantic=true`, detects function/class additions, modifications, and deletions using TreeSitter
+- **Config field tracking**: Detects changes to config fields in Pydantic models, dataclasses, Go structs, TypeScript interfaces, and Rust serde structs
+- **Action items**: Provides prioritized action items for AI agents to act on detected changes
 - **Performance**: Semantic detection is slower due to AST parsing
 - **Prerequisites**: Requires baselines to exist (run `docmgr_init` first)
+
+## Config Field Change Types
+
+| Change Type | Severity | Action |
+|-------------|----------|--------|
+| `added` | non-breaking | Document new field |
+| `removed` | breaking | Remove documentation |
+| `type_changed` | varies | Update type documentation |
+| `default_changed` | non-breaking | Update examples |
+
+## Action Item Priorities
+
+| Priority | When Used |
+|----------|-----------|
+| `critical` | Breaking changes (field removed, function removed) |
+| `high` | Signature changes, new config fields |
+| `medium` | New functions, default value changes |
+| `low` | Minor updates |
 
 ## Typical workflow
 

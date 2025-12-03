@@ -11,7 +11,7 @@ Comprehensive documentation lifecycle management powered by an MCP (Model Contex
 - **Automatic change detection** - Track code changes and affected documentation
 - **Link validation** - Find broken links and missing assets
 - **Quality assessment** - Evaluate docs against 7 quality criteria
-- **Symbol tracking** - TreeSitter-based code symbol extraction
+- **Symbol tracking** - TreeSitter-based code symbol extraction (Python, Go, TypeScript, Rust)
 - **Dependency mapping** - Automatic code-to-docs relationships
 - **Platform detection** - Auto-detect MkDocs, Sphinx, Hugo, Docusaurus, etc.
 - **Documentation migration** - Restructure docs with git history preservation
@@ -122,7 +122,7 @@ See [Tools Reference](docs/reference/tools.md) for complete API documentation.
 Doc-manager maintains 3 baseline files in `.doc-manager/memory/`:
 
 1. `repo-baseline.json` - File checksums and metadata
-2. `symbol-baseline.json` - TreeSitter code symbols (functions, classes)
+2. `symbol-baseline.json` - TreeSitter code symbols (functions, classes, config fields)
 3. `dependencies.json` - Code-to-docs dependency mappings
 
 Workflow:
