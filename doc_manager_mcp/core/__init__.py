@@ -70,6 +70,15 @@ from .responses import enforce_response_limit, safe_json_dumps
 # Security
 from .security import file_lock
 
+# Staleness detection
+from .staleness import (
+    StalenessLevel,
+    StalenessResult,
+    check_branch_mismatch,
+    check_staleness,
+    format_staleness_warnings,
+)
+
 __all__ = [
     "API_COVERAGE_PRESETS",
     "ApiCoverageConfig",
@@ -98,6 +107,11 @@ __all__ = [
     "safe_json_dumps",
     "safe_resolve",
     "save_config",
+    "StalenessLevel",
+    "StalenessResult",
+    "check_branch_mismatch",
+    "check_staleness",
+    "format_staleness_warnings",
     "validate_against_conventions",
     "validate_path_boundary",
 ]

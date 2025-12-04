@@ -6,7 +6,14 @@ Key difference from map_changes: NEVER writes to symbol-baseline.json
 from pathlib import Path
 from typing import Any
 
-from doc_manager_mcp.core import enforce_response_limit, handle_error
+from doc_manager_mcp.core import (
+    check_branch_mismatch,
+    check_staleness,
+    enforce_response_limit,
+    format_staleness_warnings,
+    handle_error,
+    run_git_command,
+)
 from doc_manager_mcp.models import DocmgrDetectChangesInput
 from doc_manager_mcp.tools._internal.changes import (
     _categorize_change,
@@ -82,8 +89,9 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
             changed_files = _get_changed_files_from_checksums(project_path, baseline)
             baseline_info = {
                 "mode": "checksum",
-                "baseline_commit": baseline.get("git_commit"),
-                "baseline_created": baseline.get("created_at")
+                "baseline_commit": baseline.get("metadata", {}).get("git_commit") if baseline.get("metadata") else baseline.get("git_commit"),
+                "baseline_created": baseline.get("timestamp"),
+                "baseline_branch": baseline.get("metadata", {}).get("git_branch") if baseline.get("metadata") else None,
             }
 
         # Categorize changes
@@ -124,7 +132,24 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
             config_field_changes = analysis_result.get("config_field_changes", [])
             action_items = analysis_result.get("action_items", [])
 
-        return {
+        # Check staleness and branch mismatch
+        warnings = []
+        if baseline_info.get("mode") == "checksum":
+            # Check repo baseline staleness
+            repo_staleness = check_staleness(baseline_info.get("baseline_created"))
+            if repo_staleness.message:
+                warnings.extend(format_staleness_warnings(repo_staleness=repo_staleness))
+
+            # Check branch mismatch
+            baseline_branch = baseline_info.get("baseline_branch")
+            if baseline_branch:
+                current_branch = await run_git_command(project_path, "rev-parse", "--abbrev-ref", "HEAD")
+                if current_branch:
+                    branch_warning = check_branch_mismatch(baseline_branch, current_branch.strip())
+                    if branch_warning:
+                        warnings.extend(format_staleness_warnings(branch_warning=branch_warning))
+
+        result = {
             "status": "success",
             "changes_detected": len(changed_files) > 0,
             "total_changes": len(changed_files),
@@ -136,6 +161,12 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
             "baseline_info": baseline_info,
             "note": "Read-only detection - baselines NOT updated. Use docmgr_update_baseline to refresh baselines."
         }
+
+        # Add warnings if any
+        if warnings:
+            result["warnings"] = warnings
+
+        return result
 
     except Exception as e:
         error_msg = handle_error(e, "docmgr_detect_changes")
@@ -168,6 +199,7 @@ async def _get_semantic_changes_readonly(
         truly read-only.
     """
     try:
+        from ...core import load_config
         from ...core.actions import ActionGenerator, actions_to_dicts
         from ...indexing.analysis.semantic_diff import (
             compare_config_fields,
@@ -175,6 +207,7 @@ async def _get_semantic_changes_readonly(
             load_symbol_baseline,
         )
         from ...indexing.analysis.tree_sitter import SymbolIndexer
+        from ...tools._internal.dependencies import load_dependencies
 
         baseline_path = project_path / ".doc-manager" / "memory" / "symbol-baseline.json"
 
@@ -196,8 +229,26 @@ async def _get_semantic_changes_readonly(
         # Compare config fields (T016: New feature)
         config_field_changes = compare_config_fields(old_symbols, indexer.index)
 
-        # Generate action items (T016: New feature)
-        action_generator = ActionGenerator()
+        # Load dependencies and config for ActionGenerator
+        config = load_config(project_path) or {}
+        docs_path = config.get("docs_path", "docs")
+        doc_mappings = config.get("doc_mappings", {})
+
+        # Try to load code_to_doc from dependencies.json
+        code_to_doc: dict[str, list[str]] = {}
+        try:
+            deps_data = load_dependencies(project_path, validate=False)
+            if deps_data:
+                code_to_doc = deps_data.get("code_to_doc", {}) if isinstance(deps_data, dict) else {}
+        except Exception:
+            pass  # Fall back to empty code_to_doc
+
+        # Generate action items with dependencies for precise doc inference
+        action_generator = ActionGenerator(
+            docs_path=docs_path,
+            code_to_doc=code_to_doc,
+            doc_mappings=doc_mappings,
+        )
         action_items = action_generator.generate_actions(
             semantic_changes,
             config_field_changes,

@@ -210,8 +210,16 @@ def test_site_docs_subdirectory(temp_project):
     assert "site/docs" in api_docs[0]["file"]
 
 
-def test_missing_config_falls_back_to_defaults(temp_project):
-    """Test that missing doc_mappings config falls back to default paths."""
+def test_missing_config_no_fallback_without_dependencies(temp_project):
+    """Test that missing doc_mappings and dependencies.json results in no affected docs.
+
+    New behavior (v1.2.0): We no longer use hardcoded fallback mappings.
+    Affected docs are only detected via:
+    1. code_to_doc from dependencies.json (most precise)
+    2. doc_mappings from user config (explicit configuration)
+
+    This is intentional to avoid false positives from hardcoded assumptions.
+    """
     # Create project WITHOUT doc_mappings in config
     project_path = temp_project
 
@@ -233,22 +241,25 @@ def test_missing_config_falls_back_to_defaults(temp_project):
     loaded_config = load_config(project_path)
     assert "doc_mappings" not in loaded_config or loaded_config.get("doc_mappings") is None
 
-    # Map changes - should fall back to defaults
+    # Map changes - without dependencies.json or doc_mappings, no affected docs
     changed_files = [
         {"file": "cmd/cli/main.go", "change_type": "modified", "category": "cli"}
     ]
 
     affected = _map_to_affected_docs(changed_files, project_path)
 
-    # Should use default path
-    cli_docs = [doc for doc in affected if "command-reference" in doc["file"]]
-    assert len(cli_docs) > 0, "Should fall back to default path"
-    assert "docs/reference/command-reference.md" in cli_docs[0]["file"]
+    # No affected docs without explicit configuration or dependencies.json
+    assert len(affected) == 0, "Without doc_mappings or dependencies.json, no affected docs should be detected"
 
 
-def test_partial_config_with_some_mappings(temp_project):
-    """Test partial doc_mappings config (some categories mapped, others use defaults)."""
-    # Only map CLI, leave others to default
+def test_partial_config_only_mapped_categories_detected(temp_project):
+    """Test partial doc_mappings config only detects explicitly mapped categories.
+
+    New behavior (v1.2.0): Only explicitly mapped categories in doc_mappings
+    are detected as affected. Categories without mappings require dependencies.json
+    code_to_doc entries for detection.
+    """
+    # Only map CLI, leave others unmapped
     doc_mappings = {
         "cli": "documentation/commands.md"
     }
@@ -286,16 +297,14 @@ def test_partial_config_with_some_mappings(temp_project):
     assert len(cli_docs) > 0, "Should use custom mapping for CLI"
     assert "documentation/commands.md" in cli_docs[0]["file"]
 
-    # Test API change - should use default mapping
+    # Test API change - should NOT detect anything without explicit mapping
     api_changes = [
         {"file": "api/handler.js", "change_type": "modified", "category": "api"}
     ]
 
     affected_api = _map_to_affected_docs(api_changes, project_path)
-    api_docs = [doc for doc in affected_api if "api" in doc["file"].lower()]
-    assert len(api_docs) > 0, "Should fall back to default for API"
-    # Default should be docs/reference/api.md
-    assert any("docs" in doc["file"] and "api.md" in doc["file"] for doc in api_docs)
+    # Without api in doc_mappings and without dependencies.json, no affected docs
+    assert len(affected_api) == 0, "Unmapped categories should not produce affected docs"
 
 
 def test_nonexistent_mapped_docs_marked_as_not_exists(temp_project):

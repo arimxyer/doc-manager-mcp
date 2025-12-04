@@ -6,6 +6,7 @@ act directly on change detection output without manual interpretation.
 """
 
 from dataclasses import asdict, dataclass
+from pathlib import Path
 from typing import Any, ClassVar
 
 from doc_manager_mcp.indexing.analysis.semantic_diff import (
@@ -88,13 +89,24 @@ class ActionGenerator:
         "default_changed": ("update_example", "medium"),
     }
 
-    def __init__(self, docs_path: str = "docs"):
+    def __init__(
+        self,
+        docs_path: str = "docs",
+        code_to_doc: dict[str, list[str]] | None = None,
+        doc_mappings: dict[str, str] | None = None,
+    ):
         """Initialize ActionGenerator.
 
         Args:
             docs_path: Base path for documentation files
+            code_to_doc: Mapping of code file paths to documentation files
+                (from dependencies.json). Most precise mapping source.
+            doc_mappings: User-configured category-to-doc mappings
+                (from .doc-manager.yml). Fallback when code_to_doc unavailable.
         """
         self.docs_path = docs_path
+        self.code_to_doc = code_to_doc or {}
+        self.doc_mappings = doc_mappings or {}
 
     def generate_actions(
         self,
@@ -265,15 +277,30 @@ class ActionGenerator:
     ) -> str:
         """Infer target documentation file from source file and symbol.
 
-        Uses affected_docs mapping if available, otherwise uses conventions.
+        Priority order:
+        1. code_to_doc from dependencies.json (most precise)
+        2. affected_docs mapping (passed in, already computed)
+        3. Convention-based inference (last resort)
         """
-        # Check affected_docs for explicit mapping
+        # PRIORITY 1: Use code_to_doc from dependencies.json (most precise)
+        if source_file in self.code_to_doc:
+            doc_files = self.code_to_doc[source_file]
+            if doc_files:
+                # Return first matching doc file
+                return doc_files[0]
+
+        # PRIORITY 2: Check affected_docs for explicit mapping
         if affected_docs:
             for mapping in affected_docs:
+                # Check both source_file and affected_by fields
                 if mapping.get("source_file") == source_file:
-                    return mapping.get("doc_file", f"{self.docs_path}/api/{source_file}.md")
+                    return mapping.get("doc_file", mapping.get("file", ""))
+                # Also check affected_by list from _map_to_affected_docs
+                affected_by = mapping.get("affected_by", [])
+                if source_file in affected_by:
+                    return mapping.get("file", "")
 
-        # Convention-based inference
+        # PRIORITY 3: Convention-based inference (last resort)
         # src/module.py -> docs/reference/module.md
         # cmd/tool/main.go -> docs/cli/tool.md
         if source_file.endswith(".py"):
@@ -298,15 +325,22 @@ class ActionGenerator:
     ) -> str:
         """Infer target documentation file for config models.
 
-        Config models typically go in configuration reference docs.
+        Priority order:
+        1. doc_mappings["config"] from .doc-manager.yml
+        2. affected_docs mapping (if symbol matches)
+        3. Convention-based default (last resort)
         """
-        # Check affected_docs for explicit mapping
+        # PRIORITY 1: Use doc_mappings from config
+        if "config" in self.doc_mappings:
+            return self.doc_mappings["config"]
+
+        # PRIORITY 2: Check affected_docs for explicit mapping
         if affected_docs:
             for mapping in affected_docs:
                 if mapping.get("symbol") == parent_symbol:
-                    return mapping.get("doc_file", f"{self.docs_path}/reference/configuration.md")
+                    return mapping.get("doc_file", mapping.get("file", ""))
 
-        # Default to configuration reference
+        # PRIORITY 3: Convention-based default (last resort)
         return f"{self.docs_path}/reference/configuration.md"
 
 

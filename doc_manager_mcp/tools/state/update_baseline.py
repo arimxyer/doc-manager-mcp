@@ -174,7 +174,7 @@ def _build_baseline_structure(
         "description": f"Repository for {project_path.name}",
         "language": language,
         "docs_exist": docs_dir is not None,
-        "docs_path": str(docs_dir.relative_to(project_path)) if docs_dir else None,
+        # Note: docs_path removed in v1.2.0 - use config.docs_path as authoritative source
         "metadata": git_metadata,
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0",

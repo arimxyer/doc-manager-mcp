@@ -5,6 +5,34 @@ All notable changes to Documentation Manager are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-12-04
+
+### Added
+
+- **Staleness detection** - Warn when baseline files are outdated (7/30/90 day thresholds)
+- **Branch mismatch warnings** - Detect when current git branch differs from baseline
+- **`load_dependencies()` function** - Load dependencies.json with optional schema validation
+- **`get_reference_to_doc()` helper** - Derive reference→doc mappings on-demand from `all_references`
+- **Schema validation** - Pydantic schemas for all baseline files with validation helpers
+- **Config schema alignment** - Added `project_name` and `ConfigMetadata` to match actual config files
+
+### Changed
+
+- **Precise affected doc detection** - Uses `code_to_doc` from dependencies.json instead of hardcoded fallbacks
+- **Action generation** - ActionGenerator now accepts `code_to_doc` and `doc_mappings` for precise inference
+- **CLI tools detection** - Dynamically detects project name instead of hardcoded list
+- **Baseline staleness** - `docmgr_detect_changes` now includes staleness warnings in output
+
+### Deprecated
+
+- `docs_path` in repo-baseline.json - Use `config.docs_path` as authoritative source
+- `reference_to_doc` in dependencies.json - Use `get_reference_to_doc()` helper instead
+
+### Removed
+
+- Hardcoded category→doc fallback mappings - Explicit configuration or dependencies.json required
+- `reference_to_doc` from dependencies.json output - Reduces file size ~40%
+
 ## [1.1.1] - 2025-12-03
 
 ### Fixed

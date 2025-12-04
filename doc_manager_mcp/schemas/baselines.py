@@ -95,9 +95,11 @@ class RepoBaseline(BaseModel):
         default=False,
         description="Whether documentation directory exists"
     )
+    # DEPRECATED in v1.2.0: Use config.docs_path as authoritative source
+    # Kept for backward compatibility with older baselines
     docs_path: str | None = Field(
         default=None,
-        description="Relative path to documentation directory"
+        description="DEPRECATED: Use config.docs_path instead"
     )
     metadata: GitMetadata | None = Field(
         default=None,
@@ -174,6 +176,15 @@ class SymbolBaseline(BaseModel):
 # dependencies.json schema
 # =============================================================================
 
+class ReferenceEntry(BaseModel):
+    """Schema for a reference entry in all_references."""
+
+    model_config = ConfigDict(extra="allow")
+
+    reference: str = Field(description="Reference text (function name, file path, etc.)")
+    doc_file: str = Field(description="Documentation file containing this reference")
+
+
 class DependenciesBaseline(BaseModel):
     """Schema for dependencies.json.
 
@@ -192,7 +203,7 @@ class DependenciesBaseline(BaseModel):
     # Required fields
     generated_at: str = Field(description="ISO timestamp of generation")
 
-    # Dependency mappings
+    # File-level dependency mappings
     doc_to_code: dict[str, list[str]] = Field(
         default_factory=dict,
         description="Map of doc paths to code files they reference"
@@ -204,6 +215,23 @@ class DependenciesBaseline(BaseModel):
     asset_to_docs: dict[str, list[str]] = Field(
         default_factory=dict,
         description="Map of asset paths to docs that use them"
+    )
+
+    # Reference-level mappings
+    unmatched_references: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="References mentioned in docs that couldn't be matched to source files"
+    )
+    all_references: dict[str, list[ReferenceEntry]] = Field(
+        default_factory=dict,
+        description="All references grouped by type (function, class, file_path, command, etc.)"
+    )
+
+    # DEPRECATED: reference_to_doc is redundant with all_references
+    # Kept for backward compatibility, will be removed in future version
+    reference_to_doc: dict[str, list[str]] | None = Field(
+        default=None,
+        description="DEPRECATED: Use get_reference_to_doc() helper instead"
     )
 
 

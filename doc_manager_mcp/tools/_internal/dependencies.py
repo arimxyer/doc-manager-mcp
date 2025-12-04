@@ -110,28 +110,33 @@ def _detect_project_name(project_path: Path) -> str | None:
     return project_path.name
 
 
-def _extract_subcommand(reference: str) -> str | None:
+def _extract_subcommand(reference: str, project_name: str | None = None) -> str | None:
     """Extract subcommand chain from a command reference.
 
     Handles references like:
-    - "pass-cli vault backup create" → "vault_backup_create"
-    - "pass-cli add github" → "add"
+    - "<project-name> vault backup create" → "vault_backup_create"
+    - "<project-name> add github" → "add"
     - "git commit -m" → "commit"
     - "docker run --rm" → "run"
     - "add" → "add"
 
     Args:
         reference: Command reference string
+        project_name: Optional project name to treat as CLI tool prefix
 
     Returns:
         Subcommand name (with underscores for multi-word) or None if not found
     """
-    # Known CLI tool names to skip
+    # Common CLI tool names to skip
     cli_tools = {
-        "pass-cli", "git", "docker", "npm", "yarn", "pip", "cargo",
+        "git", "docker", "npm", "yarn", "pip", "cargo",
         "go", "node", "python", "python3", "ruby", "php", "java",
         "kubectl", "helm", "terraform", "ansible", "make", "brew"
     }
+
+    # Add project name as CLI tool prefix if provided
+    if project_name:
+        cli_tools.add(project_name.lower())
 
     words = reference.strip().split()
     if not words:
@@ -715,7 +720,8 @@ def _match_references_to_sources(
     references: list[dict[str, Any]],
     source_files: list[Path],
     project_path: Path,
-    symbol_index: Any | None = None
+    symbol_index: Any | None = None,
+    project_name: str | None = None
 ) -> dict[str, list[str]]:
     """Match documentation references to actual source files.
 
@@ -724,12 +730,17 @@ def _match_references_to_sources(
         source_files: List of source file paths
         project_path: Project root path
         symbol_index: Optional SymbolIndexer for validating function/class matches
+        project_name: Optional project name for CLI tool detection
 
     Returns:
         Dictionary mapping doc files to matched source files
     """
     dependencies = defaultdict(set)  # doc_file -> set[source_files]
     file_cache = {}  # Cache for file contents during regex fallback searches
+
+    # Detect project name if not provided
+    if project_name is None:
+        project_name = _detect_project_name(project_path)
 
     # Build path index for O(1) file path lookups and pre-compute all normalized paths
     exact_paths, suffix_paths, path_map = _build_path_index(source_files, project_path)
@@ -788,7 +799,7 @@ def _match_references_to_sources(
 
         # Match command references to CLI source files
         elif ref_type == "command":
-            command_name = _extract_subcommand(reference)
+            command_name = _extract_subcommand(reference, project_name)
             if command_name:
                 matched_files = _match_command_to_files(
                     command_name, source_files, path_map, symbol_index,
@@ -895,7 +906,11 @@ def _build_reverse_index(dependencies: dict[str, list[str]], all_references: lis
 
 
 def _build_reference_index(all_references: list[dict[str, Any]]) -> dict[str, list[str]]:
-    """Build index of references to docs that mention them: reference -> [doc_files]."""
+    """Build index of references to docs that mention them: reference -> [doc_files].
+
+    DEPRECATED: No longer called - use get_reference_to_doc() helper instead.
+    Kept for backward compatibility.
+    """
     ref_index = defaultdict(list)
 
     for ref in all_references:
@@ -924,12 +939,82 @@ def _build_asset_to_docs_index(all_assets: list[dict[str, Any]]) -> dict[str, li
     return dict(asset_index)
 
 
+def load_dependencies(project_path: Path, validate: bool = True):
+    """Load dependencies.json with optional schema validation.
+
+    Args:
+        project_path: Path to project root
+        validate: Whether to validate against DependenciesBaseline schema (default True)
+
+    Returns:
+        DependenciesBaseline model if validate=True, raw dict if validate=False,
+        or None if file doesn't exist
+
+    Raises:
+        pydantic.ValidationError: If validate=True and data is invalid
+        json.JSONDecodeError: If file contains invalid JSON
+    """
+    dependency_file = project_path / ".doc-manager" / "dependencies.json"
+
+    if not dependency_file.exists():
+        return None
+
+    with open(dependency_file, encoding='utf-8') as f:
+        data = json.load(f)
+
+    if validate:
+        from doc_manager_mcp.schemas.baselines import DependenciesBaseline
+        return DependenciesBaseline.model_validate(data)
+
+    return data
+
+
+def get_reference_to_doc(all_references: dict[str, list[dict[str, Any]]]) -> dict[str, list[str]]:
+    """Derive reference_to_doc mapping from all_references on-demand.
+
+    This replaces the redundant reference_to_doc field that was previously stored
+    in dependencies.json. The mapping is computed from all_references which
+    contains the same data grouped by reference type.
+
+    Args:
+        all_references: Dict mapping reference types to list of {reference, doc_file}
+
+    Returns:
+        Dict mapping reference names to list of doc files that mention them
+
+    Example:
+        >>> all_refs = {"function": [{"reference": "foo()", "doc_file": "api.md"}]}
+        >>> get_reference_to_doc(all_refs)
+        {"foo()": ["api.md"]}
+    """
+    result: dict[str, list[str]] = {}
+
+    for ref_type, refs in all_references.items():
+        for ref in refs:
+            ref_name = ref.get("reference", "")
+            doc_file = ref.get("doc_file", "")
+
+            if not ref_name or not doc_file:
+                continue
+
+            if ref_name not in result:
+                result[ref_name] = []
+
+            # Avoid duplicates
+            if doc_file not in result[ref_name]:
+                result[ref_name].append(doc_file)
+
+    return result
+
+
 def _save_dependencies_to_memory(project_path: Path, dependencies: dict[str, list[str]],
                                  code_to_doc: dict[str, list[str]], unmatched_refs: dict[str, list[str]],
                                  all_references: list[dict[str, Any]] | None = None,
-                                 reference_index: dict[str, list[str]] | None = None,
                                  asset_to_docs: dict[str, list[str]] | None = None):
-    """Save dependency graph to memory directory with separated file and reference mappings."""
+    """Save dependency graph to memory directory with separated file and reference mappings.
+
+    Note: reference_index parameter removed in v1.2.0 - use get_reference_to_doc() helper instead.
+    """
     memory_dir = project_path / ".doc-manager"
 
     # Create memory directory if it doesn't exist
@@ -952,9 +1037,8 @@ def _save_dependencies_to_memory(project_path: Path, dependencies: dict[str, lis
         "unmatched_references": unmatched_refs  # ✓ SEPARATED
     }
 
-    # Add reference index (reference -> docs that mention it)
-    if reference_index:
-        data["reference_to_doc"] = reference_index
+    # NOTE: reference_to_doc removed in v1.2.0 - redundant with all_references
+    # Use get_reference_to_doc(all_references) helper to derive on-demand
 
     # Add all references grouped by type if provided
     if all_references:
@@ -1144,14 +1228,13 @@ async def track_dependencies(params: TrackDependenciesInput) -> dict[str, Any]:
         # Build reverse indices: code_to_doc (real files) and unmatched_references (strings)
         code_to_doc, unmatched_refs = _build_reverse_index(dependencies, all_references, project_name)
 
-        # Build reference index (reference text -> docs that mention it)
-        reference_index = _build_reference_index(all_references)
+        # Note: reference_index removed in v1.2.0 - use get_reference_to_doc() helper on-demand
 
         # Build asset_to_docs mapping (asset path -> docs that reference it)
         asset_to_docs = _build_asset_to_docs_index(all_assets)
 
         # Save to memory
-        _save_dependencies_to_memory(project_path, dependencies, code_to_doc, unmatched_refs, all_references, reference_index, asset_to_docs)
+        _save_dependencies_to_memory(project_path, dependencies, code_to_doc, unmatched_refs, all_references, asset_to_docs)
 
         return _format_dependency_report(dependencies, code_to_doc, unmatched_refs, len(all_references), all_references, tree_sitter_stats)
 

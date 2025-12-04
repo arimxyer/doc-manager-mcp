@@ -9,6 +9,28 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
+class ConfigMetadata(BaseModel):
+    """Metadata section for .doc-manager.yml configuration.
+
+    Stores project metadata that was captured during initialization.
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    language: str | None = Field(
+        default=None,
+        description="Primary programming language of the project"
+    )
+    created: str | None = Field(
+        default=None,
+        description="ISO 8601 timestamp when config was created"
+    )
+    version: str | None = Field(
+        default=None,
+        description="Config schema version (not doc-manager version)"
+    )
+
+
 class ApiCoverageConfig(BaseModel):
     """Configuration for API coverage metrics."""
 
@@ -79,6 +101,18 @@ class DocManagerConfig(BaseModel):
     api_coverage: ApiCoverageConfig | None = Field(
         default=None,
         description="Configuration for API coverage metrics"
+    )
+
+    # Project identification
+    project_name: str | None = Field(
+        default=None,
+        description="Project name for CLI filtering (falls back to repo_name from baseline)"
+    )
+
+    # Project metadata
+    metadata: ConfigMetadata | None = Field(
+        default=None,
+        description="Project metadata captured during initialization"
     )
 
     @field_validator("sources", "exclude", mode="before")
