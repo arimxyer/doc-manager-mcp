@@ -1,7 +1,7 @@
 {
   "version": "1.1",
   "created_at": "2025-11-27T05:28:45.696884+00:00",
-  "updated_at": "2025-12-03T23:11:26.900874+00:00",
+  "updated_at": "2025-12-04T03:33:46.008419+00:00",
   "project_root": "R:\\mcp-servers\\doc-manager",
   "symbols": {
     "DocumentationPlatform": [
@@ -3661,7 +3661,7 @@
         "name": "_update_dependencies",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 277,
+        "line": 266,
         "column": 0,
         "signature": "async def _update_dependencies(\r\n    project_path",
         "parent": null,
@@ -5156,12 +5156,24 @@
         "doc": null
       }
     ],
+    "create_symbol_baseline": [
+      {
+        "name": "create_symbol_baseline",
+        "type": "function",
+        "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
+        "line": 285,
+        "column": 0,
+        "signature": "def create_symbol_baseline(project_path",
+        "parent": null,
+        "doc": null
+      }
+    ],
     "compare_symbols": [
       {
         "name": "compare_symbols",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 285,
+        "line": 320,
         "column": 0,
         "signature": "def compare_symbols(\r\n    old_symbols",
         "parent": null,
@@ -5173,7 +5185,7 @@
         "name": "compare_config_fields",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 417,
+        "line": 452,
         "column": 0,
         "signature": "def compare_config_fields(\r\n    old_symbols",
         "parent": null,
@@ -5185,7 +5197,7 @@
         "name": "_is_type_change_breaking",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 563,
+        "line": 598,
         "column": 0,
         "signature": "def _is_type_change_breaking(old_type",
         "parent": null,
@@ -5197,7 +5209,7 @@
         "name": "_is_public_api",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 600,
+        "line": 635,
         "column": 0,
         "signature": "def _is_public_api(symbol",
         "parent": null,
