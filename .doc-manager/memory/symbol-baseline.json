@@ -1,7 +1,12 @@
 {
+  "_meta": {
+    "generated_by": "doc-manager-mcp",
+    "tool_version": "1.1.1",
+    "warning": "AUTO-GENERATED FILE - Do not edit manually. Changes will be overwritten by doc-manager."
+  },
   "version": "1.1",
   "created_at": "2025-11-27T05:28:45.696884+00:00",
-  "updated_at": "2025-12-04T03:33:46.008419+00:00",
+  "updated_at": "2025-12-04T17:34:51.847052+00:00",
   "project_root": "R:\\mcp-servers\\doc-manager",
   "symbols": {
     "DocumentationPlatform": [
@@ -2700,6 +2705,78 @@
             "doc": "Patterns for symbols to force-include"
           }
         ]
+      },
+      {
+        "name": "ApiCoverageConfig",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/config.py",
+        "line": 12,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "ApiCoverageConfig",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"allow\")",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 15,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "strategy",
+            "parent_symbol": "ApiCoverageConfig",
+            "field_type": "Literal[\"all_then_underscore\", \"all_only\", \"underscore_only\"]",
+            "default_value": "Field(\r\n        default=\"all_then_underscore\",\r\n        description=\"Strategy for detecting public symbols\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 17,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Strategy for detecting public symbols"
+          },
+          {
+            "name": "preset",
+            "parent_symbol": "ApiCoverageConfig",
+            "field_type": "str | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Language/framework preset (e.g., 'pydantic', 'django', 'go-test')\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 21,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Language/framework preset (e.g., "
+          },
+          {
+            "name": "exclude_symbols",
+            "parent_symbol": "ApiCoverageConfig",
+            "field_type": "list[str]",
+            "default_value": "Field(\r\n        default_factory=list,\r\n        description=\"Additional symbol patterns to exclude (fnmatch syntax)\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 25,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Additional symbol patterns to exclude (fnmatch syntax)"
+          },
+          {
+            "name": "include_symbols",
+            "parent_symbol": "ApiCoverageConfig",
+            "field_type": "list[str]",
+            "default_value": "Field(\r\n        default_factory=list,\r\n        description=\"Symbol patterns to force-include (overrides exclusions)\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 29,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Symbol patterns to force-include (overrides exclusions)"
+          }
+        ]
       }
     ],
     "get_resolved_exclude_patterns": [
@@ -3488,6 +3565,970 @@
         "doc": null
       }
     ],
+    "BaselineMeta": [
+      {
+        "name": "BaselineMeta",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 19,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "BaselineMeta",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"forbid\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 26,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "generated_by",
+            "parent_symbol": "BaselineMeta",
+            "field_type": "str",
+            "default_value": "Field(\r\n        default=\"doc-manager-mcp\",\r\n        description=\"Tool that generated this file\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 28,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Tool that generated this file"
+          },
+          {
+            "name": "tool_version",
+            "parent_symbol": "BaselineMeta",
+            "field_type": "str",
+            "default_value": "Field(\r\n        description=\"Version of doc-manager-mcp that generated this file\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 32,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Version of doc-manager-mcp that generated this file"
+          },
+          {
+            "name": "warning",
+            "parent_symbol": "BaselineMeta",
+            "field_type": "str",
+            "default_value": "Field(\r\n        default=\"AUTO-GENERATED FILE - Do not edit manually. \"\r\n                \"Changes will be overwritten by doc-manager.\",\r\n        description=\"Warning message for users/AI agents\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 35,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Warning message for users/AI agents"
+          }
+        ]
+      }
+    ],
+    "GitMetadata": [
+      {
+        "name": "GitMetadata",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 46,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "GitMetadata",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"allow\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 49,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "git_commit",
+            "parent_symbol": "GitMetadata",
+            "field_type": "str | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Git commit hash at baseline creation\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 51,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Git commit hash at baseline creation"
+          },
+          {
+            "name": "git_branch",
+            "parent_symbol": "GitMetadata",
+            "field_type": "str | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Git branch at baseline creation\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 55,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Git branch at baseline creation"
+          }
+        ]
+      }
+    ],
+    "RepoBaseline": [
+      {
+        "name": "RepoBaseline",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 61,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "RepoBaseline",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"allow\", populate_by_name=True)",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 67,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "meta",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "BaselineMeta | None",
+            "default_value": "Field(\r\n        default=None,\r\n        alias=\"_meta\",\r\n        description=\"Auto-generation metadata\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 70,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Auto-generation metadata"
+          },
+          {
+            "name": "repo_name",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "str",
+            "default_value": "Field(description=\"Repository/project name\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 77,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Repository/project name"
+          },
+          {
+            "name": "version",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "str",
+            "default_value": "Field(description=\"Baseline schema version\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 78,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Baseline schema version"
+          },
+          {
+            "name": "timestamp",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "str",
+            "default_value": "Field(description=\"ISO timestamp of baseline creation\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 79,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "ISO timestamp of baseline creation"
+          },
+          {
+            "name": "file_count",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "int",
+            "default_value": "Field(ge=0, description=\"Number of tracked files\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 80,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Number of tracked files"
+          },
+          {
+            "name": "files",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "dict[str, str]",
+            "default_value": "Field(\r\n        description=\"Map of relative file paths to SHA-256 checksums\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 81,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Map of relative file paths to SHA-256 checksums"
+          },
+          {
+            "name": "description",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "str | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Project description\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 86,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Project description"
+          },
+          {
+            "name": "language",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "str | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Primary programming language\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 90,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Primary programming language"
+          },
+          {
+            "name": "docs_exist",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "bool",
+            "default_value": "Field(\r\n        default=False,\r\n        description=\"Whether documentation directory exists\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 94,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Whether documentation directory exists"
+          },
+          {
+            "name": "docs_path",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "str | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Relative path to documentation directory\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 98,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Relative path to documentation directory"
+          },
+          {
+            "name": "metadata",
+            "parent_symbol": "RepoBaseline",
+            "field_type": "GitMetadata | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Git metadata\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 102,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Git metadata"
+          }
+        ]
+      }
+    ],
+    "ConfigFieldEntry": [
+      {
+        "name": "ConfigFieldEntry",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 112,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"allow\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 115,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "name",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "str",
+            "default_value": "Field(description=\"Field name\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 117,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Field name"
+          },
+          {
+            "name": "parent_symbol",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "str",
+            "default_value": "Field(description=\"Parent class/struct name\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 118,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Parent class/struct name"
+          },
+          {
+            "name": "field_type",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "str | None",
+            "default_value": "Field(default=None, description=\"Type annotation\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 119,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Type annotation"
+          },
+          {
+            "name": "default_value",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "str | None",
+            "default_value": "Field(default=None, description=\"Default value\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 120,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Default value"
+          },
+          {
+            "name": "file",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "str",
+            "default_value": "Field(description=\"File path\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 121,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "File path"
+          },
+          {
+            "name": "line",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "int",
+            "default_value": "Field(ge=1, description=\"Line number\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 122,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Line number"
+          },
+          {
+            "name": "column",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "int",
+            "default_value": "Field(ge=0, default=0, description=\"Column number\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 123,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Column number"
+          },
+          {
+            "name": "tags",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "list[str] | None",
+            "default_value": "Field(default=None, description=\"Field tags\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 124,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Field tags"
+          },
+          {
+            "name": "is_optional",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "bool",
+            "default_value": "Field(default=False, description=\"Whether field is optional\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 125,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Whether field is optional"
+          },
+          {
+            "name": "doc",
+            "parent_symbol": "ConfigFieldEntry",
+            "field_type": "str | None",
+            "default_value": "Field(default=None, description=\"Documentation string\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 126,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Documentation string"
+          }
+        ]
+      }
+    ],
+    "SymbolEntry": [
+      {
+        "name": "SymbolEntry",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 129,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "SymbolEntry",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"allow\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 132,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "name",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "str",
+            "default_value": "Field(description=\"Symbol name\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 134,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Symbol name"
+          },
+          {
+            "name": "type",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "str",
+            "default_value": "Field(description=\"Symbol type (function, class, method, etc.)\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 135,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Symbol type (function, class, method, etc.)"
+          },
+          {
+            "name": "file",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "str",
+            "default_value": "Field(description=\"File path relative to project root\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 136,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "File path relative to project root"
+          },
+          {
+            "name": "line",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "int",
+            "default_value": "Field(ge=1, description=\"Line number (1-indexed)\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 137,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Line number (1-indexed)"
+          },
+          {
+            "name": "column",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "int",
+            "default_value": "Field(ge=0, default=0, description=\"Column number (0-indexed)\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 138,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Column number (0-indexed)"
+          },
+          {
+            "name": "signature",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "str | None",
+            "default_value": "Field(default=None, description=\"Function/method signature\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 139,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Function/method signature"
+          },
+          {
+            "name": "parent",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "str | None",
+            "default_value": "Field(default=None, description=\"Parent symbol name\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 140,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Parent symbol name"
+          },
+          {
+            "name": "doc",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "str | None",
+            "default_value": "Field(default=None, description=\"Documentation string\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 141,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Documentation string"
+          },
+          {
+            "name": "config_fields",
+            "parent_symbol": "SymbolEntry",
+            "field_type": "list[ConfigFieldEntry] | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Config fields for Pydantic models, dataclasses, etc.\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 142,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Config fields for Pydantic models, dataclasses, etc."
+          }
+        ]
+      }
+    ],
+    "SymbolBaseline": [
+      {
+        "name": "SymbolBaseline",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 148,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "SymbolBaseline",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"allow\", populate_by_name=True)",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 154,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "meta",
+            "parent_symbol": "SymbolBaseline",
+            "field_type": "BaselineMeta | None",
+            "default_value": "Field(\r\n        default=None,\r\n        alias=\"_meta\",\r\n        description=\"Auto-generation metadata\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 157,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Auto-generation metadata"
+          },
+          {
+            "name": "version",
+            "parent_symbol": "SymbolBaseline",
+            "field_type": "str",
+            "default_value": "Field(description=\"Baseline schema version\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 164,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Baseline schema version"
+          },
+          {
+            "name": "created_at",
+            "parent_symbol": "SymbolBaseline",
+            "field_type": "str",
+            "default_value": "Field(description=\"ISO timestamp of initial creation\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 165,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "ISO timestamp of initial creation"
+          },
+          {
+            "name": "updated_at",
+            "parent_symbol": "SymbolBaseline",
+            "field_type": "str",
+            "default_value": "Field(description=\"ISO timestamp of last update\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 166,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "ISO timestamp of last update"
+          },
+          {
+            "name": "project_root",
+            "parent_symbol": "SymbolBaseline",
+            "field_type": "str",
+            "default_value": "Field(description=\"Absolute path to project root\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 167,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Absolute path to project root"
+          },
+          {
+            "name": "symbols",
+            "parent_symbol": "SymbolBaseline",
+            "field_type": "dict[str, list[SymbolEntry]]",
+            "default_value": "Field(\r\n        description=\"Map of symbol names to list of symbol entries\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 168,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Map of symbol names to list of symbol entries"
+          }
+        ]
+      }
+    ],
+    "DependenciesBaseline": [
+      {
+        "name": "DependenciesBaseline",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 177,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "DependenciesBaseline",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"allow\", populate_by_name=True)",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 183,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "meta",
+            "parent_symbol": "DependenciesBaseline",
+            "field_type": "BaselineMeta | None",
+            "default_value": "Field(\r\n        default=None,\r\n        alias=\"_meta\",\r\n        description=\"Auto-generation metadata\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 186,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Auto-generation metadata"
+          },
+          {
+            "name": "generated_at",
+            "parent_symbol": "DependenciesBaseline",
+            "field_type": "str",
+            "default_value": "Field(description=\"ISO timestamp of generation\")",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 193,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "ISO timestamp of generation"
+          },
+          {
+            "name": "doc_to_code",
+            "parent_symbol": "DependenciesBaseline",
+            "field_type": "dict[str, list[str]]",
+            "default_value": "Field(\r\n        default_factory=dict,\r\n        description=\"Map of doc paths to code files they reference\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 196,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Map of doc paths to code files they reference"
+          },
+          {
+            "name": "code_to_doc",
+            "parent_symbol": "DependenciesBaseline",
+            "field_type": "dict[str, list[str]]",
+            "default_value": "Field(\r\n        default_factory=dict,\r\n        description=\"Map of code paths to docs that reference them\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 200,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Map of code paths to docs that reference them"
+          },
+          {
+            "name": "asset_to_docs",
+            "parent_symbol": "DependenciesBaseline",
+            "field_type": "dict[str, list[str]]",
+            "default_value": "Field(\r\n        default_factory=dict,\r\n        description=\"Map of asset paths to docs that use them\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/baselines.py",
+            "line": 204,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Map of asset paths to docs that use them"
+          }
+        ]
+      }
+    ],
+    "validate_repo_baseline": [
+      {
+        "name": "validate_repo_baseline",
+        "type": "function",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 214,
+        "column": 0,
+        "signature": "def validate_repo_baseline(data",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "validate_symbol_baseline": [
+      {
+        "name": "validate_symbol_baseline",
+        "type": "function",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 229,
+        "column": 0,
+        "signature": "def validate_symbol_baseline(data",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "validate_dependencies_baseline": [
+      {
+        "name": "validate_dependencies_baseline",
+        "type": "function",
+        "file": "doc_manager_mcp/schemas/baselines.py",
+        "line": 244,
+        "column": 0,
+        "signature": "def validate_dependencies_baseline(data",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "DocManagerConfig": [
+      {
+        "name": "DocManagerConfig",
+        "type": "class",
+        "file": "doc_manager_mcp/schemas/config.py",
+        "line": 35,
+        "column": 0,
+        "signature": null,
+        "parent": null,
+        "doc": null,
+        "config_fields": [
+          {
+            "name": "model_config",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": null,
+            "default_value": "ConfigDict(extra=\"allow\")",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 42,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": null
+          },
+          {
+            "name": "docs_path",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": "str",
+            "default_value": "Field(\r\n        default=\"docs\",\r\n        description=\"Relative path to documentation directory\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 45,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Relative path to documentation directory"
+          },
+          {
+            "name": "platform",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": "str | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Documentation platform (mkdocs, sphinx, hugo, docusaurus, unknown)\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 49,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Documentation platform (mkdocs, sphinx, hugo, docusaurus, unknown)"
+          },
+          {
+            "name": "sources",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": "list[str]",
+            "default_value": "Field(\r\n        default_factory=list,\r\n        description=\"Glob patterns for source files to track\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 55,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Glob patterns for source files to track"
+          },
+          {
+            "name": "exclude",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": "list[str]",
+            "default_value": "Field(\r\n        default_factory=list,\r\n        description=\"Glob patterns for files to exclude\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 59,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Glob patterns for files to exclude"
+          },
+          {
+            "name": "use_gitignore",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": "bool",
+            "default_value": "Field(\r\n        default=False,\r\n        description=\"Whether to respect .gitignore patterns\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 63,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Whether to respect .gitignore patterns"
+          },
+          {
+            "name": "include_root_readme",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": "bool",
+            "default_value": "Field(\r\n        default=False,\r\n        description=\"Whether to include root README.md in doc operations\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 67,
+            "column": 4,
+            "tags": null,
+            "is_optional": false,
+            "doc": "Whether to include root README.md in doc operations"
+          },
+          {
+            "name": "doc_mappings",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": "dict[str, str] | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Map of change categories to documentation file paths\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 73,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Map of change categories to documentation file paths"
+          },
+          {
+            "name": "api_coverage",
+            "parent_symbol": "DocManagerConfig",
+            "field_type": "ApiCoverageConfig | None",
+            "default_value": "Field(\r\n        default=None,\r\n        description=\"Configuration for API coverage metrics\"\r\n    )",
+            "file": "doc_manager_mcp/schemas/config.py",
+            "line": 79,
+            "column": 4,
+            "tags": null,
+            "is_optional": true,
+            "doc": "Configuration for API coverage metrics"
+          }
+        ]
+      }
+    ],
+    "normalize_list_fields": [
+      {
+        "name": "normalize_list_fields",
+        "type": "method",
+        "file": "doc_manager_mcp/schemas/config.py",
+        "line": 86,
+        "column": 4,
+        "signature": "def normalize_list_fields(cls, v",
+        "parent": "DocManagerConfig",
+        "doc": null
+      }
+    ],
+    "normalize_doc_mappings": [
+      {
+        "name": "normalize_doc_mappings",
+        "type": "method",
+        "file": "doc_manager_mcp/schemas/config.py",
+        "line": 94,
+        "column": 4,
+        "signature": "def normalize_doc_mappings(cls, v",
+        "parent": "DocManagerConfig",
+        "doc": null
+      }
+    ],
+    "validate_config": [
+      {
+        "name": "validate_config",
+        "type": "function",
+        "file": "doc_manager_mcp/schemas/config.py",
+        "line": 101,
+        "column": 0,
+        "signature": "def validate_config(data",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "get_json_meta": [
+      {
+        "name": "get_json_meta",
+        "type": "function",
+        "file": "doc_manager_mcp/schemas/metadata.py",
+        "line": 22,
+        "column": 0,
+        "signature": "def get_json_meta() -> dict",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "get_yaml_header": [
+      {
+        "name": "get_yaml_header",
+        "type": "function",
+        "file": "doc_manager_mcp/schemas/metadata.py",
+        "line": 37,
+        "column": 0,
+        "signature": "def get_yaml_header() -> str",
+        "parent": null,
+        "doc": null
+      }
+    ],
+    "insert_meta_first": [
+      {
+        "name": "insert_meta_first",
+        "type": "function",
+        "file": "doc_manager_mcp/schemas/metadata.py",
+        "line": 54,
+        "column": 0,
+        "signature": "def insert_meta_first(data",
+        "parent": null,
+        "doc": null
+      }
+    ],
     "docmgr_detect_changes": [
       {
         "name": "docmgr_detect_changes",
@@ -3625,7 +4666,7 @@
         "name": "_write_baseline_safely",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 184,
+        "line": 186,
         "column": 0,
         "signature": "def _write_baseline_safely(baseline_path",
         "parent": null,
@@ -3637,7 +4678,7 @@
         "name": "_update_repo_baseline",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 197,
+        "line": 199,
         "column": 0,
         "signature": "async def _update_repo_baseline(project_path",
         "parent": null,
@@ -3649,7 +4690,7 @@
         "name": "_update_symbol_baseline",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 239,
+        "line": 241,
         "column": 0,
         "signature": "async def _update_symbol_baseline(project_path",
         "parent": null,
@@ -3661,7 +4702,7 @@
         "name": "_update_dependencies",
         "type": "function",
         "file": "doc_manager_mcp/tools/state/update_baseline.py",
-        "line": 266,
+        "line": 268,
         "column": 0,
         "signature": "async def _update_dependencies(\r\n    project_path",
         "parent": null,
@@ -4265,7 +5306,7 @@
         "name": "_format_dependency_report",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 981,
+        "line": 985,
         "column": 0,
         "signature": "def _format_dependency_report(dependencies",
         "parent": null,
@@ -4277,7 +5318,7 @@
         "name": "track_dependencies",
         "type": "function",
         "file": "doc_manager_mcp/tools/_internal/dependencies.py",
-        "line": 1004,
+        "line": 1008,
         "column": 0,
         "signature": "async def track_dependencies(params",
         "parent": null,
@@ -5161,7 +6202,7 @@
         "name": "create_symbol_baseline",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 285,
+        "line": 289,
         "column": 0,
         "signature": "def create_symbol_baseline(project_path",
         "parent": null,
@@ -5173,7 +6214,7 @@
         "name": "compare_symbols",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 320,
+        "line": 324,
         "column": 0,
         "signature": "def compare_symbols(\r\n    old_symbols",
         "parent": null,
@@ -5185,7 +6226,7 @@
         "name": "compare_config_fields",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 452,
+        "line": 456,
         "column": 0,
         "signature": "def compare_config_fields(\r\n    old_symbols",
         "parent": null,
@@ -5197,7 +6238,7 @@
         "name": "_is_type_change_breaking",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 598,
+        "line": 602,
         "column": 0,
         "signature": "def _is_type_change_breaking(old_type",
         "parent": null,
@@ -5209,7 +6250,7 @@
         "name": "_is_public_api",
         "type": "function",
         "file": "doc_manager_mcp/indexing/analysis/semantic_diff.py",
-        "line": 635,
+        "line": 639,
         "column": 0,
         "signature": "def _is_public_api(symbol",
         "parent": null,
