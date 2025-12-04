@@ -143,6 +143,33 @@ doc-writer agent Please update documentation:
 Run `docmgr_validate_docs` before returning.
 ```
 
+### Example 4: Config Field Documentation
+
+```markdown
+doc-writer agent Please update documentation:
+
+**Context**: New config fields added to AppConfig. Action items from semantic analysis indicate these need documentation.
+
+**Platform**: MkDocs
+
+**Files to Update**:
+1. docs/reference/configuration.md - Document new config fields in AppConfig
+   - Source: src/config.py:15-45
+   - Type: config reference
+   - Key details:
+     - Field: `timeout` (int, default: 30) - Request timeout in seconds
+     - Field: `retry_count` (int, default: 3) - Number of retry attempts
+     - Field: `log_level` (str, default: "INFO") - Logging verbosity
+   - Priority: high (from action_items)
+
+**Conventions**:
+- Use table format for config fields (Name | Type | Default | Description)
+- Include example YAML/JSON showing field usage
+- Note any validation constraints
+
+Run `docmgr_validate_docs` before returning.
+```
+
 ## Receiving Results
 
 ### What to Expect

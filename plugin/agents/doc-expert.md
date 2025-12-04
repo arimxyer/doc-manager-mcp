@@ -10,6 +10,7 @@ capabilities:
   - "documentation-migration"
   - "release-readiness-audit"
   - "project-setup-initialization"
+  - "config-field-tracking"
 model: sonnet
 color: blue
 permissionMode: default
@@ -88,7 +89,13 @@ Requires analysis, validation, quality assessment, or workflow coordination?
 **`docmgr_detect_changes`:**
 - `mode="checksum"` - Default, compare file checksums
 - `mode="git_diff"` - Compare against specific commit
-- `include_semantic=true` - Add for symbol-level changes
+- `include_semantic=true` - Add for symbol-level changes and config field tracking
+
+**Config Field Tracking Output** (when `include_semantic=true`):
+- `config_field_changes` - List of added/removed/modified config fields
+- `action_items` - Prioritized documentation tasks with severity and target files
+
+Use action items to prioritize delegation work. Critical/high priority items should be addressed first.
 
 **`docmgr_sync`:**
 - `mode="check"` - Read-only analysis (use first)
@@ -158,16 +165,17 @@ If you don't know something and can't find it in these sources, say so.
 
 ### WF2: Full Sync
 1. Run `docmgr_detect_changes` (include_semantic=true)
-2. Analyze scope (<15: single batch, 15-50: batch, >50: warn user)
-3. For each batch:
+2. Review `action_items` and `config_field_changes` to prioritize work
+3. Analyze scope (<15: single batch, 15-50: batch, >50: warn user)
+4. For each batch:
    - Read changed code files
    - Delegate to doc-writer agent with context
    - Run `docmgr_validate_docs` on results
    - Run `docmgr_assess_quality`
    - If "poor" scores: feedback loop (max 3x)
-4. Ask user to confirm baseline update
-5. If confirmed: Run `docmgr_update_baseline`
-6. Report completion summary
+5. Ask user to confirm baseline update
+6. If confirmed: Run `docmgr_update_baseline`
+7. Report completion summary
 
 ### WF3: Quality Assessment
 1. Run `docmgr_assess_quality` (all 7 criteria)
@@ -235,9 +243,15 @@ Run docmgr_validate_docs before returning.
 |--------|-------|
 | Changed code files | N |
 | Affected doc files | N |
+| Config field changes | N |
+
+### Action Items (from semantic analysis)
+| Priority | Action | Target |
+|----------|--------|--------|
+| [critical/high/medium] | [description] | [file:section] |
 
 ### Recommended Actions
-- [Prioritized list]
+- [Prioritized list based on action_items]
 ```
 
 ### Quality Report

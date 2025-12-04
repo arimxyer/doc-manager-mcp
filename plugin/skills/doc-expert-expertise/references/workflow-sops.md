@@ -66,14 +66,22 @@ Step 4: Exit
 Step 1: Detect Changes
 ├── Run: docmgr_detect_changes(mode="checksum", include_semantic=true)
 ├── Capture: changed files by category, symbol changes
+├── Capture: config_field_changes (added/removed/modified config fields)
+├── Capture: action_items (prioritized documentation tasks)
 └── Calculate: total scope
 
-Step 2: Analyze Scope
+Step 2: Prioritize Using Action Items
+├── Review action_items by priority (critical → high → medium → low)
+├── Critical/High: Breaking changes, config field removals
+├── Medium: New config fields, default value changes
+└── Use priorities to order delegation batches
+
+Step 3: Analyze Scope
 ├── <15 files → Single batch
 ├── 15-50 files → Batch into groups of 10-15
 └── >50 files → Warn user, get confirmation before proceeding
 
-Step 3: For Each Batch
+Step 4: For Each Batch
 │
 ├── 3a: Read Changed Code
 │   ├── Read source files in batch
@@ -99,12 +107,12 @@ Step 3: For Each Batch
     ├── Any Poor → Provide feedback, request revision
     └── After 3 iterations still Poor → Escalate to user
 
-Step 4: Confirm Baseline Update
+Step 5: Confirm Baseline Update
 ├── Ask: "Documentation updated. Update baseline to mark as synced?"
 ├── If yes → Run: docmgr_update_baseline
 └── If no → Report completion without baseline update
 
-Step 5: Report Completion
+Step 6: Report Completion
 └── Summary: files updated, quality scores, baseline status
 ```
 
