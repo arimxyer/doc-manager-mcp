@@ -248,8 +248,12 @@ def save_symbol_baseline(
             serialized_symbols.append(sym_dict)
         symbols_dict[file_path] = serialized_symbols
 
+    # Get auto-generated metadata
+    from doc_manager_mcp.schemas.metadata import get_json_meta
+
     # Build JSON structure with metadata
     baseline_data = {
+        "_meta": get_json_meta(),
         "version": "1.1",  # Bumped for config_fields support
         "created_at": created_at,
         "updated_at": now,

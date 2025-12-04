@@ -163,11 +163,13 @@ def _build_baseline_structure(
     from datetime import datetime
 
     from doc_manager_mcp.core import detect_project_language, find_docs_directory
+    from doc_manager_mcp.schemas.metadata import get_json_meta
 
     language = detect_project_language(project_path)
     docs_dir = find_docs_directory(project_path)
 
     return {
+        "_meta": get_json_meta(),
         "repo_name": project_path.name,
         "description": f"Repository for {project_path.name}",
         "language": language,

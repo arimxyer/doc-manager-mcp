@@ -941,7 +941,11 @@ def _save_dependencies_to_memory(project_path: Path, dependencies: dict[str, lis
 
     dependency_file = memory_dir / "dependencies.json"
 
+    # Get auto-generated metadata
+    from doc_manager_mcp.schemas.metadata import get_json_meta
+
     data = {
+        "_meta": get_json_meta(),
         "generated_at": datetime.now().isoformat(),
         "doc_to_code": dependencies,
         "code_to_doc": code_to_doc,  # ✓ ONLY real source files
