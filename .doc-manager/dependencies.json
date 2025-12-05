@@ -4,7 +4,7 @@
     "tool_version": "1.2.1",
     "warning": "AUTO-GENERATED FILE - Do not edit manually. Changes will be overwritten by doc-manager."
   },
-  "generated_at": "2025-12-04T20:04:23.336181",
+  "generated_at": "2025-12-04T20:10:07.618099",
   "doc_to_code": {
     "getting-started/installation.md": [
       "doc_manager_mcp/server.py",
@@ -611,6 +611,15 @@
     ],
     "test_": [
       "reference/api-coverage.md"
+    ],
+    "change_percentage": [
+      "reference/tools/docmgr_detect_changes.md"
+    ],
+    "check_stale_references": [
+      "reference/tools/docmgr_validate_docs.md"
+    ],
+    "check_external_assets": [
+      "reference/tools/docmgr_validate_docs.md"
     ],
     "doc-manager-mcp": [
       "README.md"
@@ -2433,6 +2442,14 @@
         "doc_file": "reference/tools/docmgr_validate_docs.md"
       },
       {
+        "reference": "true",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "false",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
         "reference": "false",
         "doc_file": "reference/tools/docmgr_validate_docs.md"
       },
@@ -3115,6 +3132,10 @@
         "doc_file": "reference/tools/docmgr_detect_changes.md"
       },
       {
+        "reference": "change_percentage",
+        "doc_file": "reference/tools/docmgr_detect_changes.md"
+      },
+      {
         "reference": "type_changed",
         "doc_file": "reference/tools/docmgr_detect_changes.md"
       },
@@ -3228,6 +3249,14 @@
       },
       {
         "reference": "check_snippets",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "check_stale_references",
+        "doc_file": "reference/tools/docmgr_validate_docs.md"
+      },
+      {
+        "reference": "check_external_assets",
         "doc_file": "reference/tools/docmgr_validate_docs.md"
       },
       {

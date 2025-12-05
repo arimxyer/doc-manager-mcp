@@ -176,7 +176,7 @@ api_coverage:
 
 With the plugin installed, config field tracking is built into the `/doc-sync` command:
 
-```
+```text
 /doc-sync
 ```
 
