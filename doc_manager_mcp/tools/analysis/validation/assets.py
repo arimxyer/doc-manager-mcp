@@ -160,10 +160,10 @@ def validate_external_assets(
     """
     issues = []
 
-    # Load dependencies if not provided
+    # Load dependencies if not provided (with schema validation)
     if dependencies is None:
         from doc_manager_mcp.tools._internal.dependencies import load_dependencies
-        dependencies = load_dependencies(project_path, validate=False)
+        dependencies = load_dependencies(project_path)
 
     if not dependencies:
         return issues
@@ -247,10 +247,10 @@ def get_asset_coverage(
     Returns:
         Dict with asset coverage metrics
     """
-    # Load dependencies if not provided
+    # Load dependencies if not provided (with schema validation)
     if dependencies is None:
         from doc_manager_mcp.tools._internal.dependencies import load_dependencies
-        dependencies = load_dependencies(project_path, validate=False)
+        dependencies = load_dependencies(project_path)
 
     if not dependencies:
         return {

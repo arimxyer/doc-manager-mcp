@@ -7,8 +7,11 @@ This module provides typed, validated access to baseline files:
 """
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
+
+from pydantic import ValidationError
 
 from doc_manager_mcp.schemas.baselines import RepoBaseline
 
@@ -16,7 +19,7 @@ from doc_manager_mcp.schemas.baselines import RepoBaseline
 def load_repo_baseline(
     project_path: Path,
     validate: bool = True,
-    check_version: bool = False,
+    check_version: bool = True,
     required_version: str = "1.0.0",
 ) -> RepoBaseline | dict[str, Any] | None:
     """Load repo-baseline.json with optional schema validation.
@@ -29,11 +32,7 @@ def load_repo_baseline(
 
     Returns:
         RepoBaseline model if validate=True, raw dict if validate=False,
-        or None if file doesn't exist or version incompatible (when check_version=True)
-
-    Raises:
-        pydantic.ValidationError: If validate=True and data is invalid
-        json.JSONDecodeError: If file contains invalid JSON
+        or None if file doesn't exist, validation fails, or version incompatible
 
     Example:
         >>> baseline = load_repo_baseline(project_path)
@@ -47,14 +46,21 @@ def load_repo_baseline(
     if not baseline_path.exists():
         return None
 
-    with open(baseline_path, encoding="utf-8") as f:
-        data = json.load(f)
+    try:
+        with open(baseline_path, encoding="utf-8") as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(
+            f"Warning: repo-baseline.json contains invalid JSON: {e}. "
+            "Consider running docmgr_update_baseline to regenerate.",
+            file=sys.stderr
+        )
+        return None
 
     # Task 1.6: Check version compatibility if requested
     if check_version:
         is_compatible, actual_version = check_baseline_compatibility(project_path, required_version)
         if not is_compatible:
-            import sys
             print(
                 f"Warning: Baseline version {actual_version} is older than required {required_version}. "
                 "Consider running docmgr_update_baseline to upgrade.",
@@ -62,7 +68,15 @@ def load_repo_baseline(
             )
 
     if validate:
-        return RepoBaseline.model_validate(data)
+        try:
+            return RepoBaseline.model_validate(data)
+        except ValidationError as e:
+            print(
+                f"Warning: repo-baseline.json failed schema validation: {e}. "
+                "Consider running docmgr_update_baseline to regenerate.",
+                file=sys.stderr
+            )
+            return None
 
     return data
 

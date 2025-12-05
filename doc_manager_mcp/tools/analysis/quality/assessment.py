@@ -253,15 +253,22 @@ async def assess_quality(params: AssessQualityInput) -> str | dict[str, Any]:
         # Task 3.3: Calculate docstring coverage from symbol baseline
         docstring_coverage = calculate_docstring_coverage(project_path)
 
-        # Task 1.3: Load project context from repo baseline
+        # Task 1.3: Load project context from repo baseline (with schema validation)
         project_context = None
-        repo_baseline_data = load_repo_baseline(project_path, validate=False)
-        if isinstance(repo_baseline_data, dict):
-            project_context = {
-                "repo_name": repo_baseline_data.get("repo_name"),
-                "description": repo_baseline_data.get("description"),
-                "language": repo_baseline_data.get("language"),
-            }
+        repo_baseline_data = load_repo_baseline(project_path)
+        if repo_baseline_data:
+            if isinstance(repo_baseline_data, dict):
+                project_context = {
+                    "repo_name": repo_baseline_data.get("repo_name"),
+                    "description": repo_baseline_data.get("description"),
+                    "language": repo_baseline_data.get("language"),
+                }
+            else:
+                project_context = {
+                    "repo_name": getattr(repo_baseline_data, "repo_name", None),
+                    "description": getattr(repo_baseline_data, "description", None),
+                    "language": getattr(repo_baseline_data, "language", None),
+                }
 
         return enforce_response_limit(_format_quality_report(
             results,

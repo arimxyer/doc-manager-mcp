@@ -948,23 +948,36 @@ def load_dependencies(project_path: Path, validate: bool = True):
 
     Returns:
         DependenciesBaseline model if validate=True, raw dict if validate=False,
-        or None if file doesn't exist
-
-    Raises:
-        pydantic.ValidationError: If validate=True and data is invalid
-        json.JSONDecodeError: If file contains invalid JSON
+        or None if file doesn't exist or validation fails
     """
     dependency_file = project_path / ".doc-manager" / "dependencies.json"
 
     if not dependency_file.exists():
         return None
 
-    with open(dependency_file, encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        with open(dependency_file, encoding='utf-8') as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(
+            f"Warning: dependencies.json contains invalid JSON: {e}. "
+            "Consider running docmgr_update_baseline to regenerate.",
+            file=sys.stderr
+        )
+        return None
 
     if validate:
+        from pydantic import ValidationError
         from doc_manager_mcp.schemas.baselines import DependenciesBaseline
-        return DependenciesBaseline.model_validate(data)
+        try:
+            return DependenciesBaseline.model_validate(data)
+        except ValidationError as e:
+            print(
+                f"Warning: dependencies.json failed schema validation: {e}. "
+                "Consider running docmgr_update_baseline to regenerate.",
+                file=sys.stderr
+            )
+            return None
 
     return data
 

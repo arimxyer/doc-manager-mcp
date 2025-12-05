@@ -209,14 +209,14 @@ def _map_to_affected_docs(changed_files: list[dict[str, str]], project_path: Pat
     docs_root = project_path / docs_path
     path_index = build_path_index(docs_root, project_path) if docs_root.exists() else None
 
-    # Try to load dependencies.json for precise code_to_doc mappings
+    # Try to load dependencies.json for precise code_to_doc mappings (with schema validation)
     dependencies = None
     code_to_doc: dict[str, list[str]] = {}
     try:
-        deps_data = load_dependencies(project_path, validate=False)
+        deps_data = load_dependencies(project_path)
         if deps_data:
             dependencies = deps_data
-            code_to_doc = deps_data.get("code_to_doc", {}) if isinstance(deps_data, dict) else {}
+            code_to_doc = deps_data.get("code_to_doc", {}) if isinstance(deps_data, dict) else getattr(deps_data, "code_to_doc", {})
     except Exception:
         # If loading fails, we'll use fallback mappings
         pass

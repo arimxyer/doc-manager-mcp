@@ -174,10 +174,17 @@ async def validate_docs(params: ValidateDocsInput) -> str | dict[str, Any]:
         include_root_readme = config.get('include_root_readme', False) if config else False
         conventions = load_conventions(project_path)
 
-        # Task 1.4 & 1.5: Load repo baseline for language and docs_exist
-        repo_baseline_data = load_repo_baseline(project_path, validate=False)
-        primary_language = repo_baseline_data.get("language") if isinstance(repo_baseline_data, dict) else None
-        docs_exist = repo_baseline_data.get("docs_exist", True) if isinstance(repo_baseline_data, dict) else True
+        # Task 1.4 & 1.5: Load repo baseline for language and docs_exist (with schema validation)
+        repo_baseline_data = load_repo_baseline(project_path)
+        if isinstance(repo_baseline_data, dict):
+            primary_language = repo_baseline_data.get("language")
+            docs_exist = repo_baseline_data.get("docs_exist", True)
+        elif repo_baseline_data:
+            primary_language = getattr(repo_baseline_data, "language", None)
+            docs_exist = getattr(repo_baseline_data, "docs_exist", True)
+        else:
+            primary_language = None
+            docs_exist = True
 
         # Task 1.5: Early exit if docs_exist=false in baseline
         if not docs_exist:
@@ -235,10 +242,10 @@ async def validate_docs(params: ValidateDocsInput) -> str | dict[str, Any]:
                 asyncio.to_thread(validate_symbols, docs_path, project_path, include_root_readme, None, markdown_files)
             )
 
-        # Task 2.2: Check for stale references using dependencies.json
+        # Task 2.2: Check for stale references using dependencies.json (with schema validation)
         dependencies_data = None
         if getattr(params, 'check_stale_references', True) or getattr(params, 'check_external_assets', False):
-            dependencies_data = load_dependencies(project_path, validate=False)
+            dependencies_data = load_dependencies(project_path)
 
         if getattr(params, 'check_stale_references', True) and dependencies_data:
             validators.append(

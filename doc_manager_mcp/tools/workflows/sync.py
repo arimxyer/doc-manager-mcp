@@ -79,10 +79,10 @@ async def sync(params: SyncInput) -> dict[str, Any] | str:
         config = load_config(project_path)
         include_root_readme = config.get('include_root_readme', False) if config else False
 
-        # Task 1.2 & 1.3: Load repo baseline for repo_name and description
-        repo_baseline_data = load_repo_baseline(project_path, validate=False)
-        repo_name = repo_baseline_data.get("repo_name") if isinstance(repo_baseline_data, dict) else project_path.name
-        description = repo_baseline_data.get("description") if isinstance(repo_baseline_data, dict) else None
+        # Task 1.2 & 1.3: Load repo baseline for repo_name and description (with schema validation)
+        repo_baseline_data = load_repo_baseline(project_path)
+        repo_name = repo_baseline_data.get("repo_name") if isinstance(repo_baseline_data, dict) else getattr(repo_baseline_data, "repo_name", None) if repo_baseline_data else project_path.name
+        description = repo_baseline_data.get("description") if isinstance(repo_baseline_data, dict) else getattr(repo_baseline_data, "description", None) if repo_baseline_data else None
 
         lines = ["# Documentation Sync Report", ""]
         lines.append(f"**Project:** {repo_name}")

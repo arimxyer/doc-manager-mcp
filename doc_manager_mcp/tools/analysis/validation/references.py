@@ -29,10 +29,10 @@ def validate_stale_references(
     """
     issues = []
 
-    # Load dependencies if not provided
+    # Load dependencies if not provided (with schema validation)
     if dependencies is None:
         from doc_manager_mcp.tools._internal.dependencies import load_dependencies
-        dependencies = load_dependencies(project_path, validate=False)
+        dependencies = load_dependencies(project_path)
 
     if not dependencies:
         return issues
@@ -73,10 +73,10 @@ def get_doc_code_coverage(
         - avg_refs_per_doc: Average code references per doc
         - docs_by_ref_count: Breakdown of docs by reference count
     """
-    # Load dependencies if not provided
+    # Load dependencies if not provided (with schema validation)
     if dependencies is None:
         from doc_manager_mcp.tools._internal.dependencies import load_dependencies
-        dependencies = load_dependencies(project_path, validate=False)
+        dependencies = load_dependencies(project_path)
 
     if not dependencies:
         return {

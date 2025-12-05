@@ -89,10 +89,10 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
 
             changed_files = _get_changed_files_from_checksums(project_path, baseline)
 
-            # Load typed baseline for additional metadata
-            repo_baseline_data = load_repo_baseline(project_path, validate=False)
-            repo_name = repo_baseline_data.get("repo_name") if isinstance(repo_baseline_data, dict) else None
-            file_count = repo_baseline_data.get("file_count", 0) if isinstance(repo_baseline_data, dict) else 0
+            # Load typed baseline for additional metadata (with schema validation)
+            repo_baseline_data = load_repo_baseline(project_path)
+            repo_name = repo_baseline_data.get("repo_name") if isinstance(repo_baseline_data, dict) else getattr(repo_baseline_data, "repo_name", None)
+            file_count = repo_baseline_data.get("file_count", 0) if isinstance(repo_baseline_data, dict) else getattr(repo_baseline_data, "file_count", 0)
 
             baseline_info = {
                 "mode": "checksum",
@@ -252,12 +252,12 @@ async def _get_semantic_changes_readonly(
         docs_path = config.get("docs_path", "docs")
         doc_mappings = config.get("doc_mappings", {})
 
-        # Try to load code_to_doc from dependencies.json
+        # Try to load code_to_doc from dependencies.json (with schema validation)
         code_to_doc: dict[str, list[str]] = {}
         try:
-            deps_data = load_dependencies(project_path, validate=False)
+            deps_data = load_dependencies(project_path)
             if deps_data:
-                code_to_doc = deps_data.get("code_to_doc", {}) if isinstance(deps_data, dict) else {}
+                code_to_doc = deps_data.get("code_to_doc", {}) if isinstance(deps_data, dict) else getattr(deps_data, "code_to_doc", {})
         except Exception:
             pass  # Fall back to empty code_to_doc
 
