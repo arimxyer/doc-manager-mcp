@@ -1,7 +1,7 @@
 {
   "_meta": {
     "generated_by": "doc-manager-mcp",
-    "tool_version": "1.2.1",
+    "tool_version": "1.2.3",
     "warning": "AUTO-GENERATED FILE - Do not edit manually. Changes will be overwritten by doc-manager."
   },
   "repo_name": "doc-manager",
@@ -9,19 +9,19 @@
   "language": "Python",
   "docs_exist": true,
   "metadata": {
-    "git_commit": "670a915fbfcc2c5a5c8e1a1238f249ddfcb96779",
+    "git_commit": "ccb9b74a3ee60135fa50732d75ec6faad6793023",
     "git_branch": "main"
   },
-  "timestamp": "2025-12-04T20:10:05.631211",
+  "timestamp": "2025-12-04T23:27:30.324400",
   "version": "1.0.0",
   "file_count": 133,
   "files": {
     "AGENTS.md": "98937111944378f074f31608340066abad87b15de8fc37defc41f4735c0688ca",
-    "CHANGELOG.md": "a8f1a5f7ed166755631be47a6d0a9908ed3a65273967476ab105d62db2ad8266",
+    "CHANGELOG.md": "2aa00d64a5d46876648ff568e9755e7a60e2bf7c522056abf06635f6f2061db6",
     "LICENSE": "39bde6d6482a0649242a82f8a3aeca72cbf49b2beae5a42717ccffe7c81a94f3",
-    "pyproject.toml": "3b46a094fb286a4cb286aaef5be581be4f101f5d3f64b677031b93f025269b5d",
+    "pyproject.toml": "e400efc392077bed8eecd7fa49f3487f74296ce5c2c0a6a6ea08bc7119329b19",
     "README.md": "584ad736aeb372d0c234556d8e1e976817d789e4007437230b40f41af750dfee",
-    "uv.lock": "4e9eb83961cb1327c34ffa43f6b1ffd7ac391a366f9fe3ba22e282ed54fe2cc3",
+    "uv.lock": "99f4c69d42cb59fa6402a4c8a6e597a38c8499b9ae625ea62c529f470a307c8c",
     "docs/index.md": "6d8cbd14623e1cf930e8768a706e9d6166c7e67789679b31dac985e9d9288fe1",
     "docs/README.md": "6d8cbd14623e1cf930e8768a706e9d6166c7e67789679b31dac985e9d9288fe1",
     "docs/getting-started/installation.md": "7f59d52c657f2e410eb13b64bce7106c9243afe65ba4da1292b46493ea6a77e8",
@@ -109,7 +109,7 @@
     "doc_manager_mcp/tools/analysis/validation/validator.py": "1bacc3f7099c06610f568923486874ae6cb17df397868be3a8973153b37e6f47",
     "doc_manager_mcp/tools/analysis/validation/__init__.py": "bc6f1b7c8995e2ee3586a6992d9bb0c922e8c72af8866bba73a8546ea8c7b711",
     "doc_manager_mcp/tools/state/init.py": "8b8b3c30c63775e84510565c672afa6391015c36fc7c72cf77b3613e453ce604",
-    "doc_manager_mcp/tools/state/update_baseline.py": "01192a5ede90efa9eb9584725ba7074e57ae25d7970230192f182268fd45c635",
+    "doc_manager_mcp/tools/state/update_baseline.py": "e9d86c3acfcf73edbbe41a52e9ceec72640c05c668804ee4cd44824ff1d3f5d2",
     "doc_manager_mcp/tools/state/__init__.py": "6563b2d5dd9db28e9c754e39b4c955d819e85fc8ccd76984f75504a797c59429",
     "doc_manager_mcp/tools/workflows/migrate.py": "6e7165e18406298d41df7ba1b83d272edf6e08028abd460a4161d982da183c61",
     "doc_manager_mcp/tools/workflows/migrate_helpers.py": "86c7099dd9244b0ccd3ed4b1d3093f1b2882b52b8275da4f95e9872d3b4a8eda",

@@ -1,10 +1,10 @@
 {
   "_meta": {
     "generated_by": "doc-manager-mcp",
-    "tool_version": "1.2.1",
+    "tool_version": "1.2.3",
     "warning": "AUTO-GENERATED FILE - Do not edit manually. Changes will be overwritten by doc-manager."
   },
-  "generated_at": "2025-12-04T20:10:07.618099",
+  "generated_at": "2025-12-04T23:27:31.587648",
   "doc_to_code": {
     "getting-started/installation.md": [
       "doc_manager_mcp/server.py",
