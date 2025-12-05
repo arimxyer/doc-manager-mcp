@@ -28,13 +28,15 @@ Identifies changed files by comparing current state against baselines. Categoriz
 
 ```json
 {
+  "status": "success",
   "changes_detected": true,
-  "changed_files": {
-    "code": ["src/api.py", "src/models.py"],
-    "documentation": ["docs/api.md"],
-    "asset": [],
-    "config": [".doc-manager.yml"]
-  },
+  "total_changes": 15,
+  "change_percentage": 12.5,
+  "changed_files": [
+    {"file": "src/api.py", "category": "code", "change_type": "modified"},
+    {"file": "src/models.py", "category": "code", "change_type": "modified"},
+    {"file": "docs/api.md", "category": "documentation", "change_type": "modified"}
+  ],
   "affected_docs": {
     "docs/api.md": ["src/api.py"],
     "docs/reference.md": ["src/models.py"]
@@ -120,6 +122,7 @@ Changes are categorized as:
 - **Modes**:
   - `checksum`: Compare current file checksums against `repo-baseline.json`
   - `git_diff`: Compare current files against a specific git commit
+- **Change percentage**: Output includes `change_percentage` showing what fraction of tracked files changed (e.g., "15 of 120 files changed (12.5%)")
 - **Semantic detection**: When `include_semantic=true`, detects function/class additions, modifications, and deletions using TreeSitter
 - **Config field tracking**: Detects changes to config fields in Pydantic models, dataclasses, Go structs, TypeScript interfaces, and Rust serde structs
 - **Action items**: Provides prioritized action items for AI agents to act on detected changes

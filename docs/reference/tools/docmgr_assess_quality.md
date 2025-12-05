@@ -63,6 +63,16 @@ Evaluates documentation quality using a structured framework of 7 criteria. Prov
       }
     }
   },
+  "docstring_coverage": {
+    "symbols_with_doc": 45,
+    "total_public_symbols": 195,
+    "coverage_percentage": 23.1,
+    "breakdown_by_type": {
+      "class": {"total": 25, "with_doc": 10, "coverage_percentage": 40},
+      "function": {"total": 120, "with_doc": 30, "coverage_percentage": 25},
+      "method": {"total": 50, "with_doc": 5, "coverage_percentage": 10}
+    }
+  },
   "summary": {
     "strengths": ["Clear structure", "Good purposefulness"],
     "weaknesses": ["Low API coverage", "Duplicate topics", "Missing language tags"],
@@ -210,6 +220,7 @@ await mcp.call_tool("docmgr_assess_quality", {
 - **Comprehensive**: Assesses content, structure, and technical accuracy
 - **Actionable**: Provides specific issues and recommendations
 - **Metrics-driven**: Includes quantifiable measurements
+- **Docstring coverage**: Reports percentage of public symbols with docstrings, broken down by type (class/function/method)
 - **Root README**: Includes root README.md if `include_root_readme: true` in config
 - **Prerequisites**: Requires baselines for accuracy assessment
 

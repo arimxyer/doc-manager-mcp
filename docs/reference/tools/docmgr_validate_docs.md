@@ -25,6 +25,8 @@ Performs comprehensive validation checks on documentation files to catch broken 
 | `check_links` | bool | No | `true` | Validate internal links point to existing files |
 | `check_assets` | bool | No | `true` | Verify images/assets exist and have alt text |
 | `check_snippets` | bool | No | `true` | Validate code block syntax |
+| `check_stale_references` | bool | No | `true` | Warn about code references that couldn't be matched to source files |
+| `check_external_assets` | bool | No | `false` | Validate external asset URLs are reachable (makes HTTP requests, expensive) |
 | `validate_code_syntax` | bool | No | `false` | Deep syntax validation with TreeSitter (slower) |
 | `validate_symbols` | bool | No | `false` | Check documented symbols exist in codebase |
 
@@ -132,6 +134,20 @@ await mcp.call_tool("docmgr_validate_docs", {
 - Validates API references are accurate
 - Detects outdated symbol references
 - Requires symbol baseline to exist
+
+### Stale reference detection (`check_stale_references=true`)
+
+- Warns when code references in docs can't be matched to source files
+- Identifies function/class names mentioned but not found
+- Helps catch documentation referencing renamed or deleted code
+- Enabled by default
+
+### External asset validation (`check_external_assets=true`)
+
+- Makes HTTP HEAD requests to verify external URLs are reachable
+- Catches broken external links (404s, timeouts)
+- **Note**: Disabled by default as it's expensive (network requests)
+- Use sparingly, primarily before releases
 
 ## Issue severities
 
