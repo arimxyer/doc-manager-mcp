@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/doc-manager-mcp.svg)](https://pypi.org/project/doc-manager-mcp/)
 [![Python Version](https://img.shields.io/pypi/pyversions/doc-manager-mcp)](https://pypi.org/project/doc-manager-mcp/)
-[![License](https://img.shields.io/github/license/ari1110/doc-manager-mcp)](https://github.com/ari1110/doc-manager-mcp/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/arimxyer/doc-manager-mcp)](https://github.com/arimxyer/doc-manager-mcp/blob/main/LICENSE)
 
 Comprehensive documentation lifecycle management powered by an MCP (Model Context Protocol) server. Automates documentation creation, maintenance, quality assessment, and synchronization for software projects.
 
@@ -26,7 +26,7 @@ The **doc-management plugin** provides an interactive documentation workflow wit
 
 ```bash
 # Add the marketplace
-/plugin marketplace add ari1110/doc-manager-mcp
+/plugin marketplace add arimxyer/doc-manager-mcp
 
 # Install the plugin (automatically configures MCP server)
 /plugin install doc-manager@doc-manager-suite

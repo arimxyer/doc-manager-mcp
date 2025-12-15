@@ -3,13 +3,13 @@
   "version": "1.2.4",
   "description": "Documentation lifecycle management integration for Claude Code. Provides proactive documentation health monitoring, automated sync workflows, quality assessment against 7 professional criteria, and intelligent agent coordination through the doc-manager MCP server.",
   "author": {
-    "name": "ari1110",
+    "name": "arimxyer",
     "email": "na@na.com",
-    "url": "https://github.com/ari1110/doc-manager-mcp"
+    "url": "https://github.com/arimxyer/doc-manager-mcp"
   },
   "license": "MIT",
-  "homepage": "https://github.com/ari1110/doc-manager-mcp",
-  "repository": "https://github.com/ari1110/doc-manager-mcp.git",
+  "homepage": "https://github.com/arimxyer/doc-manager-mcp",
+  "repository": "https://github.com/arimxyer/doc-manager-mcp.git",
   "keywords": ["documentation", "docs", "sync", "validation", "quality", "mcp", "doc-management", "technical-writing", "api-docs"],
   "commands": ["./commands"],
   "agents": ["./agents/doc-expert.md", "./agents/doc-writer.md"],

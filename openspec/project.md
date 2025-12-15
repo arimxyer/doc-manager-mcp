@@ -194,7 +194,7 @@ The 7 quality criteria for documentation assessment:
 ### Claude Code Plugin
 The project can be installed as a Claude Code plugin from the marketplace:
 ```bash
-/plugin marketplace add ari1110/doc-manager-mcp
+/plugin marketplace add arimxyer/doc-manager-mcp
 /plugin install doc-manager@doc-manager-suite
 ```
 
