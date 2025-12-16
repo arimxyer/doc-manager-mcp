@@ -12,7 +12,7 @@ The **doc-management plugin** provides an interactive workflow with specialized 
 
 **Install:**
 ```bash
-/plugin marketplace add ari1110/doc-manager-mcp
+/plugin marketplace add arimxyer/doc-manager-mcp
 /plugin install doc-manager@doc-manager-suite
 ```
 

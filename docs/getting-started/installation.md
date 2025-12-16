@@ -18,7 +18,7 @@ Documentation Manager is an MCP (Model Context Protocol) server that integrates 
 
 ```bash
 # Add the marketplace
-/plugin marketplace add ari1110/doc-manager-mcp
+/plugin marketplace add arimxyer/doc-manager-mcp
 
 # Install the plugin (automatically configures MCP server)
 /plugin install doc-manager@doc-manager-suite
@@ -90,7 +90,7 @@ If you need to install the package directly (not common for MCP usage):
 pip install doc-manager-mcp
 
 # From source
-git clone https://github.com/ari1110/doc-manager-mcp
+git clone https://github.com/arimxyer/doc-manager-mcp
 cd doc-manager-mcp
 pip install -e .
 ```
