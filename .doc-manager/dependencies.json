@@ -1,10 +1,10 @@
 {
   "_meta": {
     "generated_by": "doc-manager-mcp",
-    "tool_version": "1.2.3",
+    "tool_version": "1.2.4",
     "warning": "AUTO-GENERATED FILE - Do not edit manually. Changes will be overwritten by doc-manager."
   },
-  "generated_at": "2025-12-04T23:27:31.587648",
+  "generated_at": "2025-12-16T10:45:30.632680",
   "doc_to_code": {
     "getting-started/installation.md": [
       "doc_manager_mcp/server.py",
@@ -614,6 +614,42 @@
     ],
     "change_percentage": [
       "reference/tools/docmgr_detect_changes.md"
+    ],
+    "docs_exist": [
+      "reference/tools/docmgr_init.md"
+    ],
+    "metadata.git_branch": [
+      "reference/tools/docmgr_init.md"
+    ],
+    "files_tracked": [
+      "reference/tools/docmgr_init.md"
+    ],
+    "symbols_indexed": [
+      "reference/tools/docmgr_init.md"
+    ],
+    "symbol_breakdown": [
+      "reference/tools/docmgr_init.md"
+    ],
+    "details.repo_baseline.language": [
+      "reference/tools/docmgr_update_baseline.md"
+    ],
+    "details.repo_baseline.docs_exist": [
+      "reference/tools/docmgr_update_baseline.md"
+    ],
+    "details.repo_baseline.git_branch": [
+      "reference/tools/docmgr_update_baseline.md"
+    ],
+    "details.symbol_baseline.breakdown": [
+      "reference/tools/docmgr_update_baseline.md"
+    ],
+    "details.dependencies.total_doc_files": [
+      "reference/tools/docmgr_update_baseline.md"
+    ],
+    "details.dependencies.total_source_files": [
+      "reference/tools/docmgr_update_baseline.md"
+    ],
+    "details.dependencies.unmatched_references": [
+      "reference/tools/docmgr_update_baseline.md"
     ],
     "check_stale_references": [
       "reference/tools/docmgr_validate_docs.md"
@@ -2374,6 +2410,10 @@
         "doc_file": "reference/tools/docmgr_init.md"
       },
       {
+        "reference": "language",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
         "reference": "src",
         "doc_file": "reference/tools/docmgr_init.md"
       },
@@ -3168,6 +3208,26 @@
         "doc_file": "reference/tools/docmgr_init.md"
       },
       {
+        "reference": "docs_exist",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
+        "reference": "metadata.git_branch",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
+        "reference": "files_tracked",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
+        "reference": "symbols_indexed",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
+        "reference": "symbol_breakdown",
+        "doc_file": "reference/tools/docmgr_init.md"
+      },
+      {
         "reference": "project_path",
         "doc_file": "reference/tools/docmgr_migrate.md"
       },
@@ -3229,6 +3289,34 @@
       },
       {
         "reference": "docs_path",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "details.repo_baseline.language",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "details.repo_baseline.docs_exist",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "details.repo_baseline.git_branch",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "details.symbol_baseline.breakdown",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "details.dependencies.total_doc_files",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "details.dependencies.total_source_files",
+        "doc_file": "reference/tools/docmgr_update_baseline.md"
+      },
+      {
+        "reference": "details.dependencies.unmatched_references",
         "doc_file": "reference/tools/docmgr_update_baseline.md"
       },
       {
