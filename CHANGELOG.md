@@ -5,6 +5,19 @@ All notable changes to Documentation Manager are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.6] - 2026-01-31
+
+### Fixed
+
+- **Duplicate syntax warnings** - `check_snippets` and `validate_code_syntax` no longer both TreeSitter-validate the same code blocks; when both enabled, only `check_snippets` runs
+- **Frontmatter parsed as headings** - YAML frontmatter is now stripped before markdown-it-py parsing, fixing false "0 H1 headers" and incorrect heading counts across all consumers (structure checks, consistency, H1 detection)
+- **Stale reference flood from CLI commands** - Built-in heuristic filters now skip references containing spaces (CLI invocations) and flag-like references (`--help`, `-v`) without requiring manual `exclude_reference_patterns` config
+- **Missing symbol false positives** - Keyboard key names (`Backspace`, `Enter`), ALL_CAPS env vars/constants (`EDITOR`), and short references (≤2 chars) are no longer flagged as missing symbols
+
+### Added
+
+- **Go API coverage preset** - New `"go"` preset excludes `internal/*`, TUI packages, generated code (`*.pb.go`, `*_gen.go`), and mock files from API coverage metrics
+
 ## [1.2.5] - 2026-01-31
 
 ### Fixed

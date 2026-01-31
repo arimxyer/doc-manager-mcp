@@ -7,6 +7,7 @@ line number information.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 import markdown_it
@@ -26,9 +27,30 @@ class MarkdownParser:
     attribute provided by markdown-it-py.
     """
 
+    # Regex to match YAML frontmatter (must be at very start of content)
+    _FRONTMATTER_RE = re.compile(r"\A---\s*\n.*?\n---\s*\n", re.DOTALL)
+
     def __init__(self):
         """Initialize the markdown parser."""
         self.md_parser = markdown_it.MarkdownIt()
+
+    def _strip_frontmatter(self, content: str) -> tuple[str, int]:
+        """Strip YAML frontmatter and return (cleaned content, lines removed).
+
+        Returns the content with frontmatter replaced by blank lines (to
+        preserve line numbers) and the number of frontmatter lines.
+        """
+        m = self._FRONTMATTER_RE.match(content)
+        if m:
+            fm_lines = m.group(0).count("\n")
+            # Replace with blank lines to preserve line numbers
+            return "\n" * fm_lines + content[m.end():], fm_lines
+        return content, 0
+
+    def _parse(self, content: str) -> list:
+        """Parse content after stripping frontmatter."""
+        content, _ = self._strip_frontmatter(content)
+        return self.md_parser.parse(content)
 
     def extract_headers(self, content: str) -> list[dict[str, Any]]:
         """Extract markdown headers with level, text, and line number.
@@ -46,7 +68,7 @@ class MarkdownParser:
             [{'level': 1, 'text': 'Title', 'line': 1},
              {'level': 2, 'text': 'Subtitle', 'line': 2}]
         """
-        tokens = self.md_parser.parse(content)
+        tokens = self._parse(content)
         headers = []
 
         for i, token in enumerate(tokens):
@@ -92,7 +114,7 @@ class MarkdownParser:
             >>> links
             [{'type': 'inline', 'text': 'Example', 'url': 'http://example.com', 'line': 1}]
         """
-        tokens = self.md_parser.parse(content)
+        tokens = self._parse(content)
         links = []
 
         # Links are children of inline tokens, not top-level
@@ -146,7 +168,7 @@ class MarkdownParser:
             >>> blocks
             [{'language': 'python', 'code': "print('hello')\\n", 'line': 1}]
         """
-        tokens = self.md_parser.parse(content)
+        tokens = self._parse(content)
         code_blocks = []
 
         for token in tokens:
@@ -178,7 +200,7 @@ class MarkdownParser:
             >>> images
             [{'alt': 'Alt text', 'src': 'image.png', 'line': 1}]
         """
-        tokens = self.md_parser.parse(content)
+        tokens = self._parse(content)
         images = []
 
         # Images are children of inline tokens, like links
@@ -222,7 +244,7 @@ class MarkdownParser:
             >>> code
             [{'text': 'functionName()', 'line': 1}]
         """
-        tokens = self.md_parser.parse(content)
+        tokens = self._parse(content)
         inline_codes = []
 
         # Need to traverse inline tokens within other tokens

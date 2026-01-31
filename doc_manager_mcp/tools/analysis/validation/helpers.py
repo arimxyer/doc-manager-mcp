@@ -9,6 +9,15 @@ from doc_manager_mcp.indexing.analysis.code_validator import CodeValidator
 from doc_manager_mcp.indexing.analysis.tree_sitter import Symbol, SymbolIndexer
 from doc_manager_mcp.indexing.parsers.markdown import MarkdownParser
 
+# Common keyboard key names that appear in documentation but aren't code symbols
+_KEYBOARD_KEYS = {
+    "Backspace", "Enter", "Return", "Tab", "Escape", "Space", "Delete",
+    "Insert", "Home", "End", "PageUp", "PageDown",
+    "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight",
+    "CapsLock", "NumLock", "ScrollLock", "PrintScreen",
+    "Shift", "Control", "Alt", "Meta", "Super",
+}
+
 
 def validate_code_examples(
     content: str,
@@ -110,6 +119,19 @@ def validate_documented_symbols(
     for code_span in inline_codes:
         code_text = code_span["text"]
         line = code_span["line"]
+
+        # Skip short references (≤2 chars) — too ambiguous
+        if len(code_text.rstrip("()")) <= 2:
+            continue
+
+        # Skip ALL_CAPS words (env vars/constants) unless they match a codebase symbol
+        bare = code_text.rstrip("()")
+        if bare.isupper() and bare not in symbol_index:
+            continue
+
+        # Skip common keyboard key names
+        if bare in _KEYBOARD_KEYS:
+            continue
 
         # Check if it's a function reference
         if match := FUNCTION_PATTERN.match(code_text):

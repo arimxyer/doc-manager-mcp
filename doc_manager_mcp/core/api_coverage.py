@@ -128,6 +128,24 @@ API_COVERAGE_PRESETS: dict[str, dict[str, list[str]]] = {
             "Fuzz*",
         ]
     },
+    "go": {
+        "exclude_symbols": [
+            "Test*",
+            "Benchmark*",
+            "Example*",
+            "Fuzz*",
+        ],
+        "exclude_paths": [
+            "internal/*",
+            "cmd/tui/*",
+            "cmd/*/tui/*",
+            "*_generated.go",
+            "*_gen.go",
+            "*.pb.go",
+            "mock_*",
+            "mocks/*",
+        ],
+    },
     # ===================
     # Rust Frameworks
     # ===================
@@ -154,7 +172,7 @@ PresetName = Literal[
     # JavaScript/TypeScript
     "jest", "vitest", "react", "vue",
     # Go
-    "go-test",
+    "go", "go-test",
     # Rust
     "rust-test", "serde",
 ]

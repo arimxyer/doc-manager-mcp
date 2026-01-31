@@ -49,6 +49,14 @@ def validate_stale_references(
         if exclude_patterns and any(fnmatch(reference, pat) for pat in exclude_patterns):
             continue
 
+        # Built-in heuristic filters: skip CLI-like references
+        # References with spaces are likely CLI invocations, not symbols
+        if " " in reference:
+            continue
+        # Flags like --help, -v
+        if reference.startswith("--") or (reference.startswith("-") and len(reference) > 1 and reference[1:2].isalpha()):
+            continue
+
         # Determine confidence level
         confidence = "high" if any(c in reference for c in "/.:") else "low"
 

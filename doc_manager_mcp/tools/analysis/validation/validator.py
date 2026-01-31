@@ -232,7 +232,9 @@ async def validate_docs(params: ValidateDocsInput) -> str | dict[str, Any]:
                 asyncio.to_thread(validate_code_snippets, docs_path, project_path, include_root_readme, markdown_cache, markdown_files, primary_language)
             )
 
-        if params.validate_code_syntax:
+        # Skip validate_code_syntax when check_snippets is enabled — both use
+        # TreeSitter to validate the same code blocks, producing duplicate warnings.
+        if params.validate_code_syntax and not params.check_snippets:
             validators.append(
                 asyncio.to_thread(validate_code_syntax, docs_path, project_path, include_root_readme, markdown_files)
             )
