@@ -32,6 +32,10 @@ Identifies changed files by comparing current state against baselines. Categoriz
   "changes_detected": true,
   "total_changes": 15,
   "change_percentage": 12.5,
+  "summary": {
+    "by_category": {"api": 8, "test": 4, "documentation": 2, "config": 1},
+    "staleness_warning": "15 of 20 tracked files changed (75.0%). Consider updating baselines."
+  },
   "changed_files": [
     {"file": "src/api.py", "category": "code", "change_type": "modified"},
     {"file": "src/models.py", "category": "code", "change_type": "modified"},

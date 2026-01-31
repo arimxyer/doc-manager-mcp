@@ -110,6 +110,18 @@ api_coverage:
     - "MySpecialConfig"  # Include even though preset excludes *Config
 ```
 
+### Exclude paths
+
+The `exclude_paths` option excludes symbols from specific source paths (fnmatch syntax). This is useful for filtering out CLI internals, TUI code, or framework wiring that inflates the undocumented count.
+
+```yaml
+api_coverage:
+  exclude_paths:
+    - "cmd/tui/*"          # TUI rendering code
+    - "internal/cobra/*"   # Cobra CLI wiring
+    - "internal/prompt/*"  # Interactive prompts
+```
+
 ## Configuration examples
 
 ### Python library with Pydantic

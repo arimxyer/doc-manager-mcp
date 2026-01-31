@@ -140,6 +140,8 @@ await mcp.call_tool("docmgr_validate_docs", {
 - Warns when code references in docs can't be matched to source files
 - Identifies function/class names mentioned but not found
 - Helps catch documentation referencing renamed or deleted code
+- Each issue includes a `confidence` field: `"high"` for paths/qualified symbols, `"low"` for simple words
+- Use `exclude_reference_patterns` in `.doc-manager.yml` to suppress noise from CLI commands, flags, and config keys
 - Enabled by default
 
 ### External asset validation (`check_external_assets=true`)

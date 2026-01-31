@@ -150,8 +150,24 @@ api_coverage:
 - `preset` - Pre-configured exclusions for common frameworks (pydantic, django, jest, etc.)
 - `exclude_symbols` - Custom patterns to exclude
 - `include_symbols` - Force-include specific symbols
+- `exclude_paths` - Path patterns to exclude from coverage (e.g., `cmd/tui/*`)
 
 For complete documentation of all options, presets, and examples, see [API Coverage Reference](api-coverage.md).
+
+### Exclude reference patterns
+
+- **Type**: list[string]
+- **Default**: `[]`
+- **Required**: No
+- **Description**: Patterns to exclude from stale reference validation (fnmatch syntax). Use this to suppress warnings for CLI commands, config keys, or other inline code references that aren't actual source file references.
+
+**Example:**
+```yaml
+exclude_reference_patterns:
+  - "pass-*"      # CLI subcommands
+  - "--*"          # CLI flags
+  - "*.example.*"  # Example domains
+```
 
 ## Configuration examples
 
@@ -203,6 +219,14 @@ sources:
   - "pkg/**/*.go"
   - "internal/**/*.go"
 docs_path: docs
+exclude_reference_patterns:
+  - "pass-*"    # CLI subcommands
+  - "--*"       # CLI flags
+api_coverage:
+  preset: go-test
+  exclude_paths:
+    - "cmd/tui/*"          # TUI internals
+    - "internal/cobra/*"   # CLI wiring
 metadata:
   language: Go
   created: '2025-11-20T18:45:00.000000'

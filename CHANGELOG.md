@@ -5,6 +5,20 @@ All notable changes to Documentation Manager are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.5] - 2026-01-31
+
+### Fixed
+
+- **Link validation false positives** - Root README links to files outside `docs_path` (e.g., `LICENSE`, `test/README.md`) no longer report as broken; falls back to filesystem resolution for files outside the docs directory
+- **Setext heading false positives** - YAML frontmatter `---` separators no longer match the setext heading regex, fixing inflated heading style inconsistency warnings for Hugo/Jekyll projects
+
+### Added
+
+- **`exclude_reference_patterns` config option** - Filter stale reference warnings using fnmatch patterns (e.g., `pass-*`, `--*`) to suppress noise from CLI commands and config keys
+- **`exclude_paths` for API coverage** - Exclude source paths from coverage metrics (e.g., `cmd/tui/*`, `internal/cobra/*`) to avoid counting internal/CLI symbols as undocumented
+- **Stale reference confidence levels** - Each stale reference issue now includes a `confidence` field: `"high"` for file paths and qualified symbols (contains `/`, `.`, `:`), `"low"` for simple words
+- **Change detection summary** - `docmgr_detect_changes` output now includes a `summary` section with per-category counts and a `staleness_warning` when >50% of tracked files have changed
+
 ## [1.2.4] - 2025-12-04
 
 ### Added
