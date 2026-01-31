@@ -166,11 +166,31 @@ async def docmgr_detect_changes(params: DocmgrDetectChangesInput) -> dict[str, A
                 len(changed_files) / file_count_value * 100, 1
             )
 
+        # Build per-category summary
+        category_summary: dict[str, int] = {}
+        for change in categorized_changes:
+            cat = change["category"]
+            category_summary[cat] = category_summary.get(cat, 0) + 1
+
+        # Staleness warning when >50% of tracked files changed
+        staleness_warning = None
+        file_count_for_staleness = baseline_info.get("file_count", 0)
+        if isinstance(file_count_for_staleness, int) and file_count_for_staleness > 0:
+            if len(changed_files) > file_count_for_staleness * 0.5:
+                staleness_warning = (
+                    f"{len(changed_files)} of {file_count_for_staleness} tracked files changed "
+                    f"({change_percentage}%). Consider updating baselines."
+                )
+
         result = {
             "status": "success",
             "changes_detected": len(changed_files) > 0,
             "total_changes": len(changed_files),
             "change_percentage": change_percentage,  # Task 1.7: "X of Y files changed (Z%)"
+            "summary": {
+                "by_category": category_summary,
+                **({"staleness_warning": staleness_warning} if staleness_warning else {}),
+            },
             "changed_files": categorized_changes,
             "affected_documentation": affected_docs,
             "semantic_changes": semantic_changes,

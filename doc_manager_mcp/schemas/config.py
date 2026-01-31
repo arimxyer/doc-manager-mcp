@@ -52,6 +52,10 @@ class ApiCoverageConfig(BaseModel):
         default_factory=list,
         description="Symbol patterns to force-include (overrides exclusions)"
     )
+    exclude_paths: list[str] = Field(
+        default_factory=list,
+        description="Path patterns to exclude from coverage (fnmatch syntax)"
+    )
 
 
 class DocManagerConfig(BaseModel):
@@ -101,6 +105,12 @@ class DocManagerConfig(BaseModel):
     api_coverage: ApiCoverageConfig | None = Field(
         default=None,
         description="Configuration for API coverage metrics"
+    )
+
+    # Validation tuning
+    exclude_reference_patterns: list[str] = Field(
+        default_factory=list,
+        description="Patterns to exclude from stale reference checks (fnmatch syntax, e.g. 'pass-*', '--*')"
     )
 
     # Project identification

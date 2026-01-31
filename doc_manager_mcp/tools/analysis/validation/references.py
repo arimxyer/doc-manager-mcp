@@ -4,6 +4,7 @@ Task 2.2: Use unmatched_references from dependencies.json to detect
 references in documentation that couldn't be matched to actual code.
 """
 
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -14,6 +15,7 @@ if TYPE_CHECKING:
 def validate_stale_references(
     project_path: Path,
     dependencies: "dict[str, Any] | DependenciesBaseline | None" = None,
+    exclude_reference_patterns: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """Validate documentation for stale/unmatched code references.
 
@@ -40,7 +42,16 @@ def validate_stale_references(
     # Get unmatched_references from dependencies
     unmatched_refs = dependencies.get("unmatched_references", {}) if isinstance(dependencies, dict) else getattr(dependencies, "unmatched_references", {})
 
+    exclude_patterns = exclude_reference_patterns or []
+
     for reference, doc_files in unmatched_refs.items():
+        # Skip references matching exclude patterns
+        if exclude_patterns and any(fnmatch(reference, pat) for pat in exclude_patterns):
+            continue
+
+        # Determine confidence level
+        confidence = "high" if any(c in reference for c in "/.:") else "low"
+
         for doc_file in doc_files:
             issues.append({
                 "type": "stale_reference",
@@ -49,6 +60,7 @@ def validate_stale_references(
                 "line": 1,  # Line number not available from dependencies.json
                 "message": f"Reference `{reference}` could not be matched to any source file",
                 "reference": reference,
+                "confidence": confidence,
             })
 
     return issues

@@ -192,6 +192,10 @@ class ApiCoverageConfig(BaseModel):
         default_factory=list,
         description="Patterns for symbols to force-include"
     )
+    exclude_paths: list[str] = Field(
+        default_factory=list,
+        description="Path patterns to exclude from coverage (fnmatch syntax, e.g. 'cmd/tui/*', 'internal/cobra/*')"
+    )
 
     def get_resolved_exclude_patterns(self) -> list[str]:
         """Get merged exclude patterns from preset + custom.

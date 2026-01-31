@@ -58,7 +58,8 @@ def check_internal_link(
     link_url: str,
     file_path: Path,
     docs_root: Path,
-    link_index=None
+    link_index=None,
+    project_path: Path | None = None,
 ) -> str | None:
     """Check if internal link is valid using link index for O(1) lookup.
 
@@ -67,6 +68,7 @@ def check_internal_link(
         file_path: Source file containing the link
         docs_root: Documentation root directory
         link_index: Optional LinkIndex for fast lookups (falls back to file system if None)
+        project_path: Optional project root for resolving links from files outside docs_root
 
     Returns:
         Error message if link is broken, None if valid
@@ -103,11 +105,17 @@ def check_internal_link(
         target = link_index.resolve(url_without_anchor, source_context, docs_root)
 
         if target is None:
+            # Fall back to filesystem resolution for files outside docs_root
+            # (e.g., root README linking to test/README.md or LICENSE)
+            if project_path and not _is_under(file_path, docs_root):
+                return _check_link_via_filesystem(
+                    url_without_anchor, link_url, file_path, docs_root
+                )
             return f"Broken link: {link_url} (target not found)"
 
         return None
 
-    # Fallback to file system checks (backward compatibility)
+    # Fallback to file system checks (backward compatibility, also used for non-docs files)
     # Resolve relative path
     if url_without_anchor.startswith('/'):
         # Absolute path from docs root
@@ -135,6 +143,41 @@ def check_internal_link(
                 return None  # Valid Hugo-style extensionless link
 
         return f"Broken link: {link_url} (target not found)"
+
+    return None
+
+
+def _is_under(path: Path, parent: Path) -> bool:
+    """Check if path is under parent directory."""
+    try:
+        path.resolve().relative_to(parent.resolve())
+        return True
+    except ValueError:
+        return False
+
+
+def _check_link_via_filesystem(
+    url_without_anchor: str,
+    original_url: str,
+    file_path: Path,
+    docs_root: Path,
+) -> str | None:
+    """Resolve a link via filesystem for files outside docs_root."""
+    if url_without_anchor.startswith('/'):
+        target = docs_root / url_without_anchor.lstrip('/')
+    else:
+        target = file_path.parent / url_without_anchor
+
+    try:
+        target = safe_resolve(target)
+    except (RecursionError, Exception):
+        return f"Broken link: {original_url} (target not found)"
+
+    if not target.exists():
+        if not target.suffix:
+            if target.with_suffix('.md').exists():
+                return None
+        return f"Broken link: {original_url} (target not found)"
 
     return None
 
@@ -179,7 +222,7 @@ def check_broken_links(
 
             for link in links:
                 # Check internal links only using link index
-                error = check_internal_link(link['url'], md_file, docs_path, link_index)
+                error = check_internal_link(link['url'], md_file, docs_path, link_index, project_path)
                 if error:
                     issues.append({
                         "type": "broken_link",

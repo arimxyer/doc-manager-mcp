@@ -1,0 +1,3 @@
+[tasks.test]
+description = "Run pytest test suite"
+run = "uv run pytest"

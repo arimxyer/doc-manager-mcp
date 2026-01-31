@@ -49,9 +49,13 @@ def assess_consistency(
                 else:
                     code_langs_without_lang += 1
 
+            # Strip YAML frontmatter before heading analysis
+            # (frontmatter --- separators match setext heading regex)
+            content_for_headings = re.sub(r'^---\n.*?\n---\n', '', content, count=1, flags=re.DOTALL)
+
             # Check heading styles
-            atx_style_count += len(re.findall(r'^#{1,6} ', content, re.MULTILINE))
-            setext_style_count += len(re.findall(r'^.+\n[=\-]+$', content, re.MULTILINE))
+            atx_style_count += len(re.findall(r'^#{1,6} ', content_for_headings, re.MULTILINE))
+            setext_style_count += len(re.findall(r'^.+\n[=\-]+$', content_for_headings, re.MULTILINE))
 
         except Exception as e:
             print(f"Warning: Failed to read file {md_file}: {e}", file=sys.stderr)

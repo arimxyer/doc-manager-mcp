@@ -248,8 +248,9 @@ async def validate_docs(params: ValidateDocsInput) -> str | dict[str, Any]:
             dependencies_data = load_dependencies(project_path)
 
         if getattr(params, 'check_stale_references', True) and dependencies_data:
+            exclude_ref_patterns = config.get('exclude_reference_patterns', []) if config else []
             validators.append(
-                asyncio.to_thread(validate_stale_references, project_path, dependencies_data)  # type: ignore[arg-type]
+                asyncio.to_thread(validate_stale_references, project_path, dependencies_data, exclude_ref_patterns)  # type: ignore[arg-type]
             )
 
         # Task 2.3: Check external asset URLs for reachability (opt-in, expensive)

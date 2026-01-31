@@ -3,6 +3,8 @@
 from pathlib import Path
 from typing import Any
 
+from fnmatch import fnmatch
+
 from doc_manager_mcp.core import (
     ApiCoverageConfig,
     extract_module_all,
@@ -369,6 +371,7 @@ def detect_undocumented_apis(
     api_config = _load_api_coverage_config(project_path)
     exclude_patterns = api_config.get_resolved_exclude_patterns()
     include_patterns = api_config.include_symbols
+    exclude_path_patterns = api_config.exclude_paths
     strategy = api_config.strategy
 
     # Step 1: Get all symbols from codebase
@@ -397,6 +400,9 @@ def detect_undocumented_apis(
     # Filter to only public symbols using configurable conventions
     public_symbols = []
     for symbol in all_symbols:
+        # Exclude symbols from paths matching exclude_paths patterns
+        if exclude_path_patterns and any(fnmatch(symbol.file, pat) for pat in exclude_path_patterns):
+            continue
         module_all = get_module_all(symbol.file)
         if is_public_symbol(
             symbol,
@@ -490,6 +496,7 @@ def calculate_documentation_coverage(
     api_config = _load_api_coverage_config(project_path)
     exclude_patterns = api_config.get_resolved_exclude_patterns()
     include_patterns = api_config.include_symbols
+    exclude_path_patterns = api_config.exclude_paths
     strategy = api_config.strategy
 
     # Index all symbols in the project
@@ -523,6 +530,9 @@ def calculate_documentation_coverage(
     # Filter to only public symbols using configurable conventions
     public_symbols = []
     for symbol in all_symbols:
+        # Exclude symbols from paths matching exclude_paths patterns
+        if exclude_path_patterns and any(fnmatch(symbol.file, pat) for pat in exclude_path_patterns):
+            continue
         module_all = get_module_all(symbol.file)
         if is_public_symbol(
             symbol,
