@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/arimxyer-doc-manager-mcp-badge.png)](https://mseep.ai/app/arimxyer-doc-manager-mcp)
+
 # Documentation Manager
 
 [![PyPI version](https://img.shields.io/pypi/v/doc-manager-mcp.svg)](https://pypi.org/project/doc-manager-mcp/)
