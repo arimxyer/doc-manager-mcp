@@ -1,3 +1,5 @@
+
+
 # Documentation Manager
 
 [![PyPI version](https://img.shields.io/pypi/v/doc-manager-mcp.svg)](https://pypi.org/project/doc-manager-mcp/)
@@ -134,7 +136,7 @@ Workflow:
 5. docmgr_update_baseline   → Refresh baselines
 ```
 
-Or use `docmgr_sync mode="resync"` to combine steps 3-5.
+Or use `docmgr_sync` to orchestrate change detection, validation, quality assessment, and baseline updates.
 
 ## Configuration
 
